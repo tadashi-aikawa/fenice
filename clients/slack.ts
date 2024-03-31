@@ -1,4 +1,4 @@
-import { AsyncResult, Result } from "owlelia";
+import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
 import { Block } from "./slack/models";
 

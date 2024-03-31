@@ -2,6 +2,8 @@
 import { onMounted } from "vue";
 import { Channel } from "../models";
 import { getUsersConversations } from "@/clients/slack";
+import { DateTime } from "owlelia";
+import { sorter } from "@/utils/collections";
 
 const model = defineModel<Channel | null>();
 
@@ -20,11 +22,28 @@ onMounted(async () => {
     return;
   }
 
-  channels.value = res.channels;
+  channels.value = await sortChennels(res.channels);
 });
+
+const sortChennels = async (channels: Channel[]) => {
+  const mapping = await lastSelectedByChannelId.getValue();
+  return channels.toSorted(sorter(({ id }) => mapping[id] ?? 0, "desc"));
+};
 
 const customFilter = (value: string, query: string) =>
   query.split(" ").every((q) => value.includes(q));
+
+const handleUpdate = async (channel?: Channel) => {
+  if (!channel) {
+    return;
+  }
+
+  const m = await lastSelectedByChannelId.getValue();
+  m[channel.id] = DateTime.now().unix;
+  await lastSelectedByChannelId.setValue(m);
+
+  channels.value = await sortChennels(channels.value);
+};
 </script>
 
 <template>
@@ -40,5 +59,6 @@ const customFilter = (value: string, query: string) =>
     placeholder="スペース区切りでand検索"
     auto-select-first
     style="width: 480px"
+    @update:model-value="handleUpdate"
   />
 </template>
