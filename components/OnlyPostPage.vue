@@ -1,9 +1,8 @@
 <script lang="ts" setup>
 import { showSuccessToast } from "@/utils/toast";
-import ChannelSelect from "./ChannelSelect.vue";
+import JoinnedChannelSelect from "./JoinnedChannelSelect.vue";
 import { Channel } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
-import CharaLoading from "./CharaLoading.vue";
 import UploadingImage from "./UploadingImage.vue";
 
 const channel = ref<Channel | null>(null);
@@ -89,7 +88,7 @@ const handlePaste = async (e: ClipboardEvent) => {
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
-    <ChannelSelect v-model="channel" />
+    <JoinnedChannelSelect v-model="channel" />
     <template v-if="channel">
       <v-textarea v-model="text" style="width: 480px" @paste="handlePaste" />
 
