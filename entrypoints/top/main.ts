@@ -2,9 +2,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
-import "./style.css";
 
 // Vuetify
+import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
