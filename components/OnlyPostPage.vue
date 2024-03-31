@@ -21,6 +21,8 @@ const postMessage = async () => {
     showErrorToast(err);
     return;
   }
+
+  text.value = "";
   showSuccessToast(`channelに投稿しました`);
 };
 </script>
