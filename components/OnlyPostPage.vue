@@ -82,7 +82,7 @@ const handlePaste = async (e: ClipboardEvent) => {
   }
 
   image.value.url = res.file.url_private;
-  image.value.thumbnail = res.file.thumb_64;
+  image.value.thumbnail = res.file.thumb_160;
 };
 </script>
 
@@ -95,9 +95,9 @@ const handlePaste = async (e: ClipboardEvent) => {
       <UploadingImage
         v-if="image"
         :uploading="uploading"
-        :src="image?.blobUrl"
-        width="64px"
-        height="64px"
+        :src="image?.thumbnail ?? image?.blobUrl"
+        width="160px"
+        height="160px"
       />
 
       <v-btn
