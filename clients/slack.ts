@@ -1,9 +1,6 @@
-import {
-  createGetDefaultHeaders,
-  createPostDefaultHeaders,
-  getRequest,
-  postRequest,
-} from "./slack/base";
+import { AsyncResult, Result } from "owlelia";
+import { RequestError, getRequest, postRequest } from "./slack/base";
+import { Block } from "./slack/models";
 
 export async function getUsersConversations(args: {
   exclude_archived?: boolean;
@@ -28,22 +25,58 @@ export async function getUsersConversations(args: {
       limit: args.limit,
       types: args.types,
     },
-    headers: await createGetDefaultHeaders(),
   });
 }
 
-export async function postChatPostMessage(args: {
+export async function postChatPostMessage<R extends { ok: boolean }>(args: {
   channel: string;
   text: string;
-}) {
-  return await postRequest<{
-    ok: boolean;
-  }>({
+}): AsyncResult<R, RequestError>;
+export async function postChatPostMessage<R extends { ok: boolean }>(args: {
+  channel: string;
+  blocks: Block[];
+}): AsyncResult<R, RequestError>;
+export async function postChatPostMessage<R extends { ok: boolean }>(
+  args: {
+    channel: string;
+  } & ({ text: string } | { blocks: Block[] }),
+): AsyncResult<R, RequestError> {
+  return await postRequest<R>({
     path: "/chat.postMessage",
     json: {
       channel: args.channel,
-      text: args.text,
+      ...("text" in args ? { text: args.text } : { blocks: args.blocks }),
     },
-    headers: await createPostDefaultHeaders(),
+  });
+}
+
+export async function postFilesUpload(args: { channel: string; file: File }) {
+  const formData = new FormData();
+  formData.append("channel", args.channel);
+  formData.append("file", args.file);
+
+  return await postRequest<{
+    ok: boolean;
+    file: {
+      id: string;
+      name: string;
+      title: string;
+      filetype: string;
+      mimetype: string;
+      permalink: string;
+      thumb_64: string;
+      thumb_80: string;
+      thumb_160: string;
+      thumb_360: string;
+      thumb_360_h: string;
+      thumb_360_w: string;
+      url_private: string;
+      url_private_download: string;
+      user: string;
+      user_team: string;
+    };
+  }>({
+    path: "/files.upload",
+    formData,
   });
 }

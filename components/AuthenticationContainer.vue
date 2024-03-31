@@ -11,7 +11,7 @@ const authenticate = async () => {
   // code取得
   const clientId = (await clientIdStorage.getValue()) ?? "";
   const redirectUri = encodeURIComponent(browser.identity.getRedirectURL());
-  const scopes = ["chat:write", "channels:read", "groups:read"];
+  const scopes = ["chat:write", "channels:read", "groups:read", "files:write"];
   const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${clientId}&user_scope=${scopes.join(",")}&redirect_uri=${redirectUri}`;
   const responseUrl = await browser.identity.launchWebAuthFlow({
     interactive: true,

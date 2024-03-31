@@ -22,17 +22,9 @@ function buildUrl(path: Path, query: Query = {}): string {
   return `${BASE_URL}${path}${queryStr ? "?" + queryStr : ""}`;
 }
 
-export async function createGetDefaultHeaders(): Promise<HeadersInit> {
+export async function createDefaultHeaders(): Promise<HeadersInit> {
   const token = await accessTokenStorage.getValue();
   return {
-    Authorization: `Bearer ${token}`,
-  };
-}
-
-export async function createPostDefaultHeaders(): Promise<HeadersInit> {
-  const token = await accessTokenStorage.getValue();
-  return {
-    "Content-Type": "application/json;charset=utf-8",
     Authorization: `Bearer ${token}`,
   };
 }
@@ -40,11 +32,9 @@ export async function createPostDefaultHeaders(): Promise<HeadersInit> {
 export async function getRequest<R>(args: {
   path: Path;
   query?: Query;
-  headers?: HeadersInit;
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
-  const headers = args.headers ?? (await createGetDefaultHeaders());
-
+  const headers = await createDefaultHeaders();
   const res = await fetch(url, { headers });
   return handleResponse<R>(res);
 }
@@ -53,11 +43,25 @@ export async function postRequest<R>(args: {
   path: Path;
   query?: Query;
   json?: Object;
-  headers?: HeadersInit;
+  formData?: FormData;
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
-  const headers = args.headers ?? (await createPostDefaultHeaders());
-  const body = args.json ? JSON.stringify(args.json) : undefined;
+
+  let headers, body;
+  if (args.json) {
+    headers = {
+      ...(await createDefaultHeaders()),
+      "Content-Type": "application/json;charset=utf-8",
+    };
+    body = JSON.stringify(args.json);
+  } else if (args.formData) {
+    // https://zenn.dev/kariya_mitsuru/articles/25c9aeb27059e7
+    headers = await createDefaultHeaders();
+    body = args.formData;
+  } else {
+    headers = await createDefaultHeaders();
+    body = undefined;
+  }
 
   const res = await fetch(url, { method: "POST", headers, body });
   return handleResponse<R>(res);

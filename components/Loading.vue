@@ -12,6 +12,8 @@ defineProps<{
     class="align-center justify-center"
     persistent
   >
-    <CharaLoading />
+    <div style="display: flex; justify-content: center; width: 95vw">
+      <CharaLoading />
+    </div>
   </v-overlay>
 </template>

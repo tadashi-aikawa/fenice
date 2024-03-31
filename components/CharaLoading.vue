@@ -1,24 +1,22 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div style="display: flex; justify-content: center; width: 95vw">
-    <div style="display: flex; align-items: center; gap: 16px">
-      <div class="chara">
-        <img src="/icon/384.png" width="125px" />
-      </div>
-      <p class="loading">
-        <span>L</span>
-        <span>O</span>
-        <span>A</span>
-        <span>D</span>
-        <span>I</span>
-        <span>N</span>
-        <span>G</span>
-        <span>.</span>
-        <span>.</span>
-        <span>.</span>
-      </p>
+  <div style="display: flex; align-items: center; gap: 16px">
+    <div class="chara">
+      <img src="/icon/384.png" width="125px" />
     </div>
+    <p class="loading">
+      <span>L</span>
+      <span>O</span>
+      <span>A</span>
+      <span>D</span>
+      <span>I</span>
+      <span>N</span>
+      <span>G</span>
+      <span>.</span>
+      <span>.</span>
+      <span>.</span>
+    </p>
   </div>
 </template>
 

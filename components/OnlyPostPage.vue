@@ -2,18 +2,46 @@
 import { showSuccessToast } from "@/utils/toast";
 import ChannelSelect from "./ChannelSelect.vue";
 import { Channel } from "@/models";
-import { postChatPostMessage } from "@/clients/slack";
+import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
+import CharaLoading from "./CharaLoading.vue";
+import UploadingImage from "./UploadingImage.vue";
 
 const channel = ref<Channel | null>(null);
 const text = ref("");
+const image = ref<{ blobUrl: string; url?: string; thumbnail?: string } | null>(
+  null,
+);
+
+const uploading = ref(false);
 const posting = ref(false);
 
 const postMessage = async () => {
   posting.value = true;
 
-  const [_, err] = (
-    await postChatPostMessage({ channel: channel.value!.id, text: text.value })
-  ).unwrap();
+  const res = image.value
+    ? await postChatPostMessage({
+        channel: channel.value!.id,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: text.value,
+            },
+          },
+          {
+            type: "image",
+            image_url: image.value?.url!,
+            alt_text: "image",
+          },
+        ],
+      })
+    : await postChatPostMessage({
+        channel: channel.value!.id,
+        text: text.value,
+      });
+
+  const [_, err] = res.unwrap();
 
   posting.value = false;
 
@@ -23,21 +51,64 @@ const postMessage = async () => {
   }
 
   text.value = "";
+  image.value = null;
   showSuccessToast(`channelに投稿しました`);
+};
+
+const handlePaste = async (e: ClipboardEvent) => {
+  const dataType = e.clipboardData?.types.at(0);
+  if (dataType !== "Files" && dataType !== "text/html") {
+    return;
+  }
+
+  const file = e.clipboardData?.files.item(0);
+  if (!file) {
+    return;
+  }
+
+  image.value = { blobUrl: URL.createObjectURL(file) };
+
+  uploading.value = true;
+  const [res, err] = (
+    await postFilesUpload({
+      channel: channel.value!.id,
+      file,
+    })
+  ).unwrap();
+  uploading.value = false;
+
+  if (err) {
+    showErrorToast(err);
+    return;
+  }
+
+  image.value.url = res.file.url_private;
+  image.value.thumbnail = res.file.thumb_64;
 };
 </script>
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
     <ChannelSelect v-model="channel" />
-    <v-textarea v-model="text" style="width: 480px" />
-    <v-btn
-      :disabled="!channel"
-      :loading="posting"
-      @click="postMessage"
-      class="ml-3"
-      style="width: 240px"
-      >ポストする</v-btn
-    >
+    <template v-if="channel">
+      <v-textarea v-model="text" style="width: 480px" @paste="handlePaste" />
+
+      <UploadingImage
+        v-if="image"
+        :uploading="uploading"
+        :src="image?.blobUrl"
+        width="64px"
+        height="64px"
+      />
+
+      <v-btn
+        :disabled="(!text && !image) || uploading || posting"
+        :loading="posting"
+        @click="postMessage"
+        class="ml-3"
+        style="width: 240px"
+        >ポストする</v-btn
+      >
+    </template>
   </div>
 </template>
