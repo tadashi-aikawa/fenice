@@ -39,5 +39,6 @@ const customFilter = (value: string, query: string) =>
     label="投稿channel"
     placeholder="スペース区切りでand検索"
     auto-select-first
+    style="width: 480px"
   />
 </template>

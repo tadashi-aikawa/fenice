@@ -15,6 +15,11 @@ const page = ref<Page>("only-post");
 const handleClickItem = ({ id }: { id: unknown }) => {
   page.value = id as Page;
 };
+
+const items = [
+  { title: "投稿だけ機能", icon: "mdi-lead-pencil", value: "only-post" },
+  { title: "???", icon: "mdi-help-box", value: "???" },
+];
 </script>
 
 <template>
@@ -34,14 +39,11 @@ const handleClickItem = ({ id }: { id: unknown }) => {
 
           <v-list nav @click:select="handleClickItem">
             <v-list-item
-              prepend-icon="mdi-lead-pencil"
-              title="投稿だけ機能"
-              value="only-post"
-            ></v-list-item>
-            <v-list-item
-              prepend-icon="mdi-help-box"
-              title="???"
-              value="???"
+              v-for="item in items"
+              :prepend-icon="item.icon"
+              :title="item.title"
+              :value="item.value"
+              :active="page === item.value"
             ></v-list-item>
           </v-list>
         </v-navigation-drawer>
