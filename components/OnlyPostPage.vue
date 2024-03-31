@@ -89,8 +89,12 @@ const handlePaste = async (e: ClipboardEvent) => {
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
     <JoinnedChannelSelect v-model="channel" />
-    <template v-if="channel">
-      <v-textarea v-model="text" style="width: 480px" @paste="handlePaste" />
+    <v-card
+      v-if="channel"
+      :elevation="4"
+      class="d-flex flex-column align-center pa-5"
+    >
+      <v-textarea v-model="text" style="width: 640px" @paste="handlePaste" />
 
       <UploadingImage
         v-if="image"
@@ -104,10 +108,12 @@ const handlePaste = async (e: ClipboardEvent) => {
         :disabled="(!text && !image) || uploading || posting"
         :loading="posting"
         @click="postMessage"
-        class="ml-3"
         style="width: 240px"
+        class="mt-3"
+        prepend-icon="mdi-send-variant"
+        color="primary"
         >ポストする</v-btn
       >
-    </template>
+    </v-card>
   </div>
 </template>
