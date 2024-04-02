@@ -9,6 +9,9 @@ export const unreadMessagesStorage = storage.defineItem<Message[]>(
   "local:unreadMessages",
   { defaultValue: [] },
 );
+export const readByTsStorage = storage.defineItem<{
+  [ts: string]: true;
+}>("local:readMessages", { defaultValue: {} });
 
 // Options
 export const clientIdStorage = storage.defineItem<string>("local:clientId");

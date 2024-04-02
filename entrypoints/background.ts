@@ -59,7 +59,11 @@ export default defineBackground(() => {
       return;
     }
 
-    const uniqMessages = uniqBy(messages, (m) => m.ts);
+    const readByTs = await readByTsStorage.getValue();
+    const uniqMessages = uniqBy(
+      messages.filter((x) => !(x.ts in readByTs)),
+      (m) => m.ts,
+    );
     const unreadMessages = await unreadMessagesStorage.getValue();
     const newMessages = uniqMessages.filter(
       (x) => !unreadMessages.find((um) => um.ts === x.ts),
