@@ -1,3 +1,4 @@
+import "./main.css";
 import { createApp } from "vue";
 import App from "./App.vue";
 import Vue3Toastify from "vue3-toastify";
