@@ -2,6 +2,56 @@ import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
 import { Block } from "./slack/models";
 
+export async function getSearchMessages(args: {
+  query: string;
+  sort: "timestamp";
+  count?: number; // def: 20
+}) {
+  return await getRequest<{
+    ok: boolean;
+    query: string;
+    messages: {
+      total: number;
+      paging: {
+        count: number;
+        total: number;
+        page: number; // 現在ページ
+        pages: number; // ページ総数
+      };
+      matches: {
+        iid: string; // ???
+        team: string;
+        channel: {
+          id: string;
+          is_channel: boolean;
+          is_group: boolean;
+          is_im: boolean;
+          is_mpim: boolean;
+          is_shared: boolean;
+          is_org_shared: boolean;
+          is_ext_shared: boolean;
+          is_private: boolean;
+        };
+        type: "message";
+        user: string;
+        username: string; // tadashi-aikawa
+        ts: string;
+        blocks: Block[];
+        text: string;
+        permalink: string;
+        no_reactions: boolean;
+      }[];
+    };
+  }>({
+    path: "/search.messages",
+    query: {
+      query: args.query,
+      sort: args.sort,
+      count: args.count,
+    },
+  });
+}
+
 export async function getUsersConversations(args: {
   exclude_archived?: boolean;
   limit?: number;

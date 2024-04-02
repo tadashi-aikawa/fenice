@@ -15,3 +15,14 @@ export function sorter<T, U extends number | string>(
           ? -1
           : 0;
 }
+
+export function uniqBy<T>(values: T[], fn: (x: T) => string | number): T[] {
+  const m = new Map<string | number, T>();
+  values.forEach((x) => {
+    const k = fn(x);
+    if (!m.has(k)) {
+      m.set(k, x);
+    }
+  });
+  return Array.from(m.values());
+}

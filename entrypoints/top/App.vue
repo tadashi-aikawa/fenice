@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
+import Badge from "@/components/Badge.vue";
+import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
 import OnlyPostView from "@/components/OnlyPostPage.vue";
-import { accessTokenStorage } from "@/utils/storage";
+import { accessTokenStorage, unreadMessagesStorage } from "@/utils/storage";
 import { ref } from "vue";
 
 const accessToken = ref("");
@@ -9,17 +11,20 @@ onBeforeMount(async () => {
   accessToken.value = (await accessTokenStorage.getValue()) ?? "";
 });
 
-type Page = "only-post" | "???";
+type Page = "only-post" | "crucial-messages";
 const page = ref<Page>("only-post");
 
 const handleClickItem = ({ id }: { id: unknown }) => {
   page.value = id as Page;
 };
 
-const items = [
-  { title: "投稿だけ機能", icon: "mdi-lead-pencil", value: "only-post" },
-  { title: "???", icon: "mdi-help-box", value: "???" },
-];
+const unreadCount = ref<number>(0);
+onMounted(async () => {
+  unreadMessagesStorage.watch((newValue) => {
+    unreadCount.value = newValue.length;
+  });
+  unreadCount.value = (await unreadMessagesStorage.getValue()).length;
+});
 </script>
 
 <template>
@@ -39,12 +44,26 @@ const items = [
 
           <v-list nav @click:select="handleClickItem">
             <v-list-item
-              v-for="item in items"
-              :prepend-icon="item.icon"
-              :title="item.title"
-              :value="item.value"
-              :active="page === item.value"
+              prepend-icon="mdi-lead-pencil"
+              title="投稿だけ機能"
+              value="only-post"
+              :active="page === 'only-post'"
             ></v-list-item>
+            <Badge
+              :disabled="unreadCount === 0"
+              color="primary"
+              :content="unreadCount"
+              location="top start"
+              offset-x="32"
+              offset-y="7"
+            >
+              <v-list-item
+                prepend-icon="mdi-message-alert"
+                title="重要なメッセージ確認"
+                value="crucial-messages"
+                :active="page === 'crucial-messages'"
+              ></v-list-item>
+            </Badge>
           </v-list>
         </v-navigation-drawer>
 
@@ -52,8 +71,8 @@ const items = [
           <template v-if="page === 'only-post'">
             <OnlyPostView />
           </template>
-          <template v-if="page === '???'">
-            <span>TODO</span>
+          <template v-if="page === 'crucial-messages'">
+            <CrucialMessagesPage />
           </template>
         </v-main>
       </v-layout>
