@@ -2,7 +2,7 @@
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import Badge from "@/components/Badge.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
-import OnlyPostView from "@/components/OnlyPostPage.vue";
+import OnlyPostPage from "@/components/OnlyPostPage.vue";
 import { accessTokenStorage, unreadMessagesStorage } from "@/utils/storage";
 import { ref } from "vue";
 
@@ -25,6 +25,14 @@ onMounted(async () => {
   });
   unreadCount.value = (await unreadMessagesStorage.getValue()).length;
 });
+
+const currentPage = computed(() =>
+  page.value === "only-post"
+    ? OnlyPostPage
+    : page.value === "crucial-messages"
+      ? CrucialMessagesPage
+      : undefined,
+);
 </script>
 
 <template>
@@ -68,12 +76,9 @@ onMounted(async () => {
         </v-navigation-drawer>
 
         <v-main>
-          <template v-if="page === 'only-post'">
-            <OnlyPostView />
-          </template>
-          <template v-if="page === 'crucial-messages'">
-            <CrucialMessagesPage />
-          </template>
+          <KeepAlive>
+            <component :is="currentPage" />
+          </KeepAlive>
         </v-main>
       </v-layout>
     </template>
