@@ -78,6 +78,10 @@ export default defineBackground(() => {
         "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
     });
 
-    await unreadMessagesStorage.setValue(unreadMessages.concat(newMessages));
+    const newUnreadMessages = unreadMessages
+      .concat(newMessages)
+      .toSorted(sorter((x) => Number(x.ts), "desc"));
+
+    await unreadMessagesStorage.setValue(newUnreadMessages);
   });
 });
