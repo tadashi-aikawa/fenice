@@ -21,6 +21,7 @@ export default defineConfig({
       "unlimitedStorage",
       "notifications",
       "alarms",
+      "tabs",
     ],
     host_permissions: [
       "https://slack.com/api/*",

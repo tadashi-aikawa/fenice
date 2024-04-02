@@ -38,6 +38,12 @@ export default defineBackground(() => {
   // FIXME: オプションで設定できるようにしたい
   browser.alarms.create("", { periodInMinutes: 0.5 });
   browser.alarms.onAlarm.addListener(async (_alarm) => {
+    // 完璧ではないけど一旦これで十分
+    const tabs = await browser.tabs.query({ title: "Fenice" });
+    if (tabs.length === 0) {
+      return;
+    }
+
     const conditions = await crucialMessageConditionsStorage.getValue();
     if (conditions.length === 0) {
       return;
