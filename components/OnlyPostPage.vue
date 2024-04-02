@@ -33,11 +33,51 @@ const postMessage = async () => {
             image_url: image.value?.url!,
             alt_text: "image",
           },
+          { type: "divider" },
+          {
+            type: "context",
+            elements: [
+              {
+                type: "image",
+                image_url:
+                  "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
+                alt_text: "fenice",
+              },
+              {
+                type: "mrkdwn",
+                text: "Posted via <https://github.com/tadashi-aikawa/fenice|Fenice>",
+              },
+            ],
+          },
         ],
       })
     : await postChatPostMessage({
         channel: channel.value!.id,
-        text: text.value,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: text.value,
+            },
+          },
+          { type: "divider" },
+          {
+            type: "context",
+            elements: [
+              {
+                type: "image",
+                image_url:
+                  "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
+                alt_text: "fenice",
+              },
+              {
+                type: "mrkdwn",
+                text: "Posted via Fenice",
+              },
+            ],
+          },
+        ],
       });
 
   const [_, err] = res.unwrap();
