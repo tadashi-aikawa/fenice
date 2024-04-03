@@ -106,7 +106,13 @@ const handlePaste = async (e: ClipboardEvent) => {
       :elevation="4"
       class="d-flex flex-column align-center pa-5"
     >
-      <v-textarea v-model="text" style="width: 640px" @paste="handlePaste" />
+      <v-textarea
+        v-model="text"
+        style="width: 640px"
+        @paste="handlePaste"
+        @keyup.ctrl.enter.exact="postMessage"
+        @keyup.meta.enter.exact="postMessage"
+      />
 
       <UploadingImage
         v-if="images.length > 0"
