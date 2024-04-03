@@ -31,7 +31,6 @@ const handleRead = async () => {
       </div>
       <div class="text-caption">{{ message.text }}</div>
       <span>{{ ts2display(message.ts) }}</span>
-      <div>{{ message.ts }}</div>
     </v-card-item>
     <v-card-actions class="d-flex justify-center">
       <v-btn size="small" variant="tonal" @click="handleRead">既読にする</v-btn>
