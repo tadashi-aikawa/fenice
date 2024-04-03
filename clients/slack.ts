@@ -36,10 +36,24 @@ export async function getSearchMessages(args: {
         user: string;
         username: string; // tadashi-aikawa
         ts: string;
-        blocks: Block[];
+        blocks?: Block[];
         text: string;
         permalink: string;
         no_reactions: boolean;
+        attachments?: {
+          author_icon: string;
+          author_link: string;
+          author_name: string;
+          color: string;
+          fallback: string;
+          footer: string;
+          footer_icon: string;
+          id: number;
+          // この下は関連ありそう
+          mrkdwn_in: string[];
+          pretext: string;
+          text: string;
+        }[];
       }[];
     };
   }>({

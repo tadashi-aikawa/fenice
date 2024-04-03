@@ -21,6 +21,26 @@ const handleRead = async () => {
   await unreadMessagesStorage.setValue(newUnreadMessages);
   await readByTsStorage.setValue(readByTs);
 };
+
+const displayMessage = computed(() => {
+  if (props.message.text) {
+    return props.message.text;
+  }
+
+  if (props.message.attachments) {
+    return props.message.attachments
+      .map(
+        (x) => `---
+${x.fallback}
+> ${x.author_name}
+> ${x.text}
+---`,
+      )
+      .join("\n\n");
+  }
+
+  return "今の実装では解析ができません。Feniceのバージョンアップをお待ちください。";
+});
 </script>
 
 <template>
@@ -29,7 +49,10 @@ const handleRead = async () => {
       <div class="text-overline mb-1">
         {{ message.username }}
       </div>
-      <div class="text-caption">{{ message.text }}</div>
+      <v-divider class="pb-3" />
+      <pre class="text-caption" style="white-space: pre-wrap">{{
+        displayMessage
+      }}</pre>
       <span>{{ ts2display(message.ts) }}</span>
     </v-card-item>
     <v-card-actions class="d-flex justify-center">
