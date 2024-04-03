@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { smartLineBreakSplit } from "@/utils/collections";
 import { crucialMessageConditionsStorage } from "@/utils/storage";
 
 interface State {
@@ -23,7 +24,7 @@ const handleClickSave = async () => {
   await clientIdStorage.setValue(state.clientId);
   await clientSecretStorage.setValue(state.clientSecret);
   await crucialMessageConditionsStorage.setValue(
-    state.crucialMessageConditions.split("\n"),
+    smartLineBreakSplit(state.crucialMessageConditions),
   );
   close();
 };

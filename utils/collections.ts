@@ -26,3 +26,7 @@ export function uniqBy<T>(values: T[], fn: (x: T) => string | number): T[] {
   });
   return Array.from(m.values());
 }
+
+export function smartLineBreakSplit(text: string): string[] {
+  return text.split("\n").filter((x) => x);
+}
