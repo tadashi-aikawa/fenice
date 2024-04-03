@@ -13,7 +13,7 @@
     "zip:firefox": "wxt zip -b firefox",
     "compile": "vue-tsc --noEmit",
     "postinstall": "wxt prepare",
-    "prepare": "husky install",
+    "prepare": "husky",
     "pre:push": "bun compile && bun test"
   },
   "dependencies": {
