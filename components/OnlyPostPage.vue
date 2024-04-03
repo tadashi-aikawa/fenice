@@ -4,7 +4,7 @@ import JoinnedChannelSelect from "./JoinnedChannelSelect.vue";
 import { Channel } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock } from "@/clients/slack/models";
+import { ImageBlock, SectionBlock } from "@/clients/slack/models";
 
 const channel = ref<Channel | null>(null);
 const text = ref("");
@@ -16,6 +16,17 @@ const posting = ref(false);
 const postMessage = async () => {
   posting.value = true;
 
+  const sectionBlocks: SectionBlock[] = text.value
+    ? [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: text.value,
+          },
+        },
+      ]
+    : [];
   const imageBlocks: ImageBlock[] = images.value.map((x) => ({
     type: "image",
     image_url: x.url!,
@@ -25,13 +36,7 @@ const postMessage = async () => {
   const res = await postChatPostMessage({
     channel: channel.value!.id,
     blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: text.value,
-        },
-      },
+      ...sectionBlocks,
       ...imageBlocks,
       { type: "divider" },
       {
@@ -125,11 +130,11 @@ const handlePaste = async (e: ClipboardEvent) => {
       <v-btn
         :disabled="(!text && !images) || uploading || posting"
         :loading="posting"
-        @click="postMessage"
         style="width: 240px"
         class="mt-3"
         prepend-icon="mdi-send-variant"
         color="primary"
+        @click="postMessage"
         >ポストする</v-btn
       >
     </v-card>
