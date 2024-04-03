@@ -114,6 +114,7 @@ const handlePaste = async (e: ClipboardEvent) => {
       <v-textarea
         v-model="text"
         style="width: 640px"
+        :rows="12"
         @paste="handlePaste"
         @keyup.ctrl.enter.exact="postMessage"
         @keyup.meta.enter.exact="postMessage"
