@@ -46,20 +46,35 @@ ${x.fallback}
 <template>
   <v-card variant="flat" max-width="720" class="mb-5" :elevation="4">
     <v-card-item>
-      <div class="text-overline mb-1">
-        {{ message.username }}
+      <div class="d-flex align-center my-1 ga-2">
+        <div class="text-body-2 font-weight-bold">
+          {{ message.username }}
+        </div>
+        <v-spacer />
+        <v-btn
+          icon="mdi-check-circle-outline"
+          @click="handleRead"
+          variant="tonal"
+          density="compact"
+          style="color: forestgreen"
+        />
+        <v-btn
+          icon="mdi-slack"
+          @click="handleOpenSlack"
+          variant="tonal"
+          density="compact"
+          style="color: goldenrod"
+        />
       </div>
+
       <v-divider class="pb-3" />
       <pre class="text-caption" style="white-space: pre-wrap">{{
         displayMessage
       }}</pre>
-      <span>{{ ts2display(message.ts) }}</span>
+      <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
+        <v-icon>mdi-clock</v-icon>
+        <span>{{ ts2display(message.ts) }}</span>
+      </div>
     </v-card-item>
-    <v-card-actions class="d-flex justify-center">
-      <v-btn size="small" variant="tonal" @click="handleRead">既読にする</v-btn>
-      <v-btn size="small" variant="tonal" @click="handleOpenSlack"
-        >Slackで開く</v-btn
-      >
-    </v-card-actions>
   </v-card>
 </template>
