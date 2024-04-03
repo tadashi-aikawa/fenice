@@ -27,9 +27,6 @@ const handleRead = async () => {
   <v-card variant="flat" max-width="720" class="mb-5" :elevation="4">
     <v-card-item>
       <div class="text-overline mb-1">
-        {{ message.channel.id }}
-      </div>
-      <div class="text-h6 mb-1">
         {{ message.username }}
       </div>
       <div class="text-caption">{{ message.text }}</div>
