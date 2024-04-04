@@ -2,6 +2,7 @@
 import { Message } from "@/models";
 import { unreadMessagesStorage } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
+import { sleep } from "@/utils/os";
 
 const messages = ref<Message[]>([]);
 onMounted(async () => {
@@ -10,6 +11,24 @@ onMounted(async () => {
     messages.value = newValue;
   });
 });
+
+const markAsRead = async (message: Message) => {
+  const unreadMessages = await unreadMessagesStorage.getValue();
+  const newUnreadMessages = unreadMessages.filter((x) => x.ts !== message.ts);
+
+  const readByTs = await readByTsStorage.getValue();
+  readByTs[message.ts] = true;
+
+  await unreadMessagesStorage.setValue(newUnreadMessages);
+  await readByTsStorage.setValue(readByTs);
+};
+
+const markAllAsRead = async () => {
+  for (const message of messages.value) {
+    await markAsRead(message);
+    await sleep(350);
+  }
+};
 </script>
 
 <template>
@@ -20,9 +39,18 @@ onMounted(async () => {
           :key="message.ts"
           v-for="message in messages"
           :message="message"
+          @click:read="markAsRead"
         />
       </transition-group>
     </div>
+
+    <v-btn
+      prepend-icon="mdi-check-circle-outline"
+      color="warning"
+      style="position: absolute; right: 10px; top: 10px"
+      @click="markAllAsRead"
+      >すべて既読にする</v-btn
+    >
   </div>
 </template>
 

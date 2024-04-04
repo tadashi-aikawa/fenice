@@ -6,20 +6,12 @@ const props = defineProps<{
   message: Message;
 }>();
 
+const emit = defineEmits<{
+  "click:read": [message: Message];
+}>();
+
 const handleOpenSlack = () => {
   window.open(props.message.permalink, "_blank");
-};
-const handleRead = async () => {
-  const unreadMessages = await unreadMessagesStorage.getValue();
-  const newUnreadMessages = unreadMessages.filter(
-    (x) => x.ts !== props.message.ts,
-  );
-
-  const readByTs = await readByTsStorage.getValue();
-  readByTs[props.message.ts] = true;
-
-  await unreadMessagesStorage.setValue(newUnreadMessages);
-  await readByTsStorage.setValue(readByTs);
 };
 
 const displayMessage = computed(() => {
@@ -41,13 +33,17 @@ ${x.fallback}
 
   return "今の実装では解析ができません。Feniceのバージョンアップをお待ちください。";
 });
+
+const handleClickRead = () => {
+  emit("click:read", props.message);
+};
 </script>
 
 <template>
   <v-card variant="elevated" max-width="720" class="mb-3" :elevation="2">
     <v-card-item class="ma-0 pa-0">
       <div class="d-flex">
-        <div class="read-button" @click="handleRead">
+        <div class="read-button" @click="handleClickRead">
           <v-icon size="large">mdi-check-circle-outline</v-icon>
         </div>
 
