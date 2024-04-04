@@ -8,6 +8,9 @@ import {
 } from "@/utils/storage";
 import { AsyncResult, DateTime, err, ok } from "owlelia";
 
+const FENICE_ICON_URL =
+  "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png";
+
 async function searchMessages(
   queries: string[],
 ): AsyncResult<Message[], RequestError[]> {
@@ -59,8 +62,7 @@ export default defineBackground(() => {
         title: "検索に失敗",
         message: errorMessage,
         type: "basic",
-        iconUrl:
-          "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
+        iconUrl: FENICE_ICON_URL,
       });
       return;
     }
@@ -84,8 +86,7 @@ export default defineBackground(() => {
       title,
       message: "todo",
       type: "basic",
-      iconUrl:
-        "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
+      iconUrl: FENICE_ICON_URL,
     });
 
     const newUnreadMessages = unreadMessages
