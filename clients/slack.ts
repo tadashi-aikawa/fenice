@@ -58,11 +58,7 @@ export async function getSearchMessages(args: {
     };
   }>({
     path: "/search.messages",
-    query: {
-      query: args.query,
-      sort: args.sort,
-      count: args.count,
-    },
+    query: args,
   });
 }
 
@@ -84,11 +80,7 @@ export async function getUsersConversations(args: {
     }[];
   }>({
     path: "/users.conversations",
-    query: {
-      exlude_archived: args.exclude_archived,
-      limit: args.limit,
-      types: args.types,
-    },
+    query: args,
   });
 }
 
