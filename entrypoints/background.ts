@@ -20,9 +20,11 @@ async function searchMessages(
   for (const q of queries) {
     const [res, err] = (
       await getSearchMessages({
-        query: [q, `after: ${DateTime.today().minusDays(2).displayDate}`].join(
-          " ",
-        ),
+        query: [
+          q,
+          `after:${DateTime.today().minusDays(2).displayDate}`,
+          `-from:me`,
+        ].join(" "),
         sort: "timestamp",
         count: 100,
       })
