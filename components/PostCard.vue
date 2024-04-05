@@ -47,7 +47,7 @@ const handleClickRead = () => {
           <v-icon size="large">mdi-check-circle-outline</v-icon>
         </div>
 
-        <div style="width: 100%" class="px-3 pt-1 pb-2">
+        <div style="width: 675px" class="px-3 pt-1 pb-2">
           <div class="d-flex align-center my-1 ga-2">
             <div class="text-body-2 font-weight-bold">
               {{ message.username }}
