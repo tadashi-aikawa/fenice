@@ -1,21 +1,25 @@
 <script setup lang="ts">
 import { smartLineBreakSplit } from "@/utils/collections";
 import { crucialMessageConditionsStorage } from "@/utils/storage";
+import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 
 interface State {
   tab: "auth" | "search";
+  accessToken: string;
   clientId: string;
   clientSecret: string;
   crucialMessageConditions: string;
 }
 const state = reactive<State>({
   tab: "auth",
+  accessToken: "",
   clientId: "",
   clientSecret: "",
   crucialMessageConditions: "",
 });
 
 onBeforeMount(async () => {
+  state.accessToken = (await accessTokenStorage.getValue()) ?? "";
   state.clientId = (await clientIdStorage.getValue()) ?? "";
   state.clientSecret = (await clientSecretStorage.getValue()) ?? "";
   state.crucialMessageConditions =
@@ -34,6 +38,10 @@ const handleClickSave = async () => {
 const close = () => {
   window.close();
 };
+
+const clearAuth = async () => {
+  await accessTokenStorage.setValue("");
+};
 </script>
 
 <template>
@@ -46,17 +54,30 @@ const close = () => {
 
       <v-window v-model="state.tab" class="pa-5">
         <v-window-item value="auth">
-          <v-text-field
-            v-model="state.clientId"
-            label="Slack appのclient_id"
-            required
-          />
-          <v-text-field
-            v-model="state.clientSecret"
-            label="Slack appのclient_secret"
-            type="password"
-            required
-          />
+          <div class="d-flex flex-column align-center">
+            <v-text-field
+              v-model="state.clientId"
+              label="Slack appのclient_id"
+              required
+              style="width: 480px"
+            />
+            <v-text-field
+              v-model="state.clientSecret"
+              label="Slack appのclient_secret"
+              type="password"
+              required
+              style="width: 480px"
+            />
+
+            <template v-if="state.accessToken">
+              <v-btn color="warning" @click="clearAuth"
+                >Slackの認証クリア</v-btn
+              >
+            </template>
+            <template v-else>
+              <AuthenticationContainer v-model="state.accessToken" />
+            </template>
+          </div>
         </v-window-item>
 
         <v-window-item value="search">

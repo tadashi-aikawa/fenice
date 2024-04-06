@@ -54,6 +54,11 @@ export default defineBackground(() => {
       return;
     }
 
+    const accessToken = await accessTokenStorage.getValue();
+    if (!accessToken) {
+      return;
+    }
+
     const timestamp = DateTime.now().unix.toString();
     const [messages, errors] = (await searchMessages(conditions)).unwrap();
     if (errors) {
