@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import { showSuccessToast } from "@/utils/toast";
 import JoinnedChannelSelect from "./JoinnedChannelSelect.vue";
-import { Channel } from "@/models";
+import { Channel, Resource, isImageResource, isVideoResource } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { ImageBlock, SectionBlock } from "@/clients/slack/models";
 
 const channel = ref<Channel | null>(null);
 const text = ref("");
-const images = ref<{ blobUrl: string; url?: string; thumbnail?: string }[]>([]);
+const files = ref<Resource[]>([]);
 
 const uploading = ref(false);
 const posting = ref(false);
@@ -27,17 +27,29 @@ const postMessage = async () => {
         },
       ]
     : [];
-  const imageBlocks: ImageBlock[] = images.value.map((x) => ({
-    type: "image",
-    image_url: x.url!,
-    alt_text: "image",
-  }));
+  const imageBlocks: ImageBlock[] = files.value
+    .filter(isImageResource)
+    .map((x) => ({
+      type: "image",
+      image_url: x.url!,
+      alt_text: "image",
+    }));
+  const videoBlocks: SectionBlock[] = files.value
+    .filter(isVideoResource)
+    .map((x) => ({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `<${x.url!}| >`,
+      },
+    }));
 
   const res = await postChatPostMessage({
     channel: channel.value!.id,
     blocks: [
       ...sectionBlocks,
       ...imageBlocks,
+      ...videoBlocks,
       { type: "divider" },
       {
         type: "context",
@@ -67,7 +79,7 @@ const postMessage = async () => {
   }
 
   text.value = "";
-  images.value = [];
+  files.value = [];
   showSuccessToast(`channelに投稿しました`);
 };
 
@@ -82,7 +94,18 @@ const handlePaste = async (e: ClipboardEvent) => {
     return;
   }
 
-  images.value = [{ blobUrl: URL.createObjectURL(file) }];
+  const fileType = file.type.startsWith("image/")
+    ? "image"
+    : file.type.startsWith("video/")
+      ? "video"
+      : undefined;
+  if (!fileType) {
+    return;
+  }
+
+  e.preventDefault();
+
+  files.value = [{ type: fileType, blobUrl: URL.createObjectURL(file) }];
 
   uploading.value = true;
   const [res, err] = (
@@ -98,8 +121,17 @@ const handlePaste = async (e: ClipboardEvent) => {
     return;
   }
 
-  images.value[0].url = res.file.url_private;
-  images.value[0].thumbnail = res.file.thumb_160;
+  const f = files.value[0];
+  switch (f.type) {
+    case "image":
+      f.url = res.file.url_private;
+      f.thumbnail = res.file.thumb_160;
+      break;
+    case "video":
+      f.url = res.file.permalink;
+      f.thumbnail = res.file.thumb_video;
+      break;
+  }
 };
 </script>
 
@@ -121,15 +153,15 @@ const handlePaste = async (e: ClipboardEvent) => {
       />
 
       <UploadingImage
-        v-if="images.length > 0"
+        v-if="files.length > 0"
         :uploading="uploading"
-        :src="images?.[0]?.thumbnail ?? images?.[0]?.blobUrl"
+        :file="files[0]"
         width="160px"
         height="160px"
       />
 
       <v-btn
-        :disabled="(!text && !images) || uploading || posting"
+        :disabled="(!text && !files) || uploading || posting"
         :loading="posting"
         style="width: 240px"
         class="mt-3"

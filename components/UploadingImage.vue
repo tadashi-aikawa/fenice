@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { Resource } from "@/models";
+
 defineProps<{
   uploading: boolean;
-  src: string;
+  file: Resource;
   width: string;
   height: string;
 }>();
@@ -9,7 +11,17 @@ defineProps<{
 
 <template>
   <div style="position: relative">
-    <img :src="src" :width="width" :height="height" />
+    <template v-if="file.type === 'video' && !file.thumbnail">
+      <v-progress-circular :style="{ width, height }" />
+    </template>
+    <template v-else>
+      <img
+        :src="file.thumbnail ?? file.blobUrl"
+        :width="width"
+        :height="height"
+      />
+    </template>
+
     <v-overlay
       :model-value="uploading"
       contained

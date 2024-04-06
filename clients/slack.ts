@@ -106,9 +106,11 @@ export async function postChatPostMessage<R extends { ok: boolean }>(
   });
 }
 
-export async function postFilesUpload(args: { channel: string; file: File }) {
+export async function postFilesUpload(args: { channel?: string; file: File }) {
   const formData = new FormData();
-  formData.append("channel", args.channel);
+  if (args.channel) {
+    formData.append("channel", args.channel);
+  }
   formData.append("file", args.file);
 
   return await postRequest<{
@@ -126,6 +128,7 @@ export async function postFilesUpload(args: { channel: string; file: File }) {
       thumb_360: string;
       thumb_360_h: string;
       thumb_360_w: string;
+      thumb_video: string; // 動画だけ?
       url_private: string;
       url_private_download: string;
       user: string;
