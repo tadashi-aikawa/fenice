@@ -32,15 +32,13 @@ const handleClickSave = async () => {
   await crucialMessageConditionsStorage.setValue(
     smartLineBreakSplit(state.crucialMessageConditions),
   );
-  close();
-};
-
-const close = () => {
-  window.close();
+  showSuccessToast("設定が更新されました");
 };
 
 const clearAuth = async () => {
   await accessTokenStorage.setValue("");
+  state.accessToken = "";
+  showSuccessToast("Slackとの認証をクリアしました");
 };
 </script>
 
@@ -92,7 +90,6 @@ const clearAuth = async () => {
 
     <div class="d-flex justify-center ga-4 mt-4">
       <v-btn color="primary" @click="handleClickSave">更新</v-btn>
-      <v-btn @click="close">キャンセル</v-btn>
     </div>
   </v-container>
 </template>

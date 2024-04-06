@@ -13,7 +13,7 @@ export const readByTsStorage = storage.defineItem<{
   [ts: string]: true;
 }>("local:readMessages", { defaultValue: {} });
 
-// Options
+// Settings
 export const clientIdStorage = storage.defineItem<string>("local:clientId");
 export const clientSecretStorage =
   storage.defineItem<string>("local:clientSecret");

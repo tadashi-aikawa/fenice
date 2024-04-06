@@ -48,10 +48,12 @@ const authenticate = async () => {
   accessTokenStorage.setValue(user.access_token ?? null);
 
   authenticating.value = false;
+
+  window.location.replace("/top.html");
 };
 </script>
 
 <template>
-  <v-btn color="primary" @click="authenticate">Slackで認証</v-btn>
+  <v-btn color="primary" @click="authenticate">Slackと認証</v-btn>
   <Loading :loading="authenticating" />
 </template>
