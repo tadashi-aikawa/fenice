@@ -73,6 +73,7 @@ const currentPage = computed(() => {
             title="投稿だけ機能"
             value="only-post"
             :active="page === 'only-post'"
+            accesskey="p"
           ></v-list-item>
           <Badge
             :disabled="unreadCount === 0"
@@ -87,6 +88,7 @@ const currentPage = computed(() => {
               title="重要なメッセージ確認"
               value="crucial-messages"
               :active="page === 'crucial-messages'"
+              accesskey="m"
             ></v-list-item>
           </Badge>
           <v-list-item
