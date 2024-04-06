@@ -41,7 +41,7 @@ async function searchMessages(
 
 export default defineBackground(() => {
   // FIXME: オプションで設定できるようにしたい
-  browser.alarms.create("", { periodInMinutes: 0.5 });
+  browser.alarms.create("", { periodInMinutes: 1 });
   browser.alarms.onAlarm.addListener(async (_alarm) => {
     // 完璧ではないけど一旦これで十分
     const tabs = await browser.tabs.query({ title: "Fenice" });
