@@ -18,7 +18,7 @@ export interface RichTextListItem {
 
 export interface RichTextSectionItem {
   type: "rich_text_section";
-  elements: (TextItem | LinkItem | UserItem)[];
+  elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
 }
 
 //---
@@ -35,4 +35,9 @@ export interface LinkItem {
 export interface UserItem {
   type: "user";
   user_id: string;
+}
+export interface EmojiItem {
+  type: "emoji";
+  name: string;
+  unicode?: string;
 }

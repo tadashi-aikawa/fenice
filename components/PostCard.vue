@@ -108,7 +108,7 @@ const channelName = computed(() =>
           <v-divider class="pb-3" />
 
           <template v-for="block in message.blocks">
-            <Block :item="block" style="font-size: 12.5px" />
+            <Block :item="block" style="font-size: 14px" />
           </template>
 
           <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
