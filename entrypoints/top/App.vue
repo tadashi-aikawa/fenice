@@ -120,7 +120,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
             title="投稿だけ機能"
             value="only-post"
             :active="page === 'only-post'"
-            accesskey="p"
+            accesskey="k"
           ></v-list-item>
           <Badge
             :disabled="unreadCount === 0"
@@ -135,7 +135,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
               title="重要なメッセージ確認"
               value="crucial-messages"
               :active="page === 'crucial-messages'"
-              accesskey="m"
+              accesskey="j"
             ></v-list-item>
           </Badge>
           <v-list-item
