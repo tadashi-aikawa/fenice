@@ -22,7 +22,3 @@ export const isImageResource = (r: Resource): r is ImageResource =>
   r.type === "image";
 export const isVideoResource = (r: Resource): r is VideoResource =>
   r.type === "video";
-
-export type Message = NonNullable<
-  Awaited<ReturnType<typeof getSearchMessages>>["_ok"]
->["messages"]["matches"][number];

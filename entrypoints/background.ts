@@ -1,6 +1,6 @@
 import { getSearchMessages } from "@/clients/slack";
 import { RequestError } from "@/clients/slack/base";
-import { Message } from "@/models";
+import { Message } from "@/clients/slack/models";
 import { uniqBy } from "@/utils/collections";
 import {
   crucialMessageConditionsStorage,

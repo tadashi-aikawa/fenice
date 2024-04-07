@@ -1,6 +1,6 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
-import { Block, User } from "./slack/models";
+import { Block, Message, User } from "./slack/models";
 
 export async function getSearchMessages(args: {
   query: string;
@@ -18,43 +18,7 @@ export async function getSearchMessages(args: {
         page: number; // 現在ページ
         pages: number; // ページ総数
       };
-      matches: {
-        iid: string; // ???
-        team: string;
-        channel: {
-          id: string;
-          is_channel: boolean;
-          is_group: boolean;
-          is_im: boolean;
-          is_mpim: boolean;
-          is_shared: boolean;
-          is_org_shared: boolean;
-          is_ext_shared: boolean;
-          is_private: boolean;
-        };
-        type: "message";
-        user: string;
-        username: string; // tadashi-aikawa
-        ts: string;
-        blocks?: Block[];
-        text: string;
-        permalink: string;
-        no_reactions: boolean;
-        attachments?: {
-          author_icon: string;
-          author_link: string;
-          author_name: string;
-          color: string;
-          fallback: string;
-          footer: string;
-          footer_icon: string;
-          id: number;
-          // この下は関連ありそう
-          mrkdwn_in: string[];
-          pretext: string;
-          text: string;
-        }[];
-      }[];
+      matches: Message[];
     };
   }>({
     path: "/search.messages",

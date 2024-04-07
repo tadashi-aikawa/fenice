@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Message } from "@/models";
 import { unreadMessagesStorage } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
 import { sleep } from "@/utils/os";
+import { Message } from "@/clients/slack/models";
 
 const messages = ref<Message[]>([]);
 onMounted(async () => {

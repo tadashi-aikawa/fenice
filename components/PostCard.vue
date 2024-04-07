@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { User } from "@/clients/slack/models";
-import { Message } from "@/models";
+import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
 import { usersByIdCache } from "@/global-cache";

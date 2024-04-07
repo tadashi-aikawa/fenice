@@ -1,5 +1,4 @@
-import { User as User } from "@/clients/slack/models";
-import { Message } from "@/models";
+import { Message, User as User } from "@/clients/slack/models";
 
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
