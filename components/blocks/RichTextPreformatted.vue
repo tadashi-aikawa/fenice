@@ -1,0 +1,33 @@
+<script setup lang="ts">
+import { RichTextPreformattedItem } from "@/clients/slack/blockModels";
+import Text from "./Text.vue";
+
+defineProps<{
+  item: RichTextPreformattedItem;
+}>();
+</script>
+
+<template>
+  <div class="pre">
+    <template v-for="childItem in item.elements">
+      <Text v-if="childItem.type === 'text'" :item="childItem" />
+    </template>
+  </div>
+</template>
+
+<style>
+.pre {
+  font-family: monospace;
+  font-size: 85%;
+  line-height: 16px;
+  white-space: pre-wrap;
+  word-wrap: anywhere;
+  max-width: 95%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 7px;
+  border: solid 1px lightgrey;
+  background-color: ghostwhite;
+  vertical-align: baseline;
+}
+</style>

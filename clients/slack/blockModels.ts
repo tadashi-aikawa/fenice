@@ -1,7 +1,11 @@
 export interface Block {
   block_id: string;
   type: "rich_text";
-  elements: (RichTextSectionItem | RichTextListItem)[];
+  elements: (
+    | RichTextSectionItem
+    | RichTextListItem
+    | RichTextPreformattedItem
+  )[];
 }
 
 //---
@@ -19,6 +23,12 @@ export interface RichTextListItem {
 export interface RichTextSectionItem {
   type: "rich_text_section";
   elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
+}
+
+export interface RichTextPreformattedItem {
+  type: "rich_text_preformatted";
+  border: number;
+  elements: TextItem[];
 }
 
 //---
