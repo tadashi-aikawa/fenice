@@ -19,12 +19,14 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "owlelia": "^0.48.0",
+    "prismjs": "^1.29.0",
     "vue": "^3.4.0",
     "vue3-toastify": "^0.2.1",
     "vuetify": "^3.5.13"
   },
   "devDependencies": {
     "@types/bun": "^1.0.12",
+    "@types/prismjs": "^1.26.3",
     "@vitejs/plugin-vue": "^5.0.1",
     "husky": "^9.0.11",
     "typescript": "^5.3.3",

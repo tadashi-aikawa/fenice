@@ -16,6 +16,10 @@ const vuetify = createVuetify({
   directives,
 });
 
+// Prism
+import "prismjs/themes/prism-okaidia.css";
+import "prismjs/components/prism-json";
+
 createApp(App)
   .use(vuetify)
   .use(Vue3Toastify, { autoClose: 1000 })

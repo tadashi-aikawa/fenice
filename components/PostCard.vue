@@ -2,7 +2,8 @@
 import { User } from "@/clients/slack/models";
 import { Message } from "@/models";
 import { ts2display } from "@/utils/date";
-import { usersByIdCache, usersCacheStorage } from "@/utils/storage";
+import { usersByIdCache } from "@/utils/storage";
+import HighlightCode from "./HighlightCode.vue";
 
 const props = defineProps<{
   message: Message;
@@ -78,6 +79,21 @@ const postUserImage = computed(
               density="compact"
               style="color: goldenrod"
             />
+            <v-menu location="end">
+              <template v-slot:activator="{ props }">
+                <v-btn
+                  icon="mdi-code-json"
+                  variant="plain"
+                  density="compact"
+                  v-bind="props"
+                />
+              </template>
+              <HighlightCode
+                :content="JSON.stringify(props.message, null, 2)"
+                language="json"
+                style="width: 570px; white-space: pre-wrap"
+              />
+            </v-menu>
           </div>
 
           <v-divider class="pb-3" />
