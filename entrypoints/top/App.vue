@@ -45,7 +45,7 @@ onMounted(async () => {
 
   const usersCache = await usersCacheStorage.getValue();
   // FIXME: 条件はあとで決める
-  if (accessToken.value && usersCache.updated === -1) {
+  if (accessToken.value && usersCache.updated === DEFAULT_USERS_CACHE.updated) {
     loadingCache.value = true;
 
     let members: User[] = [];
