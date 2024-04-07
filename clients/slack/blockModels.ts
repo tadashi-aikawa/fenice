@@ -36,11 +36,21 @@ export interface RichTextPreformattedItem {
 export interface TextItem {
   type: "text";
   text: string;
+  style?: {
+    bold?: boolean;
+    code?: boolean;
+    strike?: boolean;
+  };
 }
 export interface LinkItem {
   type: "link";
   url: string;
   text?: string;
+  style?: {
+    bold?: boolean;
+    code?: boolean;
+    strike?: boolean;
+  };
 }
 export interface UserItem {
   type: "user";
