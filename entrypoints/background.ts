@@ -22,8 +22,8 @@ async function searchMessages(
       await getSearchMessages({
         query: [
           q,
-          `after:${DateTime.today().minusDays(2).displayDate}`,
-          `-from:me`,
+          // `after:${DateTime.today().minusDays(2).displayDate}`,
+          // `-from:me`,
         ].join(" "),
         sort: "timestamp",
         count: 100,

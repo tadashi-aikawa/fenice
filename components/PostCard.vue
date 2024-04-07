@@ -4,6 +4,7 @@ import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
 import { usersByIdCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
+import Attachement from "./Attachement.vue";
 
 const props = defineProps<{
   message: Message;
@@ -52,6 +53,7 @@ const postUserImage = computed(
 );
 
 const channel = computed(() => props.message.channel);
+// TODO: 処理をまとめる
 const channelName = computed(() =>
   channel.value.is_private
     ? `🔒 ${channel.value.name}`
@@ -109,6 +111,10 @@ const channelName = computed(() =>
 
           <template v-for="block in message.blocks">
             <Block :item="block" style="font-size: 14px" />
+          </template>
+
+          <template v-for="at in message.attachments ?? []">
+            <Attachement :attachment="at" class="mt-4 ml-4" />
           </template>
 
           <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">

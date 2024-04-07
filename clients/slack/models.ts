@@ -74,20 +74,7 @@ export interface Message {
   text: string;
   permalink: string;
   no_reactions: boolean;
-  attachments?: {
-    author_icon: string;
-    author_link: string;
-    author_name: string;
-    color: string;
-    fallback: string;
-    footer: string;
-    footer_icon: string;
-    id: number;
-    // この下は関連ありそう
-    mrkdwn_in: string[];
-    pretext: string;
-    text: string;
-  }[];
+  attachments?: Attachment[];
 }
 
 export interface Channel {
@@ -102,4 +89,27 @@ export interface Channel {
   is_ext_shared: boolean;
   is_private: boolean;
   is_archived: boolean;
+}
+
+export interface Attachment {
+  author_icon: string;
+  author_link: string;
+  author_name: string;
+  color: string;
+  fallback: string;
+  footer: string;
+  footer_icon: string;
+  id: number;
+  // この下は関連ありそう
+  mrkdwn_in: string[];
+  pretext: string;
+  text: string;
+  from_url: string;
+  message_blocks?: {
+    channel: string;
+    message: {
+      blocks: Block[];
+    };
+    ts: string;
+  }[];
 }
