@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { getUserList } from "@/clients/slack";
-import { User } from "@/clients/slack/models";
 import Badge from "@/components/Badge.vue";
 import Loading from "@/components/Loading.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
@@ -9,8 +7,10 @@ import Settings from "@/entrypoints/settings/App.vue";
 import { ExhaustiveError } from "@/utils/errors";
 import {
   DEFAULT_CHANNELS_CACHE,
+  DEFAULT_EMOJI_CACHE,
   accessTokenStorage,
   channelsCacheStorage,
+  emojiCacheStorage,
   unreadMessagesStorage,
   usersCacheStorage,
 } from "@/utils/storage";
@@ -18,6 +18,7 @@ import { AsyncNullable, DateTime } from "owlelia";
 import {
   initGlobalCaches,
   refreshChannelsCaches,
+  refreshEmojiCaches,
   refreshUsersCaches,
 } from "@/global-cache";
 import { RequestError } from "@/clients/slack/base";
@@ -51,62 +52,84 @@ const loadingCacheMessage = ref("");
 const refreshUsersCache = async (): AsyncNullable<RequestError> => {
   loadingCacheMessage.value =
     "ユーザーキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [res, err] = (await refreshUsersCaches()).unwrap();
+  const [members, err] = (await refreshUsersCaches()).unwrap();
   if (err) {
     return err;
   }
 
   await usersCacheStorage.setValue({
-    updated: res.cacheTs,
-    members: res.users,
+    updated: DateTime.now().unix,
+    members,
   });
 };
 
 const refreshChannelsCache = async (): AsyncNullable<RequestError> => {
   loadingCacheMessage.value =
     "Channelキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [res, err] = (await refreshChannelsCaches()).unwrap();
+  const [channels, err] = (await refreshChannelsCaches()).unwrap();
   if (err) {
     return err;
   }
 
   await channelsCacheStorage.setValue({
-    updated: res.cacheTs,
-    channels: res.channels,
+    updated: DateTime.now().unix,
+    channels,
+  });
+};
+
+const refreshEmojiCache = async (): AsyncNullable<RequestError> => {
+  loadingCacheMessage.value = "絵文字キャッシュをリフレッシュしています。";
+  const [emoji, err] = (await refreshEmojiCaches()).unwrap();
+  if (err) {
+    return err;
+  }
+
+  await emojiCacheStorage.setValue({
+    updated: DateTime.now().unix,
+    emoji,
   });
 };
 
 onMounted(async () => {
+  loadingCache.value = true;
+  loadingCacheMessage.value = "キャッシュを読み込み中です。";
+
   await initGlobalCaches();
 
   // アクセストークンがないと通信ができないので
   if (!accessToken) {
+    loadingCache.value = false;
+    loadingCacheMessage.value = "";
     return;
   }
 
   // FIXME: 条件はあとで決める
-  loadingCacheMessage.value = "";
 
   const usersCache = await usersCacheStorage.getValue();
   if (usersCache.updated === DEFAULT_USERS_CACHE.updated) {
-    loadingCache.value = true;
     const err = await refreshUsersCache();
     if (err) {
       showErrorToast(err);
     }
-    loadingCache.value = false;
   }
 
   const channelsCache = await channelsCacheStorage.getValue();
   if (channelsCache.updated === DEFAULT_CHANNELS_CACHE.updated) {
-    loadingCache.value = true;
     const err = await refreshChannelsCache();
     if (err) {
       showErrorToast(err);
     }
-    loadingCache.value = false;
   }
 
+  const emojiCache = await emojiCacheStorage.getValue();
+  if (emojiCache.updated === DEFAULT_EMOJI_CACHE.updated) {
+    const err = await refreshEmojiCache();
+    if (err) {
+      showErrorToast(err);
+    }
+  }
+
+  loadingCache.value = false;
   loadingCacheMessage.value = "";
 });
 

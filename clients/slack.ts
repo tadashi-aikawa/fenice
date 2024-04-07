@@ -26,6 +26,16 @@ export async function getSearchMessages(args: {
   });
 }
 
+export async function getEmojiList() {
+  return await getRequest<{
+    ok: boolean;
+    emoji: { [name: string]: string };
+    cache_ts: string;
+  }>({
+    path: "/emoji.list",
+  });
+}
+
 export async function getUserList(args: { cursor?: string }) {
   return await getRequest<{
     ok: boolean;

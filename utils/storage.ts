@@ -38,3 +38,11 @@ export const channelsCacheStorage = storage.defineItem<{
 }>("local:channelsCache", {
   defaultValue: DEFAULT_CHANNELS_CACHE,
 });
+
+export const DEFAULT_EMOJI_CACHE = { updated: -1, emoji: {} };
+export const emojiCacheStorage = storage.defineItem<{
+  updated: number;
+  emoji: { [name: string]: string };
+}>("local:emojiCache", {
+  defaultValue: DEFAULT_EMOJI_CACHE,
+});
