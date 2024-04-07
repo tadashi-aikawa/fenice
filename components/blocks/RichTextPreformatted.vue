@@ -15,7 +15,7 @@ defineProps<{
   </div>
 </template>
 
-<style>
+<style scoped>
 .pre {
   font-family: monospace;
   font-size: 85%;

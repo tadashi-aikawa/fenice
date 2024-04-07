@@ -4,6 +4,7 @@ export interface Block {
   elements: (
     | RichTextSectionItem
     | RichTextListItem
+    | RichTextQuoteItem
     | RichTextPreformattedItem
   )[];
 }
@@ -22,6 +23,11 @@ export interface RichTextListItem {
 
 export interface RichTextSectionItem {
   type: "rich_text_section";
+  elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
+}
+
+export interface RichTextQuoteItem {
+  type: "rich_text_quote";
   elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
 }
 
