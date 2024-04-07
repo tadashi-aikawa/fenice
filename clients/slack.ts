@@ -1,6 +1,7 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
 import { Block, Message, User } from "./slack/models";
+import { Channel } from "@/models";
 
 export async function getSearchMessages(args: {
   query: string;
@@ -48,15 +49,7 @@ export async function getUsersConversations(args: {
 }) {
   return await getRequest<{
     ok: boolean;
-    channels: {
-      id: string;
-      name: string;
-      is_group: boolean;
-      is_im: boolean;
-      is_mpim: boolean;
-      is_private: boolean;
-      is_archived: boolean;
-    }[];
+    channels: Channel[];
   }>({
     path: "/users.conversations",
     query: args,

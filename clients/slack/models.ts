@@ -1,3 +1,5 @@
+import { Channel } from "@/models";
+
 export type Block = SectionBlock | ImageBlock | ContextBlock | DividerBlock;
 
 export interface SectionBlock {
@@ -61,17 +63,7 @@ export interface User {
 export interface Message {
   iid: string; // ???
   team: string;
-  channel: {
-    id: string;
-    is_channel: boolean;
-    is_group: boolean;
-    is_im: boolean;
-    is_mpim: boolean;
-    is_shared: boolean;
-    is_org_shared: boolean;
-    is_ext_shared: boolean;
-    is_private: boolean;
-  };
+  channel: Channel;
   type: "message";
   user: string;
   username: string; // tadashi-aikawa
