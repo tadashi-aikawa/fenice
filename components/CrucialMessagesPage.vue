@@ -26,7 +26,7 @@ const markAsRead = async (message: Message) => {
 const markAllAsRead = async () => {
   for (const message of messages.value) {
     await markAsRead(message);
-    await sleep(350);
+    await sleep(230);
   }
 };
 </script>
@@ -57,7 +57,7 @@ const markAllAsRead = async () => {
 <style scoped>
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 .list-enter-from,
 .list-leave-to {
