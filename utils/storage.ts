@@ -1,6 +1,5 @@
 import { User as User } from "@/clients/slack/models";
 import { Message } from "@/models";
-import { keyBy } from "@/utils/collections";
 
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
@@ -25,20 +24,10 @@ export const crucialMessageConditionsStorage = storage.defineItem<string[]>(
 ); // 改行区切り複数指定
 
 // Caches
+export const DEFAULT_USERS_CACHE = { updated: -1, members: [] };
 export const usersCacheStorage = storage.defineItem<{
   updated: number;
   members: User[];
 }>("local:usersCache", {
-  defaultValue: { updated: -1, members: [] },
-});
-// 使うときはこちらを
-export let usersByIdCache: { [id: string]: User } = {};
-(async function () {
-  usersByIdCache = keyBy(
-    (await usersCacheStorage.getValue()).members,
-    (x) => x.id,
-  );
-})();
-usersCacheStorage.watch((newVal) => {
-  usersByIdCache = keyBy(newVal.members, (x) => x.id);
+  defaultValue: DEFAULT_USERS_CACHE,
 });

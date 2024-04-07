@@ -13,6 +13,7 @@ import {
   usersCacheStorage,
 } from "@/utils/storage";
 import { DateTime } from "owlelia";
+import { initGlobalCaches } from "@/global-cache";
 
 type Page = "only-post" | "crucial-messages" | "settings";
 const page = ref<Page>("only-post");
@@ -39,6 +40,9 @@ onMounted(async () => {
 
 const loadingCache = ref(false);
 onMounted(async () => {
+  // いったんここで...
+  await initGlobalCaches();
+
   const usersCache = await usersCacheStorage.getValue();
   // FIXME: 条件はあとで決める
   if (accessToken.value && usersCache.updated === -1) {

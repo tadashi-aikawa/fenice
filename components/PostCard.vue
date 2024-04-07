@@ -2,8 +2,8 @@
 import { User } from "@/clients/slack/models";
 import { Message } from "@/models";
 import { ts2display } from "@/utils/date";
-import { usersByIdCache } from "@/utils/storage";
 import HighlightCode from "./HighlightCode.vue";
+import { usersByIdCache } from "@/global-cache";
 
 const props = defineProps<{
   message: Message;

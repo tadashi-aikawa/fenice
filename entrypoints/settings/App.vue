@@ -2,9 +2,10 @@
 import { smartLineBreakSplit } from "@/utils/collections";
 import { crucialMessageConditionsStorage } from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
+import { clearGlobalCaches } from "@/global-cache";
 
 interface State {
-  tab: "auth" | "search";
+  tab: "auth" | "search" | "cache";
   accessToken: string;
   clientId: string;
   clientSecret: string;
@@ -40,6 +41,11 @@ const clearAuth = async () => {
   state.accessToken = "";
   showSuccessToast("Slackとの認証をクリアしました");
 };
+
+const clearCache = async () => {
+  await clearGlobalCaches();
+  showSuccessToast("Slackのキャッシュをクリアしました");
+};
 </script>
 
 <template>
@@ -48,6 +54,7 @@ const clearAuth = async () => {
       <v-tabs v-model="state.tab" align-tabs="center">
         <v-tab value="auth">Auth</v-tab>
         <v-tab value="search">Search</v-tab>
+        <v-tab value="cache">Cache</v-tab>
       </v-tabs>
 
       <v-window v-model="state.tab" class="pa-5">
@@ -84,6 +91,12 @@ const clearAuth = async () => {
             label="重要メッセージの条件 (改行区切りで複数指定)"
             auto-grow
           />
+        </v-window-item>
+
+        <v-window-item value="cache">
+          <div class="d-flex flex-column align-center">
+            <v-btn color="warning" @click="clearCache">キャッシュクリア</v-btn>
+          </div>
         </v-window-item>
       </v-window>
     </v-card>
