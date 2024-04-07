@@ -1,4 +1,7 @@
-export type Block = SectionBlock | ImageBlock | ContextBlock | DividerBlock;
+import { Block } from "./blockModels";
+
+// TODO: Blockと統合したい。。
+export type PostBlock = SectionBlock | ImageBlock | ContextBlock | DividerBlock;
 
 export interface SectionBlock {
   type: "section";
@@ -37,6 +40,7 @@ interface MrkdwnContextBlockElement {
   text: string;
 }
 
+// API
 export interface User {
   id: string;
   name: string;

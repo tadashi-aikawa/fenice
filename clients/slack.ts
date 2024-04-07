@@ -1,6 +1,6 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
-import { Block, Channel, Message, User } from "./slack/models";
+import { PostBlock, Channel, Message, User } from "./slack/models";
 
 export async function getSearchMessages(args: {
   query: string;
@@ -89,12 +89,12 @@ export async function postChatPostMessage<R extends { ok: boolean }>(args: {
 }): AsyncResult<R, RequestError>;
 export async function postChatPostMessage<R extends { ok: boolean }>(args: {
   channel: string;
-  blocks: Block[];
+  blocks: PostBlock[];
 }): AsyncResult<R, RequestError>;
 export async function postChatPostMessage<R extends { ok: boolean }>(
   args: {
     channel: string;
-  } & ({ text: string } | { blocks: Block[] }),
+  } & ({ text: string } | { blocks: PostBlock[] }),
 ): AsyncResult<R, RequestError> {
   return await postRequest<R>({
     path: "/chat.postMessage",

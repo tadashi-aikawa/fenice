@@ -3,6 +3,7 @@ import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
 import { usersByIdCache } from "@/global-cache";
+import Block from "./blocks/Block.vue";
 
 const props = defineProps<{
   message: Message;
@@ -105,9 +106,11 @@ const channelName = computed(() =>
           </div>
 
           <v-divider class="pb-3" />
-          <pre class="text-caption" style="white-space: pre-wrap">{{
-            displayMessage
-          }}</pre>
+
+          <template v-for="block in message.blocks">
+            <Block :item="block" style="font-size: 12.5px" />
+          </template>
+
           <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
             <v-icon>mdi-clock</v-icon>
             <span>{{ ts2display(message.ts) }}</span>
