@@ -49,6 +49,13 @@ const postUsername = computed(
 const postUserImage = computed(
   () => postUser.value?.profile.image_72 ?? "/icon/384.png",
 );
+
+const channel = computed(() => props.message.channel);
+const channelName = computed(() =>
+  channel.value.is_private
+    ? `🔒 ${channel.value.name}`
+    : `#${channel.value.name}`,
+);
 </script>
 
 <template>
@@ -67,7 +74,9 @@ const postUserImage = computed(
                 <div>
                   {{ postUsername }}
                 </div>
-                <div class="text-caption">channel名</div>
+                <div class="text-caption text-grey-darken-1">
+                  {{ channelName }}
+                </div>
               </div>
             </div>
             <v-spacer />
