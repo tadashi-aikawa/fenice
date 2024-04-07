@@ -13,7 +13,7 @@ import {
   usersCacheStorage,
 } from "@/utils/storage";
 import { DateTime } from "owlelia";
-import { initGlobalCaches } from "@/global-cache";
+import { initGlobalCaches, refreshUsersCaches } from "@/global-cache";
 
 type Page = "only-post" | "crucial-messages" | "settings";
 const page = ref<Page>("only-post");
@@ -47,28 +47,17 @@ onMounted(async () => {
   // FIXME: 条件はあとで決める
   if (accessToken.value && usersCache.updated === DEFAULT_USERS_CACHE.updated) {
     loadingCache.value = true;
-
-    let members: User[] = [];
-    let cacheTs = DateTime.now().unix;
-    let nextCursor = "";
-    while (true) {
-      const [res, err] = (await getUserList({ cursor: nextCursor })).unwrap();
-      if (err) {
-        showErrorToast(err);
-        loadingCache.value = false;
-        return;
-      }
-
-      members = members.concat(res.members);
-      cacheTs = res.cache_ts;
-
-      nextCursor = res.response_metadata.next_cursor;
-      if (!nextCursor) {
-        break;
-      }
+    const [res, err] = (await refreshUsersCaches()).unwrap();
+    if (err) {
+      showErrorToast(err);
+      loadingCache.value = false;
+      return;
     }
 
-    await usersCacheStorage.setValue({ updated: cacheTs, members });
+    await usersCacheStorage.setValue({
+      updated: res.cacheTs,
+      members: res.users,
+    });
     loadingCache.value = false;
   }
 });
