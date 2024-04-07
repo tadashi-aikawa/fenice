@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { smartLineBreakSplit } from "@/utils/collections";
-import { crucialMessageConditionsStorage } from "@/utils/storage";
+import {
+  channelsCacheStorage,
+  crucialMessageConditionsStorage,
+} from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import { DateTime } from "owlelia";
-import { clearUsersCaches } from "@/global-cache";
+import { clearChannelsCaches, clearUsersCaches } from "@/global-cache";
 
 interface State {
   tab: "auth" | "search" | "cache";
@@ -13,6 +16,7 @@ interface State {
   crucialMessageConditions: string;
   cache: {
     users?: { lastUpdated: string; num: number };
+    channels?: { lastUpdated: string; num: number };
   };
 }
 const state = reactive<State>({
@@ -26,11 +30,17 @@ const state = reactive<State>({
 
 const updateCacheMeta = async () => {
   const userCache = await usersCacheStorage.getValue();
+  const channelCache = await channelsCacheStorage.getValue();
+
   state.cache = {
     ...state.cache,
     users: {
       lastUpdated: DateTime.of(userCache.updated).displayDateTime,
       num: userCache.members.length,
+    },
+    channels: {
+      lastUpdated: DateTime.of(channelCache.updated).displayDateTime,
+      num: channelCache.channels.length,
     },
   };
 };
@@ -73,10 +83,13 @@ const clearAuth = async () => {
   showSuccessToast("Slackとの認証をクリアしました");
 };
 
-const clearCache = async (target: "users") => {
+const clearCache = async (target: "users" | "channels") => {
   switch (target) {
     case "users":
       await clearUsersCaches();
+      break;
+    case "channels":
+      await clearChannelsCaches();
       break;
     default:
       throw new ExhaustiveError(target);
@@ -140,6 +153,17 @@ const clearCache = async (target: "users") => {
             >
               <template v-slot:append>
                 <v-btn color="warning" @click="clearCache('users')"
+                  >クリア</v-btn
+                >
+              </template>
+            </v-list-item>
+
+            <v-list-item
+              title="Channelキャッシュ"
+              :subtitle="toCacheMessage(state.cache.channels)"
+            >
+              <template v-slot:append>
+                <v-btn color="warning" @click="clearCache('channels')"
                   >クリア</v-btn
                 >
               </template>

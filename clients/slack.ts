@@ -41,9 +41,27 @@ export async function getUserList(args: { cursor?: string }) {
   });
 }
 
+export async function getConversationsList(args: {
+  cursor?: string;
+  exclude_archived?: boolean;
+  limit?: number; // 1000以下
+  types?: string;
+}) {
+  return await getRequest<{
+    ok: boolean;
+    channels: Channel[];
+    response_metadata: {
+      next_cursor: string | "";
+    };
+  }>({
+    path: "/conversations.list",
+    query: args,
+  });
+}
+
 export async function getUsersConversations(args: {
   exclude_archived?: boolean;
-  limit?: number;
+  limit?: number; // 1000以下
   types?: string;
 }) {
   return await getRequest<{

@@ -13,7 +13,7 @@ onMounted(async () => {
   const [res, err] = (
     await getUsersConversations({
       exclude_archived: true,
-      limit: 999,
+      limit: 1000,
       types: "public_channel,private_channel",
     })
   ).unwrap();

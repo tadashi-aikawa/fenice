@@ -1,4 +1,4 @@
-import { Message, User as User } from "@/clients/slack/models";
+import { Channel, Message, User as User } from "@/clients/slack/models";
 
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
@@ -29,4 +29,12 @@ export const usersCacheStorage = storage.defineItem<{
   members: User[];
 }>("local:usersCache", {
   defaultValue: DEFAULT_USERS_CACHE,
+});
+
+export const DEFAULT_CHANNELS_CACHE = { updated: -1, channels: [] };
+export const channelsCacheStorage = storage.defineItem<{
+  updated: number;
+  channels: Channel[];
+}>("local:channelsCache", {
+  defaultValue: DEFAULT_CHANNELS_CACHE,
 });

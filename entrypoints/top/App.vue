@@ -8,12 +8,19 @@ import OnlyPostPage from "@/components/OnlyPostPage.vue";
 import Settings from "@/entrypoints/settings/App.vue";
 import { ExhaustiveError } from "@/utils/errors";
 import {
+  DEFAULT_CHANNELS_CACHE,
   accessTokenStorage,
+  channelsCacheStorage,
   unreadMessagesStorage,
   usersCacheStorage,
 } from "@/utils/storage";
-import { DateTime } from "owlelia";
-import { initGlobalCaches, refreshUsersCaches } from "@/global-cache";
+import { AsyncNullable, DateTime } from "owlelia";
+import {
+  initGlobalCaches,
+  refreshChannelsCaches,
+  refreshUsersCaches,
+} from "@/global-cache";
+import { RequestError } from "@/clients/slack/base";
 
 type Page = "only-post" | "crucial-messages" | "settings";
 const page = ref<Page>("only-post");
@@ -39,27 +46,68 @@ onMounted(async () => {
 });
 
 const loadingCache = ref(false);
+const loadingCacheMessage = ref("");
+
+const refreshUsersCache = async (): AsyncNullable<RequestError> => {
+  loadingCacheMessage.value =
+    "ユーザーキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
+  const [res, err] = (await refreshUsersCaches()).unwrap();
+  if (err) {
+    return err;
+  }
+
+  await usersCacheStorage.setValue({
+    updated: res.cacheTs,
+    members: res.users,
+  });
+};
+
+const refreshChannelsCache = async (): AsyncNullable<RequestError> => {
+  loadingCacheMessage.value =
+    "Channelキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
+  const [res, err] = (await refreshChannelsCaches()).unwrap();
+  if (err) {
+    return err;
+  }
+
+  await channelsCacheStorage.setValue({
+    updated: res.cacheTs,
+    channels: res.channels,
+  });
+};
+
 onMounted(async () => {
-  // いったんここで...
   await initGlobalCaches();
 
-  const usersCache = await usersCacheStorage.getValue();
+  // アクセストークンがないと通信ができないので
+  if (!accessToken) {
+    return;
+  }
+
   // FIXME: 条件はあとで決める
-  if (accessToken.value && usersCache.updated === DEFAULT_USERS_CACHE.updated) {
+  loadingCacheMessage.value = "";
+
+  const usersCache = await usersCacheStorage.getValue();
+  if (usersCache.updated === DEFAULT_USERS_CACHE.updated) {
     loadingCache.value = true;
-    const [res, err] = (await refreshUsersCaches()).unwrap();
+    const err = await refreshUsersCache();
     if (err) {
       showErrorToast(err);
-      loadingCache.value = false;
-      return;
     }
-
-    await usersCacheStorage.setValue({
-      updated: res.cacheTs,
-      members: res.users,
-    });
     loadingCache.value = false;
   }
+
+  const channelsCache = await channelsCacheStorage.getValue();
+  if (channelsCache.updated === DEFAULT_CHANNELS_CACHE.updated) {
+    loadingCache.value = true;
+    const err = await refreshChannelsCache();
+    if (err) {
+      showErrorToast(err);
+    }
+    loadingCache.value = false;
+  }
+
+  loadingCacheMessage.value = "";
 });
 
 const currentPage = computed(() => {
@@ -143,9 +191,6 @@ const handleClickItem = ({ id }: { id: unknown }) => {
       </v-main>
     </v-layout>
 
-    <Loading
-      :loading="loadingCache"
-      message="キャッシュをロード中です。この処理はしばらくかかります..."
-    />
+    <Loading :loading="loadingCache" :message="loadingCacheMessage" />
   </v-app>
 </template>
