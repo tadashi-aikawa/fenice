@@ -14,7 +14,7 @@ export async function initGlobalCaches() {
   });
 }
 
-export async function clearGlobalCaches() {
+export async function clearUsersCaches() {
   usersByIdCache = {};
   await usersCacheStorage.setValue(DEFAULT_USERS_CACHE);
 }

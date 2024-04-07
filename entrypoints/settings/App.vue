@@ -2,7 +2,8 @@
 import { smartLineBreakSplit } from "@/utils/collections";
 import { crucialMessageConditionsStorage } from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
-import { clearGlobalCaches } from "@/global-cache";
+import { DateTime } from "owlelia";
+import { clearUsersCaches } from "@/global-cache";
 
 interface State {
   tab: "auth" | "search" | "cache";
@@ -10,6 +11,9 @@ interface State {
   clientId: string;
   clientSecret: string;
   crucialMessageConditions: string;
+  cache: {
+    users?: { lastUpdated: string; num: number };
+  };
 }
 const state = reactive<State>({
   tab: "auth",
@@ -17,7 +21,19 @@ const state = reactive<State>({
   clientId: "",
   clientSecret: "",
   crucialMessageConditions: "",
+  cache: {},
 });
+
+const updateCacheMeta = async () => {
+  const userCache = await usersCacheStorage.getValue();
+  state.cache = {
+    ...state.cache,
+    users: {
+      lastUpdated: DateTime.of(userCache.updated).displayDateTime,
+      num: userCache.members.length,
+    },
+  };
+};
 
 onBeforeMount(async () => {
   state.accessToken = (await accessTokenStorage.getValue()) ?? "";
@@ -25,7 +41,22 @@ onBeforeMount(async () => {
   state.clientSecret = (await clientSecretStorage.getValue()) ?? "";
   state.crucialMessageConditions =
     (await crucialMessageConditionsStorage.getValue())?.join("\n") ?? "";
+
+  await updateCacheMeta();
 });
+
+const toCacheMessage = (cache?: {
+  lastUpdated: string;
+  num: number;
+}): string => {
+  if (!cache) {
+    return "読み込み中";
+  }
+
+  return cache.num > 0
+    ? `キャッシュ数: ${cache.num}, 最終更新: ${cache.lastUpdated}`
+    : "キャッシュは存在しません";
+};
 
 const handleClickSave = async () => {
   await clientIdStorage.setValue(state.clientId);
@@ -42,9 +73,17 @@ const clearAuth = async () => {
   showSuccessToast("Slackとの認証をクリアしました");
 };
 
-const clearCache = async () => {
-  await clearGlobalCaches();
-  showSuccessToast("Slackのキャッシュをクリアしました");
+const clearCache = async (target: "users") => {
+  switch (target) {
+    case "users":
+      await clearUsersCaches();
+      break;
+    default:
+      throw new ExhaustiveError(target);
+  }
+
+  await updateCacheMeta();
+  showSuccessToast("キャッシュをクリアしました");
 };
 </script>
 
@@ -94,9 +133,18 @@ const clearCache = async () => {
         </v-window-item>
 
         <v-window-item value="cache">
-          <div class="d-flex flex-column align-center">
-            <v-btn color="warning" @click="clearCache">キャッシュクリア</v-btn>
-          </div>
+          <v-list lines="two">
+            <v-list-item
+              title="ユーザーキャッシュ"
+              :subtitle="toCacheMessage(state.cache.users)"
+            >
+              <template v-slot:append>
+                <v-btn color="warning" @click="clearCache('users')"
+                  >クリア</v-btn
+                >
+              </template>
+            </v-list-item>
+          </v-list>
         </v-window-item>
       </v-window>
     </v-card>
