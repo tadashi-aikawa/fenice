@@ -1,6 +1,6 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
-import { Block } from "./slack/models";
+import { Block, User } from "./slack/models";
 
 export async function getSearchMessages(args: {
   query: string;
@@ -58,6 +58,21 @@ export async function getSearchMessages(args: {
     };
   }>({
     path: "/search.messages",
+    query: args,
+  });
+}
+
+export async function getUserList(args: { cursor?: string }) {
+  return await getRequest<{
+    ok: boolean;
+    offset?: string;
+    members: User[];
+    cache_ts: number;
+    response_metadata: {
+      next_cursor: string | "";
+    };
+  }>({
+    path: "/users.list",
     query: args,
   });
 }

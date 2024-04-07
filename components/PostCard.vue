@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { User } from "@/clients/slack/models";
 import { Message } from "@/models";
 import { ts2display } from "@/utils/date";
+import { usersByIdCache, usersCacheStorage } from "@/utils/storage";
 
 const props = defineProps<{
   message: Message;
@@ -37,6 +39,16 @@ ${x.fallback}
 const handleClickRead = () => {
   emit("click:read", props.message);
 };
+
+const postUser = computed<User | null>(
+  () => usersByIdCache[props.message.user],
+);
+const postUsername = computed(
+  () => postUser.value?.real_name ?? props.message.username,
+);
+const postUserImage = computed(
+  () => postUser.value?.profile.image_72 ?? "/icon/384.png",
+);
 </script>
 
 <template>
@@ -49,8 +61,14 @@ const handleClickRead = () => {
 
         <div style="width: 675px" class="px-3 pt-1 pb-2">
           <div class="d-flex align-center my-1 ga-2">
-            <div class="text-body-2 font-weight-bold">
-              {{ message.username }}
+            <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
+              <img :src="postUserImage" width="36px" height="36px" />
+              <div>
+                <div>
+                  {{ postUsername }}
+                </div>
+                <div class="text-caption">channel名</div>
+              </div>
             </div>
             <v-spacer />
             <v-btn

@@ -1,26 +1,33 @@
 <script setup lang="ts">
-import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
+import { getUserList } from "@/clients/slack";
+import { User } from "@/clients/slack/models";
 import Badge from "@/components/Badge.vue";
+import Loading from "@/components/Loading.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
 import OnlyPostPage from "@/components/OnlyPostPage.vue";
 import Settings from "@/entrypoints/settings/App.vue";
 import { ExhaustiveError } from "@/utils/errors";
-import { accessTokenStorage, unreadMessagesStorage } from "@/utils/storage";
-import { ref } from "vue";
-
-const accessToken = ref("");
-
-onBeforeMount(async () => {
-  const token = (await accessTokenStorage.getValue()) ?? "";
-  accessToken.value = token;
-});
+import {
+  accessTokenStorage,
+  unreadMessagesStorage,
+  usersCacheStorage,
+} from "@/utils/storage";
+import { DateTime } from "owlelia";
 
 type Page = "only-post" | "crucial-messages" | "settings";
 const page = ref<Page>("only-post");
 
-const handleClickItem = ({ id }: { id: unknown }) => {
-  page.value = id as Page;
-};
+// nullは未取得. 空文字はなし
+const accessToken = ref<string | null>(null);
+onBeforeMount(async () => {
+  const token = (await accessTokenStorage.getValue()) ?? "";
+  accessToken.value = token;
+});
+onMounted(async () => {
+  accessTokenStorage.watch((newValue) => {
+    accessToken.value = newValue ?? "";
+  });
+});
 
 const unreadCount = ref<number>(0);
 onMounted(async () => {
@@ -28,16 +35,48 @@ onMounted(async () => {
     unreadCount.value = newValue.length;
   });
   unreadCount.value = (await unreadMessagesStorage.getValue()).length;
+});
 
-  accessTokenStorage.watch((newValue) => {
-    accessToken.value = newValue ?? "";
-  });
+const loadingCache = ref(false);
+onMounted(async () => {
+  const usersCache = await usersCacheStorage.getValue();
+  // FIXME: 条件はあとで決める
+  if (accessToken.value && usersCache.updated === -1) {
+    loadingCache.value = true;
+
+    let members: User[] = [];
+    let cacheTs = DateTime.now().unix;
+    let nextCursor = "";
+    while (true) {
+      const [res, err] = (await getUserList({ cursor: nextCursor })).unwrap();
+      if (err) {
+        showErrorToast(err);
+        loadingCache.value = false;
+        return;
+      }
+
+      members = members.concat(res.members);
+      cacheTs = res.cache_ts;
+
+      nextCursor = res.response_metadata.next_cursor;
+      if (!nextCursor) {
+        break;
+      }
+    }
+
+    await usersCacheStorage.setValue({ updated: cacheTs, members });
+    loadingCache.value = false;
+  }
 });
 
 const currentPage = computed(() => {
   // トークンがない場合は設定画面(認証設定)に強制
-  if (!accessToken.value) {
+  if (accessToken.value === "") {
     return Settings;
+  }
+  // まだ取得できていない
+  if (!accessToken.value) {
+    return undefined;
   }
 
   switch (page.value) {
@@ -51,6 +90,10 @@ const currentPage = computed(() => {
       throw new ExhaustiveError(page.value);
   }
 });
+
+const handleClickItem = ({ id }: { id: unknown }) => {
+  page.value = id as Page;
+};
 </script>
 
 <template>
@@ -106,5 +149,10 @@ const currentPage = computed(() => {
         </KeepAlive>
       </v-main>
     </v-layout>
+
+    <Loading
+      :loading="loadingCache"
+      message="キャッシュをロード中です。この処理はしばらくかかります..."
+    />
   </v-app>
 </template>

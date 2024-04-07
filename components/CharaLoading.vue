@@ -32,14 +32,14 @@
   gap: 5px;
   color: darkturquoise;
   text-shadow:
-    1px 1px 0 #ccc,
-    -1px -1px 0 #ccc,
-    -1px 1px 0 #ccc,
-    1px -1px 0 #ccc,
-    0px 1px 0 #ccc,
-    0-1px 0 #ccc,
-    -1px 0 0 #ccc,
-    1px 0 0 #ccc;
+    2px 2px 0 #ccc,
+    -2px -2px 0 #ccc,
+    -2px 2px 0 #ccc,
+    2px -2px 0 #ccc,
+    0px 2px 0 #ccc,
+    0-2px 0 #ccc,
+    -2px 0 0 #ccc,
+    2px 0 0 #ccc;
 }
 
 .loading span {
