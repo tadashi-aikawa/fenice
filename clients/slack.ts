@@ -1,7 +1,6 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
-import { Block, Message, User } from "./slack/models";
-import { Channel } from "@/models";
+import { Block, Channel, Message, User } from "./slack/models";
 
 export async function getSearchMessages(args: {
   query: string;

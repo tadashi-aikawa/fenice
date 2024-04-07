@@ -1,5 +1,3 @@
-import { Channel } from "@/models";
-
 export type Block = SectionBlock | ImageBlock | ContextBlock | DividerBlock;
 
 export interface SectionBlock {
@@ -86,4 +84,18 @@ export interface Message {
     pretext: string;
     text: string;
   }[];
+}
+
+export interface Channel {
+  id: string;
+  name: string;
+  is_channel: boolean;
+  is_group: boolean;
+  is_im: boolean;
+  is_mpim: boolean;
+  is_shared: boolean;
+  is_org_shared: boolean;
+  is_ext_shared: boolean;
+  is_private: boolean;
+  is_archived: boolean;
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { Channel } from "../models";
 import { getUsersConversations } from "@/clients/slack";
 import { DateTime } from "owlelia";
 import { sorter } from "@/utils/collections";
+import { Channel } from "@/clients/slack/models";
 
 const model = defineModel<Channel | null>();
 

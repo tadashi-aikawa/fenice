@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { showSuccessToast } from "@/utils/toast";
 import JoinnedChannelSelect from "./JoinnedChannelSelect.vue";
-import { Channel, Resource, isImageResource, isVideoResource } from "@/models";
+import { Resource, isImageResource, isVideoResource } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock, SectionBlock } from "@/clients/slack/models";
+import { Channel, ImageBlock, SectionBlock } from "@/clients/slack/models";
 
 const channel = ref<Channel | null>(null);
 const text = ref("");

@@ -1,17 +1,3 @@
-export interface Channel {
-  id: string;
-  name: string;
-  is_channel: boolean;
-  is_group: boolean;
-  is_im: boolean;
-  is_mpim: boolean;
-  is_shared: boolean;
-  is_org_shared: boolean;
-  is_ext_shared: boolean;
-  is_private: boolean;
-  is_archived: boolean;
-}
-
 interface ImageResource {
   type: "image";
   blobUrl: string;
