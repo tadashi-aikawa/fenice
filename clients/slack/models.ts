@@ -102,9 +102,17 @@ export interface Attachment {
   id: number;
   // この下は関連ありそう
   mrkdwn_in: string[];
-  pretext: string;
-  text: string;
+  pretext: string; // option?
+  text: string; // option?
   from_url: string;
+
+  image_url?: string;
+  image_width?: number;
+  image_height?: number;
+
+  title?: string;
+  service_name?: string;
+  blocks?: Block[];
   message_blocks?: {
     channel: string;
     message: {

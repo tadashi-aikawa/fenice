@@ -1,4 +1,16 @@
-export interface Block {
+export type Block = SectionBlock | RichTextBlock;
+
+export interface SectionBlock {
+  block_id: string;
+  type: "section";
+  text: {
+    text: string;
+    type: "mrkdwn";
+    verbatim: boolean;
+  };
+}
+
+export interface RichTextBlock {
   block_id: string;
   type: "rich_text";
   elements: (

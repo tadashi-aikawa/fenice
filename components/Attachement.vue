@@ -22,7 +22,54 @@ const toChannelName = (id: string) => {
 
 <template>
   <div>
-    <template v-for="message_block in attachment.message_blocks">
+    <template v-if="attachment.message_blocks">
+      <template v-for="message_block in attachment.message_blocks">
+        <v-sheet max-width="625" class="mb-3" :elevation="2">
+          <div class="d-flex">
+            <div style="width: 625px" class="px-3 pt-1 pb-2">
+              <div class="d-flex align-center my-1 ga-2">
+                <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
+                  <img
+                    :src="attachment.author_icon"
+                    width="36px"
+                    height="36px"
+                  />
+                  <div>
+                    <div>
+                      {{ attachment.author_name }}
+                    </div>
+                    <div class="text-caption text-grey-darken-1">
+                      {{ toChannelName(message_block.channel) }}
+                    </div>
+                  </div>
+                </div>
+                <v-spacer />
+                <v-btn
+                  icon="mdi-slack"
+                  @click="handleOpenSlack(attachment.from_url)"
+                  variant="tonal"
+                  density="compact"
+                  style="color: goldenrod"
+                />
+              </div>
+
+              <v-divider class="pb-3" />
+
+              <template v-for="block in message_block.message.blocks">
+                <Block :item="block" style="font-size: 14px" />
+              </template>
+
+              <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
+                <v-icon>mdi-clock</v-icon>
+                <span>{{ ts2display(message_block.ts) }}</span>
+              </div>
+            </div>
+          </div>
+        </v-sheet>
+      </template>
+    </template>
+
+    <template v-else-if="attachment.blocks">
       <v-sheet max-width="625" class="mb-3" :elevation="2">
         <div class="d-flex">
           <div style="width: 625px" class="px-3 pt-1 pb-2">
@@ -32,9 +79,6 @@ const toChannelName = (id: string) => {
                 <div>
                   <div>
                     {{ attachment.author_name }}
-                  </div>
-                  <div class="text-caption text-grey-darken-1">
-                    {{ toChannelName(message_block.channel) }}
                   </div>
                 </div>
               </div>
@@ -50,13 +94,40 @@ const toChannelName = (id: string) => {
 
             <v-divider class="pb-3" />
 
-            <template v-for="block in message_block.message.blocks">
+            <template v-for="block in attachment.blocks">
               <Block :item="block" style="font-size: 14px" />
             </template>
+          </div>
+        </div>
+      </v-sheet>
+    </template>
 
-            <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
-              <v-icon>mdi-clock</v-icon>
-              <span>{{ ts2display(message_block.ts) }}</span>
+    <template v-else>
+      <v-sheet max-width="625" class="mb-3" :elevation="2">
+        <div class="d-flex">
+          <div style="width: 625px" class="px-3 pt-1 pb-2">
+            <div class="d-flex align-center my-1 ga-2">
+              <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
+                <img
+                  v-if="attachment.image_url"
+                  :src="attachment.image_url"
+                  style="max-width: 600px"
+                />
+                <img
+                  v-if="attachment.author_icon"
+                  :src="attachment.author_icon"
+                  width="36px"
+                  height="36px"
+                />
+                <div>
+                  <div>
+                    {{ attachment.author_name }}
+                    {{ attachment.pretext }}
+                    {{ attachment.text }}
+                    {{ attachment.title }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

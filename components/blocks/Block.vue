@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { Block } from "../../clients/slack/blockModels";
-import RichTextList from "./RichTextList.vue";
-import RichTextPreformatted from "./RichTextPreformatted.vue";
-import RichTextQuote from "./RichTextQuote.vue";
-import RichTextSection from "./RichTextSection.vue";
+import RichTextBlock from "./RichTextBlock.vue";
+import SectionBlock from "./SectionBlock.vue";
 
 defineProps<{
   item: Block;
@@ -12,23 +10,11 @@ defineProps<{
 
 <template>
   <div>
-    <template v-for="childItem in item.elements">
-      <RichTextSection
-        v-if="childItem.type === 'rich_text_section'"
-        :item="childItem"
-      />
-      <RichTextQuote
-        v-if="childItem.type === 'rich_text_quote'"
-        :item="childItem"
-      />
-      <RichTextList
-        v-else-if="childItem.type === 'rich_text_list'"
-        :item="childItem"
-      />
-      <RichTextPreformatted
-        v-else-if="childItem.type === 'rich_text_preformatted'"
-        :item="childItem"
-      />
+    <template v-if="item.type === 'section'">
+      <SectionBlock :item="item" />
+    </template>
+    <template v-if="item.type === 'rich_text'">
+      <RichTextBlock :item="item" />
     </template>
   </div>
 </template>
