@@ -6,11 +6,13 @@ const props = defineProps<{
   item: UserItem;
 }>();
 
-const user = computed(() => usersByIdCache[props.item.user_id]);
+const userName = computed(
+  () => usersByIdCache[props.item.user_id]?.name ?? "存在しないユーザー",
+);
 </script>
 
 <template>
-  <span class="user">@{{ user.name }}</span>
+  <span class="user">@{{ userName }}</span>
 </template>
 
 <style scoped>
