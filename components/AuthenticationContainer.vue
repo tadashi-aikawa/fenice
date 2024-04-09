@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { RequestError } from "@/clients/slack/base";
 import Loading from "./Loading.vue";
+
+const props = defineProps<{
+  clientId: string;
+  clientSecret: string;
+}>();
 
 const model = defineModel<string>();
 
@@ -9,7 +15,6 @@ const authenticate = async () => {
   authenticating.value = true;
 
   // code取得
-  const clientId = (await clientIdStorage.getValue()) ?? "";
   const redirectUri = encodeURIComponent(browser.identity.getRedirectURL());
   const scopes = [
     "chat:write",
@@ -20,37 +25,44 @@ const authenticate = async () => {
     "users:read",
     "emoji:read",
   ];
-  const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${clientId}&user_scope=${scopes.join(",")}&redirect_uri=${redirectUri}`;
-  const responseUrl = await browser.identity.launchWebAuthFlow({
-    interactive: true,
-    url: authUrl,
-  });
-  // TODO: exceptも含めて例外処理
-  const code = new URL(responseUrl).searchParams.get("code");
+  const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${props.clientId}&user_scope=${scopes.join(",")}&redirect_uri=${redirectUri}`;
 
-  // トークン取得
-  const clientSecret = (await clientSecretStorage.getValue()) ?? "";
-  const res = await fetch("https://slack.com/api/oauth.v2.access", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: `client_id=${clientId}&client_secret=${clientSecret}&code=${code}&redirect_uri=${redirectUri}`,
-  });
+  try {
+    const responseUrl = await browser.identity.launchWebAuthFlow({
+      interactive: true,
+      url: authUrl,
+    });
+    const code = new URL(responseUrl).searchParams.get("code");
 
-  const { ok, authed_user: user } = await res.json();
-  // TODO: exceptも含めて例外処理
-  if (!ok) {
-    showErrorToast("認証に失敗しました");
+    // トークン取得
+    const res = await fetch("https://slack.com/api/oauth.v2.access", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: `client_id=${props.clientId}&client_secret=${props.clientSecret}&code=${code}&redirect_uri=${redirectUri}`,
+    });
+
+    const { ok, authed_user: user, error } = await res.json();
+    if (!ok) {
+      showErrorToast(`認証に失敗しました: ${error}`);
+      authenticating.value = false;
+      return;
+    }
+
+    model.value = user.access_token;
+    accessTokenStorage.setValue(user.access_token ?? null);
+
+    await clientIdStorage.setValue(props.clientId);
+    await clientSecretStorage.setValue(props.clientSecret);
+
+    authenticating.value = false;
+
+    window.location.replace("/top.html");
+  } catch (e) {
+    showErrorToast(e as RequestError);
     authenticating.value = false;
   }
-
-  model.value = user.access_token;
-  accessTokenStorage.setValue(user.access_token ?? null);
-
-  authenticating.value = false;
-
-  window.location.replace("/top.html");
 };
 </script>
 

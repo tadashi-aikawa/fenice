@@ -146,7 +146,11 @@ const clearCache = async (target: "users" | "channels" | "emoji") => {
               >
             </template>
             <template v-else>
-              <AuthenticationContainer v-model="state.accessToken" />
+              <AuthenticationContainer
+                v-model="state.accessToken"
+                :client-id="state.clientId"
+                :client-secret="state.clientSecret"
+              />
             </template>
           </div>
         </v-window-item>
