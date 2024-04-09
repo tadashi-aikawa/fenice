@@ -25,7 +25,7 @@ export interface DividerBlock {
 
 export type SectionText = MrkdwnSectionText;
 interface MrkdwnSectionText {
-  type: "mrkdwn";
+  type: "mrkdwn" | "plain_text";
   text: string;
 }
 

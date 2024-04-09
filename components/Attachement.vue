@@ -4,6 +4,7 @@ import { channelsByIdCache } from "@/global-cache";
 import { ts2display } from "@/utils/date";
 import Block from "./blocks/Block.vue";
 import { toDisplayChannelName } from "@/utils/strings";
+import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
 
 defineProps<{
   attachment: Attachment;
@@ -119,10 +120,16 @@ const toChannelName = (id: string) =>
                 />
                 <div>
                   <div>
-                    {{ attachment.author_name }}
-                    {{ attachment.pretext }}
-                    {{ attachment.text }}
-                    {{ attachment.title }}
+                    <!-- {{ attachment.author_name }} -->
+                    <p v-if="attachment.title">
+                      <MrkdwnView :text="attachment.title" />
+                    </p>
+                    <p v-if="attachment.pretext">
+                      <MrkdwnView :text="attachment.pretext" />
+                    </p>
+                    <p v-if="attachment.text">
+                      <MrkdwnView :text="attachment.text" />
+                    </p>
                   </div>
                 </div>
               </div>

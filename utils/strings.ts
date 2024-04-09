@@ -1,6 +1,8 @@
 import { Channel } from "@/clients/slack/models";
 import { usersByIdCache, usersByNameCache } from "@/global-cache";
 
+import * as emoji from "node-emoji";
+
 export function toDisplayChannelName(channel: Channel) {
   if (channel.is_im) {
     return `📬 ${usersByIdCache[channel.name]?.real_name}`;
@@ -22,4 +24,8 @@ export function toDisplayChannelName(channel: Channel) {
   }
 
   return `🔒 ${channel.name}`;
+}
+
+export function name2emoji(name: string): string | undefined {
+  return emoji.get(name);
 }
