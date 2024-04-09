@@ -18,5 +18,9 @@ export function showErrorToast(arg: RequestError | string): Id {
 }
 
 export function showSuccessToast(message: string): Id {
-  return toast.success(message, { autoClose: 3000, transition: "flip" });
+  return toast.success(message, {
+    autoClose: 3000,
+    transition: "flip",
+    pauseOnFocusLoss: false,
+  });
 }
