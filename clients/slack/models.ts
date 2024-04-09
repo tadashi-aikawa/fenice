@@ -102,8 +102,8 @@ export interface Attachment {
   id: number;
   // この下は関連ありそう
   mrkdwn_in: string[];
-  pretext: string; // option?
-  text: string; // option?
+  pretext?: string; // option?
+  text?: string; // option?
   from_url: string;
 
   image_url?: string;
