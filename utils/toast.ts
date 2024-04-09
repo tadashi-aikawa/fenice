@@ -22,5 +22,6 @@ export function showSuccessToast(message: string): Id {
     autoClose: 3000,
     transition: "flip",
     pauseOnFocusLoss: false,
+    hideProgressBar: true,
   });
 }
