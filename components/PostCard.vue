@@ -2,9 +2,10 @@
 import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
-import { usersByIdCache } from "@/global-cache";
+import { usersByIdCache, usersByNameCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
+import { toDisplayChannelName } from "@/utils/strings";
 
 const props = defineProps<{
   message: Message;
@@ -53,12 +54,7 @@ const postUserImage = computed(
 );
 
 const channel = computed(() => props.message.channel);
-// TODO: 処理をまとめる
-const channelName = computed(() =>
-  channel.value.is_private
-    ? `🔒 ${channel.value.name}`
-    : `#${channel.value.name}`,
-);
+const channelName = computed(() => toDisplayChannelName(channel.value));
 </script>
 
 <template>

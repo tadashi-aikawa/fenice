@@ -16,8 +16,10 @@ import { RequestError } from "./clients/slack/base";
 
 // ユーザーキャッシュ
 export let usersByIdCache: { [id: string]: User } = {};
+export let usersByNameCache: { [name: string]: User } = {}; // アルファベット名
 export async function clearUsersCaches() {
   usersByIdCache = {};
+  usersByNameCache = {};
   await usersCacheStorage.setValue(DEFAULT_USERS_CACHE);
 }
 export async function refreshUsersCaches(): AsyncResult<User[], RequestError> {
@@ -105,8 +107,13 @@ export async function initGlobalCaches() {
     (await usersCacheStorage.getValue()).members,
     (x) => x.id,
   );
+  usersByNameCache = keyBy(
+    (await usersCacheStorage.getValue()).members,
+    (x) => x.name,
+  );
   usersCacheStorage.watch((newVal) => {
     usersByIdCache = keyBy(newVal.members, (x) => x.id);
+    usersByNameCache = keyBy(newVal.members, (x) => x.name);
   });
 
   channelsByIdCache = keyBy(

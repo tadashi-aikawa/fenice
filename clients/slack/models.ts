@@ -82,8 +82,8 @@ export interface Channel {
   name: string;
   is_channel: boolean;
   is_group: boolean;
-  is_im: boolean;
-  is_mpim: boolean;
+  is_im: boolean; // 単DM
+  is_mpim: boolean; // 複数人DM
   is_shared: boolean;
   is_org_shared: boolean;
   is_ext_shared: boolean;

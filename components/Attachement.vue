@@ -3,6 +3,7 @@ import { Attachment } from "@/clients/slack/models";
 import { channelsByIdCache } from "@/global-cache";
 import { ts2display } from "@/utils/date";
 import Block from "./blocks/Block.vue";
+import { toDisplayChannelName } from "@/utils/strings";
 
 defineProps<{
   attachment: Attachment;
@@ -13,11 +14,8 @@ const handleOpenSlack = (link: string) => {
   window.open(link, "_blank");
 };
 
-// TODO: 処理をまとめる
-const toChannelName = (id: string) => {
-  const channel = channelsByIdCache[id];
-  return channel.is_private ? `🔒 ${channel.name}` : `#${channel.name}`;
-};
+const toChannelName = (id: string) =>
+  toDisplayChannelName(channelsByIdCache[id]);
 </script>
 
 <template>
