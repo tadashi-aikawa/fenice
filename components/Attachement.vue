@@ -105,34 +105,30 @@ const toChannelName = (id: string) =>
       <v-sheet max-width="625" class="mb-3" :elevation="2">
         <div class="d-flex">
           <div style="width: 625px" class="px-3 pt-1 pb-2">
-            <div class="d-flex align-center my-1 ga-2">
-              <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
-                <img
-                  v-if="attachment.image_url"
-                  :src="attachment.image_url"
-                  style="max-width: 600px"
-                />
+            <div class="text-caption d-flex flex-column align-top ga-1">
+              <img
+                v-if="attachment.image_url"
+                :src="attachment.image_url"
+                style="max-width: 600px"
+              />
+              <div class="d-flex ga-1">
                 <img
                   v-if="attachment.author_icon"
                   :src="attachment.author_icon"
-                  width="36px"
-                  height="36px"
+                  width="18px"
+                  height="18px"
                 />
-                <div>
-                  <div>
-                    <!-- {{ attachment.author_name }} -->
-                    <p v-if="attachment.title">
-                      <MrkdwnView :text="attachment.title" />
-                    </p>
-                    <p v-if="attachment.pretext">
-                      <MrkdwnView :text="attachment.pretext" />
-                    </p>
-                    <p v-if="attachment.text">
-                      <MrkdwnView :text="attachment.text" />
-                    </p>
-                  </div>
-                </div>
+                <b>{{ attachment.author_name }}</b>
               </div>
+              <h4 v-if="attachment.title">
+                <MrkdwnView :text="attachment.title" />
+              </h4>
+              <p v-if="attachment.pretext">
+                <MrkdwnView :text="attachment.pretext" />
+              </p>
+              <p v-if="attachment.text">
+                <MrkdwnView :text="attachment.text" />
+              </p>
             </div>
           </div>
         </div>
