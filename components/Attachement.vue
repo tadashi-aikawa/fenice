@@ -70,33 +70,10 @@ const toChannelName = (id: string) =>
 
     <template v-else-if="attachment.blocks">
       <v-sheet max-width="625" class="mb-3" :elevation="2">
-        <div class="d-flex">
-          <div style="width: 625px" class="px-3 pt-1 pb-2">
-            <div class="d-flex align-center my-1 ga-2">
-              <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
-                <img :src="attachment.author_icon" width="36px" height="36px" />
-                <div>
-                  <div>
-                    {{ attachment.author_name }}
-                  </div>
-                </div>
-              </div>
-              <v-spacer />
-              <v-btn
-                icon="mdi-slack"
-                @click="handleOpenSlack(attachment.from_url)"
-                variant="tonal"
-                density="compact"
-                style="color: goldenrod"
-              />
-            </div>
-
-            <v-divider class="pb-3" />
-
-            <template v-for="block in attachment.blocks">
-              <Block :item="block" style="font-size: 14px" />
-            </template>
-          </div>
+        <div style="width: 625px" class="px-3 pt-1 pb-2">
+          <template v-for="block in attachment.blocks">
+            <Block :item="block" style="font-size: 14px" />
+          </template>
         </div>
       </v-sheet>
     </template>
