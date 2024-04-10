@@ -2,7 +2,7 @@
 import Badge from "@/components/Badge.vue";
 import Loading from "@/components/Loading.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
-import OnlyPostPage from "@/components/OnlyPostPage.vue";
+import ZenTimesPage from "@/components/ZenTimesPage.vue";
 import Settings from "@/entrypoints/settings/App.vue";
 import { ExhaustiveError } from "@/utils/errors";
 import {
@@ -23,8 +23,8 @@ import {
 } from "@/global-cache";
 import { RequestError } from "@/clients/slack/base";
 
-type Page = "only-post" | "crucial-messages" | "settings";
-const page = ref<Page>("only-post");
+type Page = "zen-times" | "crucial-messages" | "settings";
+const page = ref<Page>("zen-times");
 
 // nullは未取得. 空文字はなし
 const accessToken = ref<string | null>(null);
@@ -144,8 +144,8 @@ const currentPage = computed(() => {
   }
 
   switch (page.value) {
-    case "only-post":
-      return OnlyPostPage;
+    case "zen-times":
+      return ZenTimesPage;
     case "crucial-messages":
       return CrucialMessagesPage;
     case "settings":
@@ -180,10 +180,10 @@ const handleClickItem = ({ id }: { id: unknown }) => {
 
         <v-list nav @click:select="handleClickItem">
           <v-list-item
-            prepend-icon="mdi-lead-pencil"
-            title="投稿だけ機能"
-            value="only-post"
-            :active="page === 'only-post'"
+            prepend-icon="mdi-meditation"
+            title="禅 times"
+            value="zen-times"
+            :active="page === 'zen-times'"
             accesskey="k"
           ></v-list-item>
           <Badge
@@ -196,7 +196,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
           >
             <v-list-item
               prepend-icon="mdi-message-alert"
-              title="重要なメッセージ確認"
+              title="重要メッセージ"
               value="crucial-messages"
               :active="page === 'crucial-messages'"
               accesskey="j"
