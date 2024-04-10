@@ -5,6 +5,7 @@ import { Resource, isImageResource, isVideoResource } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { Channel, ImageBlock, SectionBlock } from "@/clients/slack/models";
+import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
 
 const channel = ref<Channel | null>(null);
 const text = ref("");
@@ -137,7 +138,8 @@ const handlePaste = async (e: ClipboardEvent) => {
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
-    <JoinnedChannelSelect v-model="channel" />
+    <!-- <JoinnedChannelSelect v-model="channel" /> -->
+    <FavoriteChannelToggle v-model="channel" />
     <v-card
       v-if="channel"
       :elevation="4"

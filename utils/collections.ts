@@ -39,3 +39,10 @@ export const keyBy = <T>(
     (prev, cur, _1, _2, k = toKey(cur)) => ((prev[k] = cur), prev),
     {} as { [key: string]: T },
   );
+
+/**
+ * nullableな値がnull/undefinedでないことを確認し、型を保証します
+ */
+export function isPresent<T>(arg: T | null | undefined): arg is T {
+  return arg != null;
+}

@@ -12,6 +12,10 @@ export const unreadMessagesStorage = storage.defineItem<Message[]>(
 export const readByTsStorage = storage.defineItem<{
   [ts: string]: true;
 }>("local:readMessages", { defaultValue: {} });
+export const selectedChannelIdsStorage = storage.defineItem<string[]>(
+  "local:selectedChannelIds",
+  { defaultValue: [] },
+);
 
 // Settings
 export const clientIdStorage = storage.defineItem<string>("local:clientId");
