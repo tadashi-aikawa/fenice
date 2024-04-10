@@ -44,8 +44,8 @@ export default defineBackground(() => {
   browser.alarms.create("", { periodInMinutes: 1 });
   browser.alarms.onAlarm.addListener(async (_alarm) => {
     // 完璧ではないけど一旦これで十分
-    const tabs = await browser.tabs.query({ title: "Fenice" });
-    if (tabs.length === 0) {
+    const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
+    if (!feniceTab) {
       return;
     }
 
@@ -93,11 +93,20 @@ export default defineBackground(() => {
       (x) => x,
     ).join("\n");
     const title = `${newMessages.length}件の新しいメッセージがあります`;
-    browser.notifications.create(timestamp, {
+    const notificationId = await browser.notifications.create(timestamp, {
       title,
       message: `${channelNames}`,
       type: "basic",
       iconUrl: FENICE_ICON_URL,
+    });
+    browser.notifications.onClicked.addListener((nid) => {
+      if (notificationId !== nid) {
+        return;
+      }
+      browser.tabs.update(feniceTab.id, {
+        active: true,
+      });
+      browser.tabs.sendMessage(feniceTab.id!, { page: "crucial-messages" });
     });
 
     const newUnreadMessages = unreadMessages

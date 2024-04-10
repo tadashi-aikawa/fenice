@@ -155,6 +155,10 @@ const currentPage = computed(() => {
   }
 });
 
+browser.runtime.onMessage.addListener((message: { page: Page }) => {
+  page.value = message.page;
+});
+
 const handleClickItem = ({ id }: { id: unknown }) => {
   page.value = id as Page;
 };
