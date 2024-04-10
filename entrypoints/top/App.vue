@@ -169,23 +169,28 @@ const handleClickItem = ({ id }: { id: unknown }) => {
     <v-layout>
       <v-navigation-drawer v-if="accessToken" expand-on-hover rail>
         <v-list>
-          <v-list-item
-            title="Fenice"
-            subtitle="for ${user}"
-            prepend-avatar="/icon/384.png"
-          ></v-list-item>
+          <v-list-item title="Fenice" subtitle="for ${user}">
+            <template v-slot:prepend>
+              <v-avatar>
+                <v-img alt="Fenice" src="/icon/384.png" />
+              </v-avatar>
+            </template>
+          </v-list-item>
         </v-list>
 
         <v-divider></v-divider>
 
         <v-list nav @click:select="handleClickItem">
           <v-list-item
-            prepend-icon="mdi-meditation"
             title="禅 times"
             value="zen-times"
             :active="page === 'zen-times'"
             accesskey="k"
-          ></v-list-item>
+          >
+            <template v-slot:prepend>
+              <v-icon icon="mdi-meditation" size="x-large"></v-icon>
+            </template>
+          </v-list-item>
           <Badge
             :disabled="unreadCount === 0"
             color="primary"
@@ -195,19 +200,25 @@ const handleClickItem = ({ id }: { id: unknown }) => {
             offset-y="7"
           >
             <v-list-item
-              prepend-icon="mdi-message-alert"
               title="重要メッセージ"
               value="crucial-messages"
               :active="page === 'crucial-messages'"
               accesskey="j"
-            ></v-list-item>
+            >
+              <template v-slot:prepend>
+                <v-icon icon="mdi-message-alert" size="x-large"></v-icon>
+              </template>
+            </v-list-item>
           </Badge>
           <v-list-item
-            prepend-icon="mdi-cog"
             title="設定"
             value="settings"
             :active="page === 'settings'"
-          ></v-list-item>
+          >
+            <template v-slot:prepend>
+              <v-icon icon="mdi-cog" size="x-large"></v-icon>
+            </template>
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
