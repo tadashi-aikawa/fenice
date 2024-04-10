@@ -88,10 +88,14 @@ export default defineBackground(() => {
       return;
     }
 
+    const channelNames = uniqBy(
+      newMessages.map((x) => (x.channel.is_im ? x.username : x.channel.name)),
+      (x) => x,
+    ).join("\n");
     const title = `${newMessages.length}件の新しいメッセージがあります`;
     browser.notifications.create(timestamp, {
       title,
-      message: "todo",
+      message: `${channelNames}`,
       type: "basic",
       iconUrl: FENICE_ICON_URL,
     });
