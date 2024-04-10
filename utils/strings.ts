@@ -29,3 +29,7 @@ export function toDisplayChannelName(channel: Channel) {
 export function name2emoji(name: string): string | undefined {
   return emoji.get(name);
 }
+
+export function toBrowserUrl(permalink: string): string {
+  return permalink.replace("/archives", "/messages");
+}

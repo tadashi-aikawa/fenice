@@ -5,7 +5,7 @@ import HighlightCode from "./HighlightCode.vue";
 import { usersByIdCache, usersByNameCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
-import { toDisplayChannelName } from "@/utils/strings";
+import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
 
 const props = defineProps<{
   message: Message;
@@ -15,29 +15,27 @@ const emit = defineEmits<{
   "click:read": [message: Message];
 }>();
 
-const handleOpenSlack = () => {
-  window.open(props.message.permalink, "_blank");
+const handleOpenBrowser = async () => {
+  const url = toBrowserUrl(props.message.permalink);
+
+  const tab = (
+    await browser.tabs.query({
+      url: "https://app.slack.com/client/*",
+    })
+  ).at(0);
+
+  if (tab) {
+    await browser.tabs.update(tab.id, {
+      url,
+      active: true,
+    });
+  } else {
+    await browser.tabs.create({ url });
+  }
 };
-
-const displayMessage = computed(() => {
-  if (props.message.text) {
-    return props.message.text;
-  }
-
-  if (props.message.attachments) {
-    return props.message.attachments
-      .map(
-        (x) => `---
-${x.fallback}
-> ${x.author_name}
-> ${x.text}
----`,
-      )
-      .join("\n\n");
-  }
-
-  return "今の実装では解析ができません。Feniceのバージョンアップをお待ちください。";
-});
+const handleOpenSlack = async () => {
+  await browser.tabs.create({ url: props.message.permalink });
+};
 
 const handleClickRead = () => {
   emit("click:read", props.message);
@@ -79,6 +77,13 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               </div>
             </div>
             <v-spacer />
+            <v-btn
+              icon="mdi-google-chrome"
+              @click="handleOpenBrowser"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
             <v-btn
               icon="mdi-slack"
               @click="handleOpenSlack"
