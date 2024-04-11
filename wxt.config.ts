@@ -28,5 +28,6 @@ export default defineConfig({
       "https://files.slack.com/*",
       "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/*",
     ],
+    action: {},
   },
 });

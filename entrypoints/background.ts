@@ -40,6 +40,12 @@ async function searchMessages(
 }
 
 export default defineBackground(() => {
+  // アイコンクリック時の処理
+  browser.action.onClicked.addListener(() => {
+    browser.tabs.create({ url: browser.runtime.getURL("/top.html") });
+  });
+
+  // 通知クリック時の処理
   const notifiedIds = new Set<string>();
   browser.notifications.onClicked.addListener(async (nid) => {
     if (!notifiedIds.has(nid)) {
@@ -63,7 +69,7 @@ export default defineBackground(() => {
     browser.tabs.sendMessage(feniceTab.id, { page: "crucial-messages" });
   });
 
-  // FIXME: オプションで設定できるようにしたい
+  // 定期検索処理
   browser.alarms.create("", { periodInMinutes: 1 });
   browser.alarms.onAlarm.addListener(async (_alarm) => {
     // 完璧ではないけど一旦これで十分
