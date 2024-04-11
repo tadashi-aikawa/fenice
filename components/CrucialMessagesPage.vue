@@ -26,7 +26,7 @@ const markAsRead = async (message: Message) => {
 const markAllAsRead = async () => {
   for (const message of messages.value) {
     await markAsRead(message);
-    await sleep(230);
+    await sleep(10);
   }
 };
 </script>
