@@ -62,6 +62,14 @@ export interface User {
   };
 }
 
+export interface Usergroup {
+  id: string;
+  name: string; // 日本語名
+  handle: string; // メンション
+  is_external: boolean;
+  user_count: number;
+}
+
 export interface Message {
   iid: string; // ???
   team: string;

@@ -35,12 +35,12 @@ export interface RichTextListItem {
 
 export interface RichTextSectionItem {
   type: "rich_text_section";
-  elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
+  elements: (TextItem | LinkItem | UserItem | UsergroupItem | EmojiItem)[];
 }
 
 export interface RichTextQuoteItem {
   type: "rich_text_quote";
-  elements: (TextItem | LinkItem | UserItem | EmojiItem)[];
+  elements: (TextItem | LinkItem | UserItem | UsergroupItem | EmojiItem)[];
 }
 
 export interface RichTextPreformattedItem {
@@ -73,6 +73,10 @@ export interface LinkItem {
 export interface UserItem {
   type: "user";
   user_id: string;
+}
+export interface UsergroupItem {
+  type: "usergroup";
+  usergroup_id: string;
 }
 export interface EmojiItem {
   type: "emoji";

@@ -10,6 +10,7 @@ import { DateTime } from "owlelia";
 import {
   clearChannelsCaches,
   clearEmojiCaches,
+  clearUsergroupsCaches,
   clearUsersCaches,
 } from "@/global-cache";
 
@@ -21,6 +22,7 @@ interface State {
   crucialMessageConditions: string;
   cache: {
     users?: { lastUpdated: string; num: number };
+    usergroups?: { lastUpdated: string; num: number };
     channels?: { lastUpdated: string; num: number };
     emoji?: { lastUpdated: string; num: number };
   };
@@ -36,6 +38,7 @@ const state = reactive<State>({
 
 const updateCacheMeta = async () => {
   const userCache = await usersCacheStorage.getValue();
+  const usergroupCache = await usergroupsCacheStorage.getValue();
   const channelCache = await channelsCacheStorage.getValue();
   const emojiCache = await emojiCacheStorage.getValue();
 
@@ -44,6 +47,10 @@ const updateCacheMeta = async () => {
     users: {
       lastUpdated: DateTime.of(userCache.updated).displayDateTime,
       num: userCache.members.length,
+    },
+    usergroups: {
+      lastUpdated: DateTime.of(usergroupCache.updated).displayDateTime,
+      num: usergroupCache.usergroups.length,
     },
     channels: {
       lastUpdated: DateTime.of(channelCache.updated).displayDateTime,
@@ -94,10 +101,15 @@ const clearAuth = async () => {
   showSuccessToast("Slackとの認証をクリアしました");
 };
 
-const clearCache = async (target: "users" | "channels" | "emoji") => {
+const clearCache = async (
+  target: "users" | "usergroups" | "channels" | "emoji",
+) => {
   switch (target) {
     case "users":
       await clearUsersCaches();
+      break;
+    case "usergroups":
+      await clearUsergroupsCaches();
       break;
     case "channels":
       await clearChannelsCaches();
@@ -171,6 +183,17 @@ const clearCache = async (target: "users" | "channels" | "emoji") => {
             >
               <template v-slot:append>
                 <v-btn color="warning" @click="clearCache('users')"
+                  >クリア</v-btn
+                >
+              </template>
+            </v-list-item>
+
+            <v-list-item
+              title="ユーザーグループキャッシュ"
+              :subtitle="toCacheMessage(state.cache.usergroups)"
+            >
+              <template v-slot:append>
+                <v-btn color="warning" @click="clearCache('usergroups')"
                   >クリア</v-btn
                 >
               </template>

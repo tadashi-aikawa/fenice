@@ -1,6 +1,6 @@
 import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
-import { PostBlock, Channel, Message, User } from "./slack/models";
+import { PostBlock, Channel, Message, User, Usergroup } from "./slack/models";
 
 export async function getSearchMessages(args: {
   query: string;
@@ -48,6 +48,15 @@ export async function getUsersList(args: { cursor?: string }) {
   }>({
     path: "/users.list",
     query: args,
+  });
+}
+
+export async function getUsergroupsList() {
+  return await getRequest<{
+    ok: boolean;
+    usergroups: Usergroup[];
+  }>({
+    path: "/usergroups.list",
   });
 }
 

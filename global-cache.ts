@@ -3,14 +3,14 @@ import {
   getConversationsList,
   getEmojiList,
   getUsersList,
+  getUsergroupsList,
 } from "./clients/slack";
-import { Channel, User } from "./clients/slack/models";
+import { Channel, User, Usergroup } from "./clients/slack/models";
 import {
   DEFAULT_CHANNELS_CACHE,
   DEFAULT_EMOJI_CACHE,
+  DEFAULT_USERGROUPS_CACHE,
   DEFAULT_USERS_CACHE,
-  channelsCacheStorage,
-  emojiCacheStorage,
 } from "./utils/storage";
 import { RequestError } from "./clients/slack/base";
 
@@ -22,14 +22,17 @@ export async function clearUsersCaches() {
   usersByNameCache = {};
   await usersCacheStorage.setValue(DEFAULT_USERS_CACHE);
 }
-export async function refreshUsersCaches(): AsyncResult<User[], RequestError> {
+export async function refreshAllUserCaches(): AsyncResult<
+  User[],
+  RequestError
+> {
   let users: User[] = [];
   let nextCursor = "";
 
   while (true) {
     const [res, error] = (await getUsersList({ cursor: nextCursor })).unwrap();
     if (error) {
-      error.message = `ユーザーキャッシュのリフレッシュに失敗しました。${error.message}`;
+      error.message = `全ユーザーの取得に失敗しました。${error.message}`;
       return err(error);
     }
 
@@ -42,6 +45,25 @@ export async function refreshUsersCaches(): AsyncResult<User[], RequestError> {
   }
 
   return ok(users);
+}
+
+// ユーザーグループキャッシュ
+export let usergroupsByIdCache: { [id: string]: Usergroup } = {};
+export async function clearUsergroupsCaches() {
+  usergroupsByIdCache = {};
+  await usergroupsCacheStorage.setValue(DEFAULT_USERGROUPS_CACHE);
+}
+export async function refreshAllUsergroupsCaches(): AsyncResult<
+  Usergroup[],
+  RequestError
+> {
+  const [res, error] = (await getUsergroupsList()).unwrap();
+  if (error) {
+    error.message = `ユーザーグループのリフレッシュに失敗しました。${error.message}`;
+    return err(error);
+  }
+
+  return ok(res.usergroups);
 }
 
 // channelキャッシュ
@@ -114,6 +136,14 @@ export async function initGlobalCaches() {
   usersCacheStorage.watch((newVal) => {
     usersByIdCache = keyBy(newVal.members, (x) => x.id);
     usersByNameCache = keyBy(newVal.members, (x) => x.name);
+  });
+
+  usergroupsByIdCache = keyBy(
+    (await usergroupsCacheStorage.getValue()).usergroups,
+    (x) => x.id,
+  );
+  usergroupsCacheStorage.watch((newVal) => {
+    usergroupsByIdCache = keyBy(newVal.usergroups, (x) => x.id);
   });
 
   channelsByIdCache = keyBy(

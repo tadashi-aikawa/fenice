@@ -8,6 +8,7 @@ import { ExhaustiveError } from "@/utils/errors";
 import {
   DEFAULT_CHANNELS_CACHE,
   DEFAULT_EMOJI_CACHE,
+  DEFAULT_USERGROUPS_CACHE,
   accessTokenStorage,
   channelsCacheStorage,
   emojiCacheStorage,
@@ -19,7 +20,8 @@ import {
   initGlobalCaches,
   refreshChannelsCaches,
   refreshEmojiCaches,
-  refreshUsersCaches,
+  refreshAllUsergroupsCaches,
+  refreshAllUserCaches,
 } from "@/global-cache";
 import { RequestError } from "@/clients/slack/base";
 
@@ -52,7 +54,7 @@ const loadingCacheMessage = ref("");
 const refreshUsersCache = async (): AsyncNullable<RequestError> => {
   loadingCacheMessage.value =
     "ユーザーキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [members, err] = (await refreshUsersCaches()).unwrap();
+  const [members, err] = (await refreshAllUserCaches()).unwrap();
   if (err) {
     return err;
   }
@@ -60,6 +62,20 @@ const refreshUsersCache = async (): AsyncNullable<RequestError> => {
   await usersCacheStorage.setValue({
     updated: DateTime.now().unix,
     members,
+  });
+};
+
+const refreshUsergroupsCache = async (): AsyncNullable<RequestError> => {
+  loadingCacheMessage.value =
+    "ユーザーグループキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
+  const [usergroups, err] = (await refreshAllUsergroupsCaches()).unwrap();
+  if (err) {
+    return err;
+  }
+
+  await usergroupsCacheStorage.setValue({
+    updated: DateTime.now().unix,
+    usergroups,
   });
 };
 
@@ -108,6 +124,14 @@ onMounted(async () => {
   const usersCache = await usersCacheStorage.getValue();
   if (usersCache.updated === DEFAULT_USERS_CACHE.updated) {
     const err = await refreshUsersCache();
+    if (err) {
+      showErrorToast(err);
+    }
+  }
+
+  const usergroupsCache = await usergroupsCacheStorage.getValue();
+  if (usergroupsCache.updated === DEFAULT_USERGROUPS_CACHE.updated) {
+    const err = await refreshUsergroupsCache();
     if (err) {
       showErrorToast(err);
     }

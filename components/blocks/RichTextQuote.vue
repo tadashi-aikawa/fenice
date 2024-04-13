@@ -4,6 +4,7 @@ import Text from "./Text.vue";
 import Link from "./Link.vue";
 import User from "./User.vue";
 import Emoji from "./Emoji.vue";
+import Usergroup from "./Usergroup.vue";
 
 defineProps<{
   item: RichTextQuoteItem;
@@ -16,6 +17,7 @@ defineProps<{
       <Text v-if="childItem.type === 'text'" :item="childItem" />
       <Link v-else-if="childItem.type === 'link'" :item="childItem" />
       <User v-else-if="childItem.type === 'user'" :item="childItem" />
+      <Usergroup v-else-if="childItem.type === 'usergroup'" :item="childItem" />
       <Emoji v-else-if="childItem.type === 'emoji'" :item="childItem" />
     </template>
   </div>

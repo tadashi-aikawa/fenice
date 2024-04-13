@@ -19,10 +19,10 @@ const authenticate = async () => {
   const scopes = [
     "chat:write",
     "channels:read",
-    "groups:read",
     "files:write",
     "search:read",
     "users:read",
+    "usergroups:read",
     "emoji:read",
   ];
   const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${props.clientId}&user_scope=${scopes.join(",")}&redirect_uri=${redirectUri}`;
