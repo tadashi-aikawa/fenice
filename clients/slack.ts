@@ -36,7 +36,7 @@ export async function getEmojiList() {
   });
 }
 
-export async function getUserList(args: { cursor?: string }) {
+export async function getUsersList(args: { cursor?: string }) {
   return await getRequest<{
     ok: boolean;
     offset?: string;

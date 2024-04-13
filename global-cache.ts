@@ -2,7 +2,7 @@ import { AsyncResult, err, ok } from "owlelia";
 import {
   getConversationsList,
   getEmojiList,
-  getUserList,
+  getUsersList,
 } from "./clients/slack";
 import { Channel, User } from "./clients/slack/models";
 import {
@@ -27,7 +27,7 @@ export async function refreshUsersCaches(): AsyncResult<User[], RequestError> {
   let nextCursor = "";
 
   while (true) {
-    const [res, error] = (await getUserList({ cursor: nextCursor })).unwrap();
+    const [res, error] = (await getUsersList({ cursor: nextCursor })).unwrap();
     if (error) {
       error.message = `ユーザーキャッシュのリフレッシュに失敗しました。${error.message}`;
       return err(error);
