@@ -83,6 +83,7 @@ export interface Message {
   permalink: string;
   no_reactions: boolean;
   attachments?: Attachment[];
+  files?: File[];
 }
 
 export interface Channel {
@@ -97,6 +98,13 @@ export interface Channel {
   is_ext_shared: boolean;
   is_private: boolean;
   is_archived: boolean;
+}
+
+export interface File {
+  filetype: string; // png など
+  mimetype: string;
+  name: string;
+  url_private: string;
 }
 
 export interface Attachment {

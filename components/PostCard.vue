@@ -6,6 +6,7 @@ import { usersByIdCache, usersByNameCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
 import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
+import File from "./File.vue";
 
 const props = defineProps<{
   message: Message;
@@ -112,6 +113,10 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
 
           <template v-for="block in message.blocks ?? []">
             <Block :item="block" style="font-size: 14px" />
+          </template>
+
+          <template v-for="f in message.files ?? []">
+            <File :file="f" class="mt-4 ml-4" />
           </template>
 
           <template v-for="at in message.attachments ?? []">
