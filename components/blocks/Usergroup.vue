@@ -6,12 +6,9 @@ const props = defineProps<{
   item: UsergroupItem;
 }>();
 
-const usergroupName = computed(() => {
-  console.log(usergroupsByIdCache);
-  const a =
-    usergroupsByIdCache[props.item.usergroup_id]?.handle ?? "unknown_group";
-  return a;
-});
+const usergroupName = computed(
+  () => usergroupsByIdCache[props.item.usergroup_id]?.handle ?? "unknown_group",
+);
 </script>
 
 <template>

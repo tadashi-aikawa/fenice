@@ -127,6 +127,7 @@ export interface Attachment {
   image_height?: number;
 
   title?: string;
+  service_icon?: string;
   service_name?: string;
   blocks?: Block[];
   message_blocks?: {

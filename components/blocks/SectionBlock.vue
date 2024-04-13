@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SectionBlock } from "@/clients/slack/models";
+import { SectionBlock } from "@/clients/slack/blockModels";
 import MrkdwnView from "./mrkdwn/MrkdwnView.vue";
 
 defineProps<{

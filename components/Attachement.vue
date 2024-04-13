@@ -88,7 +88,18 @@ const toChannelName = (id: string) =>
                 :src="attachment.image_url"
                 style="max-width: 600px"
               />
-              <div class="d-flex ga-1">
+
+              <div v-if="attachment.service_name" class="d-flex ga-1">
+                <img
+                  v-if="attachment.service_icon"
+                  :src="attachment.service_icon"
+                  width="18px"
+                  height="18px"
+                />
+                <b>{{ attachment.service_name }}</b>
+              </div>
+
+              <div v-if="attachment.author_name" class="d-flex ga-1">
                 <img
                   v-if="attachment.author_icon"
                   :src="attachment.author_icon"
@@ -97,6 +108,7 @@ const toChannelName = (id: string) =>
                 />
                 <b>{{ attachment.author_name }}</b>
               </div>
+
               <h4 v-if="attachment.title">
                 <MrkdwnView :text="attachment.title" />
               </h4>

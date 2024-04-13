@@ -1,13 +1,15 @@
-export type Block = SectionBlock | RichTextBlock;
+export type Block = SectionBlock | ContextBlock | RichTextBlock;
 
 export interface SectionBlock {
   block_id: string;
   type: "section";
-  text: {
-    text: string;
-    type: "mrkdwn";
-    verbatim: boolean;
-  };
+  text: SectionText;
+}
+
+export interface ContextBlock {
+  block_id: string;
+  type: "context";
+  elements: ContextBlockElement[];
 }
 
 export interface RichTextBlock {
@@ -19,6 +21,29 @@ export interface RichTextBlock {
     | RichTextQuoteItem
     | RichTextPreformattedItem
   )[];
+}
+
+//---
+
+export type SectionText = PlainSectionText | MrkdwnSectionText;
+interface PlainSectionText {
+  type: "plain_text";
+  text: string;
+}
+interface MrkdwnSectionText {
+  type: "mrkdwn";
+  text: string;
+}
+
+type ContextBlockElement = ImageContextBlockElement | MrkdwnContextBlockElement;
+interface ImageContextBlockElement {
+  type: "image";
+  image_url: string;
+  alt_text: string;
+}
+interface MrkdwnContextBlockElement {
+  type: "mrkdwn";
+  text: string;
 }
 
 //---
