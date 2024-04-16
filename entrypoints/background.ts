@@ -94,9 +94,16 @@ export default defineBackground(() => {
       const errorMessage = errors
         .map((x) => `[${x.title}] ${x.message}`)
         .join("\n");
+      const includesExpiredError = errors.find(
+        (x) => x.title === "token_expired",
+      );
       browser.notifications.create(timestamp, {
-        title: "検索に失敗",
-        message: errorMessage,
+        title: includesExpiredError
+          ? "アクセストークンの有効期限が切れました"
+          : "検索に失敗",
+        message: includesExpiredError
+          ? "Slackとの再認証が必要です"
+          : errorMessage,
         type: "basic",
         iconUrl: FENICE_ICON_URL,
       });

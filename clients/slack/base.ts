@@ -5,9 +5,23 @@ const BASE_URL = "https://slack.com/api";
 type Path = `/${string}`;
 type Query = { [key: string]: string | number | boolean | null | undefined };
 export type RequestError = {
-  title?: string;
+  title: string;
   message: string;
 };
+
+export type ResponseBase =
+  | {
+      ok: true;
+    }
+  | {
+      ok: false;
+      error: "token_revoked" | "invalid_auth" | "token_expired";
+    }
+  | {
+      ok: false;
+      error: string;
+      response_metadata?: any;
+    };
 
 function buildUrl(path: Path, query: Query = {}): string {
   for (const qk of Object.keys(query)) {
@@ -70,21 +84,31 @@ export async function postRequest<R>(args: {
 async function handleResponse<R>(res: Response): AsyncResult<R, RequestError> {
   if (!res.ok) {
     return err({
-      message: `通信に失敗しました. status=${res.status}, message=${res.text}`,
+      title: `通信が失敗しました`,
+      message: `status=${res.status}, message=${res.text}`,
     });
   }
 
-  const jr = await res.json();
-  if (!jr.ok) {
-    return err(
-      jr.response_metadata
-        ? {
-            title: jr.error,
-            message: JSON.stringify(jr.response_metadata, null, 2),
-          }
-        : { message: jr.error },
-    );
+  const jr = (await res.json()) as ResponseBase;
+  if (jr.ok) {
+    return ok(jr as R);
   }
 
-  return ok(jr as R);
+  // 認証期間切れの場合はOAuth 2.0をやり直しさせるためトークンを空にする
+  if (jr.error === "token_expired") {
+    accessTokenStorage.setValue(null);
+    return err({
+      title: "アクセストークンの有効期限が切れました",
+      message: "Slackとの再認証が必要です",
+    });
+  }
+
+  return err(
+    "response_metadata" in jr
+      ? {
+          title: jr.error,
+          message: JSON.stringify(jr.response_metadata, null, 2),
+        }
+      : { title: jr.error, message: "エラーが発生しました" },
+  );
 }
