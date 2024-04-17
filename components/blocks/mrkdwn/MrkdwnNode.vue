@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
-import { emojiCache } from "@/global-cache";
+import { emojiCache, usersByIdCache } from "@/global-cache";
 
 defineProps<{
   node: Node;
@@ -15,7 +15,11 @@ defineProps<{
 
   <template v-else-if="node.type === NodeType.ChannelLink">💩</template>
 
-  <template v-else-if="node.type === NodeType.UserLink">💩</template>
+  <template v-else-if="node.type === NodeType.UserLink">
+    <span class="user"
+      >@{{ usersByIdCache[node.userID]?.name ?? "unknown_user" }}</span
+    >
+  </template>
 
   <template v-else-if="node.type === NodeType.URL">
     <a target="_blank" class="link" :href="node.url">
@@ -147,5 +151,13 @@ defineProps<{
   border: 0 solid lightgrey;
   border-left-width: 4px;
   opacity: 0.8;
+}
+.user {
+  color: dodgerblue;
+  background-color: powderblue;
+  line-height: 30px;
+  border-radius: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 </style>
