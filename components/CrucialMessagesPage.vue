@@ -33,7 +33,7 @@ const markAllAsRead = async () => {
 
 <template>
   <div class="d-flex flex-column align-center pa-5">
-    <div style="width: 750px; height: 95vh; overflow-y: auto">
+    <div style="width: 750px; height: calc(100vh - 125px); overflow-y: auto">
       <transition-group name="list">
         <PostCard
           :key="message.ts"
@@ -47,7 +47,7 @@ const markAllAsRead = async () => {
     <v-btn
       prepend-icon="mdi-check-circle-outline"
       color="warning"
-      style="position: absolute; right: 10px; top: 10px"
+      style="position: absolute; right: 30px; top: 30px"
       @click="markAllAsRead"
       >すべて既読にする</v-btn
     >

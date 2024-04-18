@@ -246,7 +246,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
         </v-list>
       </v-navigation-drawer>
 
-      <v-main>
+      <v-main class="pa-6">
         <KeepAlive>
           <component :is="currentPage" />
         </KeepAlive>
