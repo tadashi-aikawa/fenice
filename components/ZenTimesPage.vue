@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { showSuccessToast } from "@/utils/toast";
-import JoinnedChannelSelect from "./JoinnedChannelSelect.vue";
 import { Resource, isImageResource, isVideoResource } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
@@ -138,7 +137,6 @@ const handlePaste = async (e: ClipboardEvent) => {
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
-    <!-- <JoinnedChannelSelect v-model="channel" /> -->
     <FavoriteChannelToggle v-model="channel" />
     <v-card
       v-if="channel"
