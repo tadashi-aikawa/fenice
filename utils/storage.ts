@@ -25,6 +25,10 @@ export const crucialMessageConditionsStorage = storage.defineItem<string[]>(
   "local:crucialMessageConditionsStorage",
   { defaultValue: [] },
 ); // 改行区切り複数指定
+export const quickReactionEmojisStorage = storage.defineItem<string[]>(
+  "local:quickReactionEmojisStorage",
+  { defaultValue: [] },
+); // 改行区切り複数指定
 
 // Caches
 export const DEFAULT_USERS_CACHE = { updated: -1, members: [] };

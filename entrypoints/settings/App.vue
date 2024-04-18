@@ -4,6 +4,7 @@ import {
   channelsCacheStorage,
   crucialMessageConditionsStorage,
   emojiCacheStorage,
+  quickReactionEmojisStorage,
 } from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import { DateTime } from "owlelia";
@@ -13,13 +14,15 @@ import {
   clearUsergroupsCaches,
   clearUsersCaches,
 } from "@/global-cache";
+import Emoji from "@/components/blocks/Emoji.vue";
 
 interface State {
-  tab: "auth" | "search" | "cache";
+  tab: "auth" | "search" | "appearance" | "cache";
   accessToken: string;
   clientId: string;
   clientSecret: string;
   crucialMessageConditions: string;
+  quickReactionEmojis: string;
   cache: {
     users?: { lastUpdated: string; num: number };
     usergroups?: { lastUpdated: string; num: number };
@@ -33,6 +36,7 @@ const state = reactive<State>({
   clientId: "",
   clientSecret: "",
   crucialMessageConditions: "",
+  quickReactionEmojis: "",
   cache: {},
 });
 
@@ -69,6 +73,8 @@ onBeforeMount(async () => {
   state.clientSecret = (await clientSecretStorage.getValue()) ?? "";
   state.crucialMessageConditions =
     (await crucialMessageConditionsStorage.getValue())?.join("\n") ?? "";
+  state.quickReactionEmojis =
+    (await quickReactionEmojisStorage.getValue())?.join("\n") ?? "";
 
   await updateCacheMeta();
 });
@@ -91,6 +97,9 @@ const handleClickSave = async () => {
   await clientSecretStorage.setValue(state.clientSecret);
   await crucialMessageConditionsStorage.setValue(
     smartLineBreakSplit(state.crucialMessageConditions),
+  );
+  await quickReactionEmojisStorage.setValue(
+    smartLineBreakSplit(state.quickReactionEmojis),
   );
   showSuccessToast("設定が更新されました");
 };
@@ -124,6 +133,13 @@ const clearCache = async (
   await updateCacheMeta();
   showSuccessToast("キャッシュをクリアしました");
 };
+
+const emojis = computed(() => {
+  if (!state.quickReactionEmojis.trim()) {
+    return [];
+  }
+  return smartLineBreakSplit(state.quickReactionEmojis);
+});
 </script>
 
 <template>
@@ -132,6 +148,7 @@ const clearCache = async (
       <v-tabs v-model="state.tab" align-tabs="center">
         <v-tab value="auth">Auth</v-tab>
         <v-tab value="search">Search</v-tab>
+        <v-tab value="appearance">Appearance</v-tab>
         <v-tab value="cache">Cache</v-tab>
       </v-tabs>
 
@@ -173,6 +190,21 @@ const clearCache = async (
             label="重要メッセージの条件 (改行区切りで複数指定)"
             auto-grow
           />
+        </v-window-item>
+
+        <v-window-item value="appearance">
+          <v-textarea
+            v-model="state.quickReactionEmojis"
+            label="リアクションの絵文字 (改行区切りで複数指定)(ex: smile)"
+            auto-grow
+          />
+          <div class="d-flex ga-2">
+            <template v-for="emoji in emojis">
+              <v-btn variant="elevated" icon density="compact">
+                <Emoji :item="{ type: 'emoji', name: emoji }" />
+              </v-btn>
+            </template>
+          </div>
         </v-window-item>
 
         <v-window-item value="cache">

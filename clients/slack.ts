@@ -114,6 +114,24 @@ export async function postChatPostMessage<R extends { ok: boolean }>(
   });
 }
 
+export async function postReactionsAdd(args: {
+  channel: string;
+  name: string;
+  timestamp: string;
+}) {
+  const formData = new FormData();
+  formData.append("channel", args.channel);
+  formData.append("name", args.name);
+  formData.append("timestamp", args.timestamp);
+
+  return await postRequest<{
+    ok: boolean;
+  }>({
+    path: "/reactions.add",
+    formData,
+  });
+}
+
 export async function postFilesUpload(args: { channel?: string; file: File }) {
   const formData = new FormData();
   if (args.channel) {

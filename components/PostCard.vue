@@ -2,18 +2,25 @@
 import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
-import { usersByIdCache, usersByNameCache } from "@/global-cache";
+import { usersByIdCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
 import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
 import File from "./File.vue";
+import Emoji from "./blocks/Emoji.vue";
+import { quickReactionEmojisStorage } from "@/utils/storage";
 
-const props = defineProps<{
+interface Props {
   message: Message;
-}>();
+  reactionEmojis?: string[];
+}
+const props = withDefaults(defineProps<Props>(), {
+  reactionEmojis: () => [],
+});
 
 const emit = defineEmits<{
   "click:read": [message: Message];
+  "click:reaction": [message: Message, emoji: string];
 }>();
 
 const handleOpenBrowser = async () => {
@@ -40,6 +47,10 @@ const handleOpenSlack = async () => {
 
 const handleClickRead = () => {
   emit("click:read", props.message);
+};
+
+const handleClickEmojiReaction = (emoji: string) => {
+  emit("click:reaction", props.message, emoji);
 };
 
 const postUser = computed<User | null>(
@@ -123,7 +134,21 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <Attachement :attachment="at" class="mt-4 ml-4" />
           </template>
 
-          <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
+          <div class="d-flex text-grey-darken-1 ga-1 mt-3">
+            <div class="d-flex ga-2">
+              <template v-for="emoji in reactionEmojis">
+                <v-btn
+                  variant="elevated"
+                  icon
+                  density="compact"
+                  class="reaction-emoji-button"
+                  @click="handleClickEmojiReaction(emoji)"
+                >
+                  <Emoji :item="{ type: 'emoji', name: emoji }" />
+                </v-btn>
+              </template>
+            </div>
+            <v-spacer></v-spacer>
             <v-icon>mdi-clock</v-icon>
             <span>{{ ts2display(message.ts) }}</span>
           </div>
@@ -144,5 +169,12 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
 }
 .read-button:hover {
   background-color: rgba(144, 188, 144, 0.4);
+}
+
+.reaction-emoji-button {
+  opacity: 0.25;
+}
+.reaction-emoji-button:hover {
+  opacity: 1;
 }
 </style>

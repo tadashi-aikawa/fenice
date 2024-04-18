@@ -1,14 +1,25 @@
 <script setup lang="ts">
-import { unreadMessagesStorage } from "@/utils/storage";
+import {
+  quickReactionEmojisStorage,
+  unreadMessagesStorage,
+} from "@/utils/storage";
 import PostCard from "./PostCard.vue";
 import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
+import { postReactionsAdd } from "@/clients/slack";
+import { showInfoToast } from "@/utils/toast";
 
 const messages = ref<Message[]>([]);
+const reactionEmojis = ref<string[]>([]);
 onMounted(async () => {
   messages.value = await unreadMessagesStorage.getValue();
   unreadMessagesStorage.watch((newValue) => {
     messages.value = newValue;
+  });
+
+  reactionEmojis.value = await quickReactionEmojisStorage.getValue();
+  quickReactionEmojisStorage.watch((newValue) => {
+    reactionEmojis.value = newValue;
   });
 });
 
@@ -29,6 +40,24 @@ const markAllAsRead = async () => {
     await sleep(10);
   }
 };
+
+const reactAsEmoji = async (message: Message, emoji: string) => {
+  const error = (
+    await postReactionsAdd({
+      channel: message.channel.id,
+      name: emoji,
+      timestamp: message.ts,
+    })
+  )._err;
+  if (error) {
+    if (error.title === "already_reacted") {
+      return showInfoToast(`既に :${emoji}: でリアクション済です`);
+    }
+    return showErrorToast(error);
+  }
+
+  showSuccessToast(`:${emoji}: でリアクションしました`);
+};
 </script>
 
 <template>
@@ -40,6 +69,8 @@ const markAllAsRead = async () => {
           v-for="message in messages"
           :message="message"
           @click:read="markAsRead"
+          @click:reaction="reactAsEmoji"
+          :reaction-emojis="reactionEmojis"
         />
       </transition-group>
     </div>

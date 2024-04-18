@@ -25,3 +25,13 @@ export function showSuccessToast(message: string): Id {
     hideProgressBar: true,
   });
 }
+
+export function showInfoToast(message: string): Id {
+  return toast.info(message, {
+    autoClose: 3000,
+    transition: "bounce",
+    pauseOnFocusLoss: false,
+    hideProgressBar: true,
+    theme: "colored",
+  });
+}

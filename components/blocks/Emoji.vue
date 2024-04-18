@@ -9,9 +9,10 @@ const props = defineProps<{
 const emojiStr = computed(() =>
   String.fromCodePoint(parseInt(props.item.unicode!, 16)),
 );
+const emoji = computed(() => name2emoji(props.item.name));
 const emojiUrl = computed(() => {
   const resource = emojiCache[props.item.name];
-  if (resource.startsWith("alias:")) {
+  if (resource?.startsWith("alias:")) {
     return emojiCache[resource.replace("alias:", "")];
   }
 
@@ -23,7 +24,10 @@ const emojiUrl = computed(() => {
   <template v-if="item.unicode">
     <span style="font-size: 18px">{{ emojiStr }}</span>
   </template>
-  <template v-else>
+  <template v-else-if="emoji">
+    {{ emoji }}
+  </template>
+  <template v-else-if="emojiUrl">
     <img
       :src="emojiUrl"
       style="vertical-align: -3px; margin-left: 1px"
@@ -32,4 +36,5 @@ const emojiUrl = computed(() => {
       :alt="item.name"
     />
   </template>
+  <template v-else>??</template>
 </template>
