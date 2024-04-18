@@ -9,7 +9,14 @@ const props = defineProps<{
 const emojiStr = computed(() =>
   String.fromCodePoint(parseInt(props.item.unicode!, 16)),
 );
-const emojiUrl = computed(() => emojiCache[props.item.name]);
+const emojiUrl = computed(() => {
+  const resource = emojiCache[props.item.name];
+  if (resource.startsWith("alias:")) {
+    return emojiCache[resource.replace("alias:", "")];
+  }
+
+  return resource;
+});
 </script>
 
 <template>
