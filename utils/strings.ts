@@ -27,9 +27,14 @@ export function toDisplayChannelName(channel: Channel) {
 }
 
 export function name2emoji(name: string): string | undefined {
-  return emoji.get(name);
+  return emoji.get(name) ?? fallbackEmojiMap[name];
 }
 
 export function toBrowserUrl(permalink: string): string {
   return permalink.replace("/archives", "/messages");
 }
+
+// Feniceで対応できなかった絵文字を気合でmappingしていく
+const fallbackEmojiMap = {
+  cut_of_meat: "🥩",
+} as Record<string, string>;
