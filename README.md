@@ -32,6 +32,7 @@ bun dev
 ## リリースビルド
 
 ```console
+npm version 1.2.3
 bun zip
 ```
 
