@@ -89,13 +89,18 @@ const reactAsEmoji = async (message: Message, emoji: string) => {
 </template>
 
 <style scoped>
-.list-enter-active,
 .list-leave-active {
-  transition: all 0.2s ease;
+  transition: all 0.2s ease-in;
 }
-.list-enter-from,
 .list-leave-to {
   opacity: 0;
   transform: translatex(360px);
+}
+
+.list-enter-active {
+  transition: all 0.2s linear;
+}
+.list-enter-from {
+  opacity: 0;
 }
 </style>
