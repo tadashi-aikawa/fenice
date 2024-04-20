@@ -6,8 +6,6 @@ import {
 import PostCard from "./PostCard.vue";
 import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
-import { postReactionsAdd } from "@/clients/slack";
-import { showInfoToast } from "@/utils/toast";
 import { useCardActions } from "@/composables/CardActions";
 
 const messages = ref<Message[]>([]);

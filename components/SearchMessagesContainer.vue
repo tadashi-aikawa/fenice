@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { quickReactionEmojisStorage } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
-import { Message } from "@/clients/slack/models";
+import { Channel, Message } from "@/clients/slack/models";
 import { getSearchMessages, postReactionsAdd } from "@/clients/slack";
-import { showInfoToast } from "@/utils/toast";
 import SearchMessageQueryInput from "./SearchMessageQueryInput.vue";
 import Loading from "./Loading.vue";
 import { useCardActions } from "@/composables/CardActions";
 
-const query = ref("");
 const loading = ref(false);
 
 const messages = ref<Message[]>([]);
@@ -46,13 +44,13 @@ const hideMessage = (message: Message) => {
 <template>
   <div class="d-flex flex-column align-center pa-5">
     <SearchMessageQueryInput
-      v-model="query"
       @enter="search"
-      style="width: 675px"
+      style="width: 745px"
+      class="pr-5"
     />
     <div
-      class="pa-1 py-3"
-      style="width: 750px; height: calc(100vh - 180px); overflow-y: auto"
+      class="pa-1 mt-3 mb-1"
+      style="width: 750px; height: calc(100vh - 205px); overflow-y: auto"
     >
       <template v-if="loading">
         <Loading :loading="loading" message="メッセージを検索中です" />
