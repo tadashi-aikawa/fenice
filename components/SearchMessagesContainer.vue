@@ -52,6 +52,10 @@ const reactAsEmoji = async (message: Message, emoji: string) => {
 
   showSuccessToast(`:${emoji}: でリアクションしました`);
 };
+
+const hideMessage = (message: Message) => {
+  messages.value = messages.value.filter((x) => x.ts !== message.ts);
+};
 </script>
 
 <template>
@@ -75,8 +79,10 @@ const reactAsEmoji = async (message: Message, emoji: string) => {
             v-for="message in messages"
             :message="message"
             :reaction-emojis="reactionEmojis"
+            read-icon="mdi-eye-off"
             disable-unread
             @click:reaction="reactAsEmoji"
+            @click:read="hideMessage"
           />
         </transition-group>
       </template>
