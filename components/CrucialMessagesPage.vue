@@ -63,7 +63,7 @@ const reactAsEmoji = async (message: Message, emoji: string) => {
 <template>
   <div class="d-flex flex-column align-center pa-5">
     <div
-      class="pa-1 mt-3"
+      class="pa-1 py-3"
       style="width: 750px; height: calc(100vh - 125px); overflow-y: auto"
     >
       <transition-group name="list">

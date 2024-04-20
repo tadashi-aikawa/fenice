@@ -8,18 +8,14 @@ defineProps<{
 </script>
 
 <template>
-  <v-overlay
-    :model-value="loading"
-    class="align-center justify-center"
-    persistent
-  >
-    <div class="d-flex flex-column align-center" style="height: 135px">
-      <CharaLoading />
+  <div style="margin-top: 15px">
+    <div class="d-flex flex-column align-center" style="height: 125px">
+      <CharaLoading size="small" style="margin-top: 30px" />
     </div>
     <div class="d-flex flex-column align-center">
-      <span class="text-h6 text-grey-lighten-3 font-weight-bold">{{
+      <span class="text-subtitle-1 text-grey-lighten-1 font-weight-bold">{{
         message
       }}</span>
     </div>
-  </v-overlay>
+  </div>
 </template>

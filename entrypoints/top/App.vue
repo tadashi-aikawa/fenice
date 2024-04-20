@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Badge from "@/components/Badge.vue";
-import Loading from "@/components/Loading.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
 import ZenTimesPage from "@/components/ZenTimesPage.vue";
 import Settings from "@/entrypoints/settings/App.vue";
@@ -24,9 +23,12 @@ import {
   refreshAllUserCaches,
 } from "@/global-cache";
 import { RequestError } from "@/clients/slack/base";
+import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
 
 type Page = "zen-times" | "crucial-messages" | "settings";
 const page = ref<Page>("zen-times");
+const rightDrawer = ref<boolean>(false);
 
 // nullは未取得. 空文字はなし
 const accessToken = ref<string | null>(null);
@@ -251,8 +253,26 @@ const handleClickItem = ({ id }: { id: unknown }) => {
           <component :is="currentPage" />
         </KeepAlive>
       </v-main>
+
+      <v-btn
+        icon="mdi-comment-search"
+        size="x-large"
+        variant="tonal"
+        color="primary"
+        style="position: absolute; bottom: 15px; right: 15px"
+        @click="rightDrawer = !rightDrawer"
+      ></v-btn>
+
+      <v-navigation-drawer
+        v-model="rightDrawer"
+        temporary
+        location="end"
+        width="800px"
+      >
+        <SearchMessagesContainer />
+      </v-navigation-drawer>
     </v-layout>
 
-    <Loading :loading="loadingCache" :message="loadingCacheMessage" />
+    <LoadingOverlay :loading="loadingCache" :message="loadingCacheMessage" />
   </v-app>
 </template>

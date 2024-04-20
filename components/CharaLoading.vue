@@ -1,9 +1,38 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+interface Props {
+  size?: "small" | "medium";
+}
+const props = withDefaults(defineProps<Props>(), {
+  size: "medium",
+});
+
+const width = computed(() => {
+  switch (props.size) {
+    case "small":
+      return "85px";
+    case "medium":
+      return "125px";
+    default:
+      throw new ExhaustiveError(props.size);
+  }
+});
+
+const fontSize = computed(() => {
+  switch (props.size) {
+    case "small":
+      return "2rem";
+    case "medium":
+      return "4rem";
+    default:
+      throw new ExhaustiveError(props.size);
+  }
+});
+</script>
 
 <template>
   <div style="display: flex; align-items: center; gap: 16px">
     <div class="chara">
-      <img src="/icon/384.png" width="125px" />
+      <img src="/icon/384.png" :width="width" />
     </div>
     <p class="loading">
       <span>L</span>
@@ -26,7 +55,7 @@
 }
 
 .loading {
-  font-size: 4rem;
+  font-size: v-bind(fontSize);
   display: flex;
   justify-content: center;
   gap: 5px;

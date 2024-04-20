@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RequestError } from "@/clients/slack/base";
-import Loading from "./Loading.vue";
-
+import LoadingOverlay from "./LoadingOverlay.vue";
 const props = defineProps<{
   clientId: string;
   clientSecret: string;
@@ -69,5 +68,5 @@ const authenticate = async () => {
 
 <template>
   <v-btn color="primary" @click="authenticate">Slackと認証</v-btn>
-  <Loading :loading="authenticating" />
+  <LoadingOverlay :loading="authenticating" />
 </template>

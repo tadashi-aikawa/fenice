@@ -8,11 +8,11 @@ import Attachement from "./Attachement.vue";
 import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
 import File from "./File.vue";
 import Emoji from "./blocks/Emoji.vue";
-import { quickReactionEmojisStorage } from "@/utils/storage";
 
 interface Props {
   message: Message;
   reactionEmojis?: string[];
+  disableUnread?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   reactionEmojis: () => [],
@@ -65,17 +65,20 @@ const postUserImage = computed(
 
 const channel = computed(() => props.message.channel);
 const channelName = computed(() => toDisplayChannelName(channel.value));
+
+const cardWidth = computed(() => (props.disableUnread ? "725px" : "675px"));
 </script>
 
 <template>
   <v-card variant="elevated" max-width="720" class="mb-3" :elevation="2">
     <v-card-item class="ma-0 pa-0">
       <div class="d-flex">
-        <div class="read-button" @click="handleClickRead">
+        <div v-if="disableUnread" style="border-right: solid 1px #eee"></div>
+        <div v-else class="read-button" @click="handleClickRead">
           <v-icon size="large">mdi-check-circle-outline</v-icon>
         </div>
 
-        <div style="width: 675px" class="px-3 pt-1 pb-2">
+        <div :style="{ width: cardWidth }" class="px-3 pt-1 pb-2">
           <div class="d-flex align-center my-1 ga-2">
             <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
               <img :src="postUserImage" width="36px" height="36px" />
