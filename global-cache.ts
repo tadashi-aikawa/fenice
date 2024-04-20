@@ -122,6 +122,14 @@ export async function refreshEmojiCaches(): AsyncResult<
 
   return ok(res.emoji);
 }
+export function getEmojiUrl(name: string): string {
+  const resource = emojiCache[name];
+  if (resource?.startsWith("alias:")) {
+    return emojiCache[resource.replace("alias:", "")];
+  }
+
+  return resource;
+}
 
 // 初期化
 export async function initGlobalCaches() {

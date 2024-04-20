@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { EmojiItem } from "@/clients/slack/blockModels";
-import { emojiCache } from "@/global-cache";
+import { emojiCache, getEmojiUrl } from "@/global-cache";
 
 const props = defineProps<{
   item: EmojiItem;
@@ -11,12 +11,7 @@ const emojiStr = computed(() =>
 );
 const emoji = computed(() => name2emoji(props.item.name));
 const emojiUrl = computed(() => {
-  const resource = emojiCache[props.item.name];
-  if (resource?.startsWith("alias:")) {
-    return emojiCache[resource.replace("alias:", "")];
-  }
-
-  return resource;
+  return getEmojiUrl(props.item.name);
 });
 </script>
 

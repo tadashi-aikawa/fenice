@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
-import { emojiCache, usersByIdCache } from "@/global-cache";
+import { emojiCache, getEmojiUrl, usersByIdCache } from "@/global-cache";
 
 defineProps<{
   node: Node;
@@ -44,7 +44,7 @@ defineProps<{
     <span v-if="name2emoji(node.name)">{{ name2emoji(node.name) }}</span>
     <img
       v-else
-      :src="emojiCache[node.name]"
+      :src="getEmojiUrl(node.name)"
       style="vertical-align: -3px; margin-left: 1px"
       width="18px"
       height="18px"
