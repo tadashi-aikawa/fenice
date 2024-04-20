@@ -161,7 +161,7 @@ const handlePaste = async (e: ClipboardEvent) => {
       />
 
       <v-btn
-        :disabled="(!text && !files) || uploading || posting"
+        :disabled="(!text && files.length === 0) || uploading || posting"
         :loading="posting"
         style="width: 240px"
         class="mt-3"
