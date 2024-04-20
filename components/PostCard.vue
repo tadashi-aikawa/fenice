@@ -138,13 +138,16 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <Attachement :attachment="at" class="mt-4 ml-4" />
           </template>
 
-          <div class="d-flex text-grey-darken-1 ga-1 mt-3">
-            <div class="d-flex ga-2">
-              <template v-for="emoji in reactionEmojis">
+          <div class="d-flex align-center text-grey-darken-1 mt-3">
+            <v-slide-group style="max-width: 520px">
+              <v-slide-group-item>
                 <v-btn
+                  v-for="emoji in reactionEmojis"
+                  :key="emoji"
                   :variant="reactedEmojis.has(emoji) ? 'tonal' : 'elevated'"
                   icon
                   density="compact"
+                  class="mx-1"
                   :class="
                     reactedEmojis.has(emoji)
                       ? 'reaction-emoji-button__reacted'
@@ -154,8 +157,9 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                 >
                   <Emoji :item="{ type: 'emoji', name: emoji }" />
                 </v-btn>
-              </template>
-            </div>
+              </v-slide-group-item>
+            </v-slide-group>
+
             <v-spacer></v-spacer>
             <v-icon>mdi-clock</v-icon>
             <span>{{ ts2display(message.ts) }}</span>

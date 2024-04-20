@@ -197,8 +197,9 @@ const emojis = computed(() => {
             v-model="state.quickReactionEmojis"
             label="リアクションの絵文字 (改行区切りで複数指定)(ex: smile)"
             auto-grow
+            :max-rows="20"
           />
-          <div class="d-flex ga-2">
+          <div class="d-flex ga-2 flex-wrap">
             <template v-for="emoji in emojis">
               <v-btn variant="elevated" icon density="compact">
                 <Emoji :item="{ type: 'emoji', name: emoji }" />
