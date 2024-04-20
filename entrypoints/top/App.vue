@@ -221,7 +221,11 @@ const handleClickAddTab = () => {
 };
 const handleClickRemoveTab = (tab: number) => {
   if (tab === currentTab.value) {
-    moveNextTab();
+    const index = tabs.value.findIndex((x) => x === currentTab.value)!;
+    currentTab.value =
+      index === tabs.value.length - 1
+        ? tabs.value[index - 1]
+        : (currentTab.value = tabs.value[index + 1]);
   }
   tabs.value = tabs.value.filter((x) => x !== tab);
 };
