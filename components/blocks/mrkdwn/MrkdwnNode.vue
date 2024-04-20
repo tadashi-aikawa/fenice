@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
-import { emojiCache, getEmojiUrl, usersByIdCache } from "@/global-cache";
+import { getEmojiUrl, usersByIdCache } from "@/global-cache";
 
 defineProps<{
   node: Node;

@@ -25,10 +25,16 @@ import {
 import { RequestError } from "@/clients/slack/base";
 import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import { onKeyStroke } from "@vueuse/core";
+import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
 
 type Page = "zen-times" | "crucial-messages" | "settings";
 const page = ref<Page>("zen-times");
+
 const rightDrawer = ref<boolean>(false);
+let serialTabNo = 1;
+const tabs = ref<number[]>([1]);
+const currentTab = ref(1);
 
 // nullは未取得. 空文字はなし
 const accessToken = ref<string | null>(null);
@@ -188,11 +194,67 @@ browser.runtime.onMessage.addListener((message: { page: Page }) => {
 const handleClickItem = ({ id }: { id: unknown }) => {
   page.value = id as Page;
 };
+
+const movePreviousTab = () => {
+  const index = tabs.value.findIndex((x) => x === currentTab.value)!;
+  if (index === 0) {
+    currentTab.value = tabs.value.at(-1)!;
+    return;
+  }
+
+  currentTab.value = tabs.value[index - 1];
+};
+const moveNextTab = () => {
+  const index = tabs.value.findIndex((x) => x === currentTab.value)!;
+  if (index === tabs.value.length - 1) {
+    currentTab.value = tabs.value[0];
+    return;
+  }
+
+  currentTab.value = tabs.value[index + 1];
+};
+
+const handleClickAddTab = () => {
+  serialTabNo++;
+  tabs.value.push(serialTabNo);
+  currentTab.value = serialTabNo;
+};
+const handleClickRemoveTab = (tab: number) => {
+  if (tab === currentTab.value) {
+    moveNextTab();
+  }
+  tabs.value = tabs.value.filter((x) => x !== tab);
+};
+
+onKeyStroke("p", (e) => {
+  // Alt+P でトグル
+  if (hasModifierKeyPressedOnly(e, "alt")) {
+    rightDrawer.value = !rightDrawer.value;
+  }
+});
+onKeyStroke("Escape", (e) => {
+  // ESCで閉じる
+  if (!hasModifierKeyPressed(e)) {
+    rightDrawer.value = false;
+  }
+});
+onKeyStroke("8", (e) => {
+  if (hasModifierKeyPressedOnly(e, "alt")) {
+    movePreviousTab();
+    e.preventDefault();
+  }
+});
+onKeyStroke("9", (e) => {
+  if (hasModifierKeyPressedOnly(e, "alt")) {
+    moveNextTab();
+    e.preventDefault();
+  }
+});
 </script>
 
 <template>
   <v-app>
-    <v-layout @keyup.esc.exact="rightDrawer = false">
+    <v-layout>
       <v-navigation-drawer v-if="accessToken" expand-on-hover rail>
         <v-list>
           <v-list-item title="Fenice" subtitle="for ${user}">
@@ -261,7 +323,6 @@ const handleClickItem = ({ id }: { id: unknown }) => {
         color="primary"
         style="position: absolute; bottom: 15px; right: 15px"
         @click="rightDrawer = !rightDrawer"
-        accesskey="1"
       ></v-btn>
 
       <v-navigation-drawer
@@ -270,7 +331,37 @@ const handleClickItem = ({ id }: { id: unknown }) => {
         width="800px"
         temporary
       >
-        <SearchMessagesContainer />
+        <v-tabs v-model="currentTab" align-tabs="title">
+          <v-tab v-for="tab in tabs" :key="tab" :value="tab"
+            >{{ tab }}
+            <v-btn
+              v-if="tabs.length > 1"
+              icon="mdi-minus"
+              density="compact"
+              size="small"
+              style="position: absolute; right: 1px"
+              @click.stop="handleClickRemoveTab(tab)"
+            ></v-btn
+          ></v-tab>
+          <div class="d-flex align-end mb-1 ml-2">
+            <v-btn
+              icon="mdi-plus"
+              density="compact"
+              @click="handleClickAddTab"
+            ></v-btn>
+          </div>
+        </v-tabs>
+        <v-window v-model="currentTab">
+          <v-window-item
+            v-for="tab in tabs"
+            :key="tab"
+            :value="tab"
+            transition="none"
+            reverse-transition="none"
+          >
+            <SearchMessagesContainer />
+          </v-window-item>
+        </v-window>
       </v-navigation-drawer>
     </v-layout>
 

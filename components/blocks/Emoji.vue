@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { EmojiItem } from "@/clients/slack/blockModels";
-import { emojiCache, getEmojiUrl } from "@/global-cache";
+import { getEmojiUrl } from "@/global-cache";
 
 const props = defineProps<{
   item: EmojiItem;
