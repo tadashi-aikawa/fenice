@@ -261,6 +261,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
         color="primary"
         style="position: absolute; bottom: 15px; right: 15px"
         @click="rightDrawer = !rightDrawer"
+        accesskey="1"
       ></v-btn>
 
       <v-navigation-drawer
