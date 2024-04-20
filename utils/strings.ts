@@ -37,4 +37,7 @@ export function toBrowserUrl(permalink: string): string {
 // Feniceで対応できなかった絵文字を気合でmappingしていく
 const fallbackEmojiMap = {
   cut_of_meat: "🥩",
+  bow: "🙇",
+  "man-bowing": "🙇‍♂️",
+  "woman-bowing": "🙇‍♀️",
 } as Record<string, string>;
