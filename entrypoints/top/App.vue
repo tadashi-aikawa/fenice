@@ -27,6 +27,9 @@ import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { onKeyStroke } from "@vueuse/core";
 import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
+import * as pkg from "../../package.json";
+
+const version = pkg.version;
 
 type Page = "zen-times" | "crucial-messages" | "settings";
 const page = ref<Page>("zen-times");
@@ -261,7 +264,7 @@ onKeyStroke("9", (e) => {
     <v-layout>
       <v-navigation-drawer v-if="accessToken" expand-on-hover rail>
         <v-list>
-          <v-list-item title="Fenice" subtitle="for ${user}">
+          <v-list-item title="Fenice" :subtitle="`v${version}`">
             <template v-slot:prepend>
               <v-avatar>
                 <v-img alt="Fenice" src="/icon/384.png" />
