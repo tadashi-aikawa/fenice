@@ -10,14 +10,15 @@ export function useCardActions() {
         timestamp: message.ts,
       })
     )._err;
-    if (error) {
-      if (error.title === "already_reacted") {
-        return showInfoToast(`既に :${emoji}: でリアクション済です`);
-      }
-      return showErrorToast(error);
+    if (!error) {
+      return;
+    }
+    // リアクション済でも期待結果は変わらないのでスルー
+    if (error.title === "already_reacted") {
+      return;
     }
 
-    showSuccessToast(`:${emoji}: でリアクションしました`);
+    return showErrorToast(error);
   };
 
   return {

@@ -24,6 +24,8 @@ const emit = defineEmits<{
   "click:reaction": [message: Message, emoji: string];
 }>();
 
+const reactedEmojis = ref<Set<string>>(new Set());
+
 const handleOpenBrowser = async () => {
   const url = toBrowserUrl(props.message.permalink);
 
@@ -51,6 +53,7 @@ const handleClickRead = () => {
 };
 
 const handleClickEmojiReaction = (emoji: string) => {
+  reactedEmojis.value.add(emoji);
   emit("click:reaction", props.message, emoji);
 };
 
@@ -139,10 +142,14 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <div class="d-flex ga-2">
               <template v-for="emoji in reactionEmojis">
                 <v-btn
-                  variant="elevated"
+                  :variant="reactedEmojis.has(emoji) ? 'tonal' : 'elevated'"
                   icon
                   density="compact"
-                  class="reaction-emoji-button"
+                  :class="
+                    reactedEmojis.has(emoji)
+                      ? 'reaction-emoji-button__reacted'
+                      : 'reaction-emoji-button'
+                  "
                   @click="handleClickEmojiReaction(emoji)"
                 >
                   <Emoji :item="{ type: 'emoji', name: emoji }" />
@@ -176,6 +183,10 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
   opacity: 0.25;
 }
 .reaction-emoji-button:hover {
+  opacity: 1;
+}
+
+.reaction-emoji-button__reacted {
   opacity: 1;
 }
 </style>
