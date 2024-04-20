@@ -6,6 +6,7 @@ import { getSearchMessages, postReactionsAdd } from "@/clients/slack";
 import { showInfoToast } from "@/utils/toast";
 import SearchMessageQueryInput from "./SearchMessageQueryInput.vue";
 import Loading from "./Loading.vue";
+import { useCardActions } from "@/composables/CardActions";
 
 const query = ref("");
 const loading = ref(false);
@@ -35,23 +36,7 @@ const search = async (query: string) => {
   messages.value = res.messages.matches;
 };
 
-const reactAsEmoji = async (message: Message, emoji: string) => {
-  const error = (
-    await postReactionsAdd({
-      channel: message.channel.id,
-      name: emoji,
-      timestamp: message.ts,
-    })
-  )._err;
-  if (error) {
-    if (error.title === "already_reacted") {
-      return showInfoToast(`既に :${emoji}: でリアクション済です`);
-    }
-    return showErrorToast(error);
-  }
-
-  showSuccessToast(`:${emoji}: でリアクションしました`);
-};
+const { reactAsEmoji } = useCardActions();
 
 const hideMessage = (message: Message) => {
   messages.value = messages.value.filter((x) => x.ts !== message.ts);

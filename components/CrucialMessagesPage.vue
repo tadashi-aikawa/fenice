@@ -8,6 +8,7 @@ import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
 import { postReactionsAdd } from "@/clients/slack";
 import { showInfoToast } from "@/utils/toast";
+import { useCardActions } from "@/composables/CardActions";
 
 const messages = ref<Message[]>([]);
 const reactionEmojis = ref<string[]>([]);
@@ -41,23 +42,7 @@ const markAllAsRead = async () => {
   }
 };
 
-const reactAsEmoji = async (message: Message, emoji: string) => {
-  const error = (
-    await postReactionsAdd({
-      channel: message.channel.id,
-      name: emoji,
-      timestamp: message.ts,
-    })
-  )._err;
-  if (error) {
-    if (error.title === "already_reacted") {
-      return showInfoToast(`既に :${emoji}: でリアクション済です`);
-    }
-    return showErrorToast(error);
-  }
-
-  showSuccessToast(`:${emoji}: でリアクションしました`);
-};
+const { reactAsEmoji } = useCardActions();
 </script>
 
 <template>
