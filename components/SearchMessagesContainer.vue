@@ -63,7 +63,7 @@ const reactAsEmoji = async (message: Message, emoji: string) => {
     />
     <div
       class="pa-1 py-3"
-      style="width: 750px; height: calc(100vh - 125px); overflow-y: auto"
+      style="width: 750px; height: calc(100vh - 180px); overflow-y: auto"
     >
       <template v-if="loading">
         <Loading :loading="loading" message="メッセージを検索中です" />
