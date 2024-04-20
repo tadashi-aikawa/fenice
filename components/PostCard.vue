@@ -88,7 +88,13 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                   {{ postUsername }}
                 </div>
                 <div class="text-caption text-grey-darken-1">
-                  {{ channelName }}
+                  <span>{{ channelName }}</span>
+                  <span class="ml-3">
+                    <v-icon size="small">mdi-clock-outline</v-icon>
+                    <span style="margin-left: 2px">{{
+                      ts2display(message.ts)
+                    }}</span>
+                  </span>
                 </div>
               </div>
             </div>
@@ -139,7 +145,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
           </template>
 
           <div class="d-flex align-center text-grey-darken-1 mt-3">
-            <v-slide-group style="max-width: 520px">
+            <v-slide-group style="max-width: 640px">
               <v-slide-group-item>
                 <v-btn
                   v-for="emoji in reactionEmojis"
@@ -159,10 +165,6 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                 </v-btn>
               </v-slide-group-item>
             </v-slide-group>
-
-            <v-spacer></v-spacer>
-            <v-icon>mdi-clock</v-icon>
-            <span>{{ ts2display(message.ts) }}</span>
           </div>
         </div>
       </div>
