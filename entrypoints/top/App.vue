@@ -192,7 +192,7 @@ const handleClickItem = ({ id }: { id: unknown }) => {
 
 <template>
   <v-app>
-    <v-layout>
+    <v-layout @keyup.esc.exact="rightDrawer = false">
       <v-navigation-drawer v-if="accessToken" expand-on-hover rail>
         <v-list>
           <v-list-item title="Fenice" subtitle="for ${user}">
@@ -266,9 +266,9 @@ const handleClickItem = ({ id }: { id: unknown }) => {
 
       <v-navigation-drawer
         v-model="rightDrawer"
-        temporary
         location="end"
         width="800px"
+        temporary
       >
         <SearchMessagesContainer />
       </v-navigation-drawer>
