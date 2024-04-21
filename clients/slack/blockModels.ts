@@ -78,7 +78,7 @@ export interface RichTextQuoteItem {
 export interface RichTextPreformattedItem {
   type: "rich_text_preformatted";
   border: number;
-  elements: TextItem[];
+  elements: (TextItem | LinkItem)[];
 }
 
 //---

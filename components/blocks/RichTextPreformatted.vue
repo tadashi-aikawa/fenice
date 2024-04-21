@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RichTextPreformattedItem } from "@/clients/slack/blockModels";
 import Text from "./Text.vue";
+import Link from "./Link.vue";
 
 defineProps<{
   item: RichTextPreformattedItem;
@@ -11,6 +12,7 @@ defineProps<{
   <div class="pre">
     <template v-for="childItem in item.elements">
       <Text v-if="childItem.type === 'text'" :item="childItem" />
+      <Link v-if="childItem.type === 'link'" :item="childItem" />
     </template>
   </div>
 </template>
