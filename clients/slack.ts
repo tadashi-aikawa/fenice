@@ -175,3 +175,26 @@ export async function postFilesUpload(args: { channel?: string; file: File }) {
     formData,
   });
 }
+
+export async function postOauthV2Access(args: {
+  client_id: string;
+  client_secret: string;
+  grant_type: "refresh_token";
+  refresh_token: string;
+}) {
+  const formData = new FormData();
+  formData.append("client_id", args.client_id);
+  formData.append("client_secret", args.client_secret);
+  formData.append("grant_type", args.grant_type);
+  formData.append("refresh_token", args.refresh_token);
+
+  return await postRequest<{
+    ok: boolean;
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+  }>({
+    path: "/oauth.v2.access",
+    formData,
+  });
+}

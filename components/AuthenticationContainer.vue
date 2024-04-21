@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RequestError } from "@/clients/slack/base";
 import LoadingOverlay from "./LoadingOverlay.vue";
+import { refreshTokenStorage } from "@/utils/storage";
 const props = defineProps<{
   clientId: string;
   clientSecret: string;
@@ -43,7 +44,19 @@ const authenticate = async () => {
       body: `client_id=${props.clientId}&client_secret=${props.clientSecret}&code=${code}&redirect_uri=${redirectUri}`,
     });
 
-    const { ok, authed_user: user, error } = await res.json();
+    const {
+      ok,
+      authed_user: user,
+      error,
+    } = (await res.json()) as {
+      ok: boolean;
+      error: unknown | undefined;
+      authed_user: {
+        access_token: string;
+        refresh_token: string;
+        expires_in: number;
+      };
+    };
     if (!ok) {
       showErrorToast(`認証に失敗しました: ${error}`);
       authenticating.value = false;
@@ -52,6 +65,7 @@ const authenticate = async () => {
 
     model.value = user.access_token;
     accessTokenStorage.setValue(user.access_token ?? null);
+    refreshTokenStorage.setValue(user.refresh_token ?? null);
 
     await clientIdStorage.setValue(props.clientId);
     await clientSecretStorage.setValue(props.clientSecret);

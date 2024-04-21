@@ -2,6 +2,8 @@ import { Channel, Message, User, Usergroup } from "@/clients/slack/models";
 
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
+export const refreshTokenStorage =
+  storage.defineItem<string>("local:refreshToken");
 export const lastSelectedByChannelId = storage.defineItem<
   Record<string, number>
 >("local:lastSelectedByChannelId", { defaultValue: {} });
