@@ -18,11 +18,15 @@ onMounted(async () => {
   });
 });
 
-const search = async (query: string) => {
+const search = async (query: string, option: { bot: boolean }) => {
   loading.value = true;
 
   const [res, error] = (
-    await getSearchMessages({ query, sort: "timestamp" })
+    await getSearchMessages({
+      query,
+      sort: "timestamp",
+      search_exclude_bots: !option.bot,
+    })
   ).unwrap();
 
   loading.value = false;

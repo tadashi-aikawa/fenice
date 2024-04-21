@@ -6,6 +6,7 @@ export async function getSearchMessages(args: {
   query: string;
   sort: "timestamp";
   count?: number; // def: 20
+  search_exclude_bots?: boolean; // undocumented: https://stackoverflow.com/questions/61939243/exclude-bot-users-from-slack-search-api-results
 }) {
   return await getRequest<{
     ok: boolean;
