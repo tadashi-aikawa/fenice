@@ -9,9 +9,7 @@ import SearchMessageQueryInput, {
 import Loading from "./Loading.vue";
 import { useCardActions } from "@/composables/CardActions";
 import { ts2Divider } from "@/utils/date";
-import { Search } from "wxt/browser";
 
-const query = ref("");
 const searchCondition = ref<SearchCondition>({
   query: "",
   option: { bot: false },

@@ -3,9 +3,13 @@ import { usersByIdCache, usersByNameCache } from "@/global-cache";
 
 import * as emoji from "node-emoji";
 
-export function toDisplayChannelName(channel: Channel) {
+export function toDisplayChannelName(channel: Channel | undefined) {
+  if (!channel) {
+    return "❓Unknown channel";
+  }
+
   if (channel.is_im) {
-    return `📬 ${usersByIdCache[channel.name]?.real_name}`;
+    return `📬${usersByIdCache[channel.name]?.real_name}`;
   }
   if (channel.is_mpim) {
     const members = channel.name
@@ -14,16 +18,21 @@ export function toDisplayChannelName(channel: Channel) {
       .split("--")
       .map((x) => usersByNameCache[x]?.real_name)
       .join(", ");
-    return `🏠 ${members}`;
-  }
-  if (channel.is_private) {
-    return `🔒 ${channel.name}`;
-  }
-  if (channel.is_channel) {
-    return `#${channel.name}`;
+    return `🏠${members}`;
   }
 
-  return `🔒 ${channel.name}`;
+  let channelName = channel.name;
+  if (channel.is_private) {
+    channelName = `🔒${channelName}`;
+  }
+  if (channel.is_channel) {
+    channelName = `#${channelName}`;
+  }
+  if (channel.is_archived) {
+    channelName = `🧊${channelName}`;
+  }
+
+  return channelName;
 }
 
 export function name2emoji(name: string): string | undefined {

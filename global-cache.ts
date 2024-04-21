@@ -84,7 +84,6 @@ export async function refreshChannelsCaches(): AsyncResult<
       await getConversationsList({
         cursor: nextCursor,
         limit: 1000,
-        exclude_archived: true,
         types: "public_channel,private_channel",
       })
     ).unwrap();
