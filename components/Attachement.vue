@@ -5,6 +5,7 @@ import { ts2display } from "@/utils/date";
 import Block from "./blocks/Block.vue";
 import { toDisplayChannelName } from "@/utils/strings";
 import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
+import AttachmentField from "./blocks/AttachmentField.vue";
 
 defineProps<{
   attachment: Attachment;
@@ -79,6 +80,33 @@ const toChannelName = (id: string) =>
           <template v-for="block in attachment.blocks">
             <Block :item="block" style="font-size: 14px" />
           </template>
+        </div>
+      </v-sheet>
+    </template>
+
+    <template v-else-if="attachment.fields">
+      <v-sheet max-width="625" class="mb-3" :elevation="2">
+        <div
+          style="width: 625px"
+          class="d-flex flex-column px-3 pt-1 pb-2 ga-3"
+        >
+          <h4
+            v-if="attachment.title"
+            class="font-weight-bold"
+            style="font-size: 125%"
+          >
+            <a :href="attachment.title_link" target="_blank"
+              ><MrkdwnView :text="attachment.title"
+            /></a>
+          </h4>
+          <p v-if="attachment.text">
+            <MrkdwnView :text="attachment.text" />
+          </p>
+          <div class="d-flex flex-wrap">
+            <template v-for="field in attachment.fields">
+              <AttachmentField :item="field" style="font-size: 14px" />
+            </template>
+          </div>
         </div>
       </v-sheet>
     </template>

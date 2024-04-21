@@ -1,3 +1,9 @@
+export interface AttachmentField {
+  title: string;
+  value: string;
+  short: boolean;
+}
+
 export type Block = SectionBlock | ContextBlock | RichTextBlock;
 
 export interface SectionBlock {
