@@ -3,7 +3,8 @@ export type Block = SectionBlock | ContextBlock | RichTextBlock;
 export interface SectionBlock {
   block_id: string;
   type: "section";
-  text: SectionText;
+  text?: SectionText;
+  fields?: SectionText[];
 }
 
 export interface ContextBlock {

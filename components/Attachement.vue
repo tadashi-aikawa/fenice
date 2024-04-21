@@ -54,9 +54,11 @@ const toChannelName = (id: string) =>
 
               <v-divider class="pb-3" />
 
-              <template v-for="block in message_block.message.blocks">
-                <Block :item="block" style="font-size: 14px" />
-              </template>
+              <div class="d-flex flex-column ga-3">
+                <template v-for="block in message_block.message.blocks">
+                  <Block :item="block" style="font-size: 14px" />
+                </template>
+              </div>
 
               <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
                 <v-icon>mdi-clock</v-icon>
@@ -70,7 +72,10 @@ const toChannelName = (id: string) =>
 
     <template v-else-if="attachment.blocks">
       <v-sheet max-width="625" class="mb-3" :elevation="2">
-        <div style="width: 625px" class="px-3 pt-1 pb-2">
+        <div
+          style="width: 625px"
+          class="d-flex flex-column px-3 pt-1 pb-2 ga-3"
+        >
           <template v-for="block in attachment.blocks">
             <Block :item="block" style="font-size: 14px" />
           </template>

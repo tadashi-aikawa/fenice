@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { SectionBlock } from "@/clients/slack/blockModels";
-import MrkdwnView from "./mrkdwn/MrkdwnView.vue";
+import SectionText from "./SectionText.vue";
 
 defineProps<{
   item: SectionBlock;
@@ -9,11 +9,13 @@ defineProps<{
 
 <template>
   <div>
-    <template v-if="item.text.type === 'plain_text'">
-      {{ item.text.text }}
+    <template v-if="item.text">
+      <SectionText :item="item.text" />
     </template>
-    <template v-else-if="item.text.type === 'mrkdwn'">
-      <MrkdwnView :text="item.text.text" />
+    <template v-if="item.fields">
+      <div class="d-flex ga-8">
+        <SectionText v-for="f in item.fields" :item="f" />
+      </div>
     </template>
   </div>
 </template>
