@@ -43,13 +43,14 @@ defineProps<{
   <template v-else-if="node.type === NodeType.Emoji">
     <span v-if="name2emoji(node.name)">{{ name2emoji(node.name) }}</span>
     <img
-      v-else
+      v-else-if="getEmojiUrl(node.name)"
       :src="getEmojiUrl(node.name)"
       style="vertical-align: -3px; margin-left: 1px"
       width="18px"
       height="18px"
       :alt="node.name"
     />
+    <span v-else>:{{ node.name }}:</span>
   </template>
 
   <template v-else-if="node.type === NodeType.PreText">
