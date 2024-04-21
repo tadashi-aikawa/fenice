@@ -11,7 +11,10 @@ function toJapaneseDayOfWeek(dateTime: DateTime): string {
   return "??";
 }
 
-export function ts2display(ts: string): string {
+export function ts2display(
+  ts: string,
+  option?: { onlyDate?: boolean },
+): string {
   const timestamp = Number(ts);
 
   const now = DateTime.now();
@@ -20,12 +23,38 @@ export function ts2display(ts: string): string {
   const dow = toJapaneseDayOfWeek(posted);
 
   if (posted.equals(now, true)) {
-    return `今日 ${posted.displayTimeWithoutSeconds}`;
+    return option?.onlyDate
+      ? "今日"
+      : `今日 ${posted.displayTimeWithoutSeconds}`;
   }
 
   if (posted.diffDays(now) === -1) {
-    return `昨日 ${posted.displayTimeWithoutSeconds}`;
+    return option?.onlyDate
+      ? "昨日"
+      : `昨日 ${posted.displayTimeWithoutSeconds}`;
   }
 
-  return `${posted.displayDate.replaceAll("-", "/")}(${dow}) ${posted.displayTimeWithoutSeconds}`;
+  return option?.onlyDate
+    ? `${posted.displayDate.replaceAll("-", "/")}(${dow})`
+    : `${posted.displayDate.replaceAll("-", "/")}(${dow}) ${posted.displayTimeWithoutSeconds}`;
+}
+
+export function ts2Divider(
+  ts: string,
+  preTs: string | undefined,
+): string | null {
+  const timestamp = Number(ts);
+  const dt = DateTime.of(timestamp);
+
+  const preTimestamp = preTs ? Number(preTs) : undefined;
+  if (!preTimestamp) {
+    return ts2display(ts, { onlyDate: true });
+  }
+
+  const preDt = DateTime.of(preTimestamp);
+  if (preDt.day !== dt.day) {
+    return ts2display(ts, { onlyDate: true });
+  }
+
+  return null;
 }

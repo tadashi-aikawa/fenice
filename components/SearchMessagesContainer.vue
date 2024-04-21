@@ -6,6 +6,7 @@ import { getSearchMessages, postReactionsAdd } from "@/clients/slack";
 import SearchMessageQueryInput from "./SearchMessageQueryInput.vue";
 import Loading from "./Loading.vue";
 import { useCardActions } from "@/composables/CardActions";
+import { ts2Divider } from "@/utils/date";
 
 const loading = ref(false);
 
@@ -61,16 +62,29 @@ const hideMessage = (message: Message) => {
       </template>
       <template v-else>
         <transition-group name="list">
-          <PostCard
-            :key="message.ts"
-            v-for="message in messages"
-            :message="message"
-            :reaction-emojis="reactionEmojis"
-            read-icon="mdi-eye-off"
-            disable-unread
-            @click:reaction="reactAsEmoji"
-            @click:read="hideMessage"
-          />
+          <template :key="message.ts" v-for="(message, i) in messages">
+            <div
+              v-if="ts2Divider(message.ts, messages[i - 1]?.ts)"
+              class="d-flex align-center my-4 ga-2"
+            >
+              <v-divider />
+              <div
+                class="text-caption text-grey-darken-2 font-weight-bold"
+                style="white-space: nowrap"
+              >
+                {{ ts2Divider(message.ts, messages[i - 1]?.ts) }}
+              </div>
+              <v-divider />
+            </div>
+            <PostCard
+              :message="message"
+              :reaction-emojis="reactionEmojis"
+              read-icon="mdi-eye-off"
+              disable-unread
+              @click:reaction="reactAsEmoji"
+              @click:read="hideMessage"
+            />
+          </template>
         </transition-group>
       </template>
     </div>
