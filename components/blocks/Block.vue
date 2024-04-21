@@ -14,10 +14,10 @@ defineProps<{
     <template v-if="item.type === 'section'">
       <SectionBlock :item="item" />
     </template>
-    <template v-if="item.type === 'context'">
+    <template v-else-if="item.type === 'context'">
       <ContextBlock :item="item" />
     </template>
-    <template v-if="item.type === 'rich_text'">
+    <template v-else-if="item.type === 'rich_text'">
       <RichTextBlock :item="item" />
     </template>
     <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
