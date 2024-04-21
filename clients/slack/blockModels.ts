@@ -12,7 +12,7 @@ export interface AttachmentMessageBlock {
   ts: string;
 }
 
-export type Block = SectionBlock | ContextBlock | RichTextBlock;
+export type Block = SectionBlock | ContextBlock | RichTextBlock | ActionsBlock;
 
 export interface SectionBlock {
   block_id: string;
@@ -36,6 +36,13 @@ export interface RichTextBlock {
     | RichTextQuoteItem
     | RichTextPreformattedItem
   )[];
+}
+
+export interface ActionsBlock {
+  block_id: string;
+  type: "actions";
+  // XXX: 今のところ対応予定はないのでelementsは適当
+  elements: unknown[];
 }
 
 //---
