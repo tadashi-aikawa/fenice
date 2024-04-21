@@ -3,6 +3,11 @@ const query = defineModel("query", { default: "" });
 const channel = defineModel("channel", { default: "" });
 const channels = ref<string[]>([]);
 
+export type SearchCondition = {
+  query: string;
+  option: { bot: boolean };
+};
+
 type SearchFlg = "bot";
 const flags = ref<SearchFlg[]>([]);
 
@@ -16,19 +21,34 @@ onMounted(async () => {
 });
 
 const emit = defineEmits<{
-  enter: [query: string, option: { bot: boolean }];
+  search: [condition: SearchCondition];
+  "update:condition": [condition: SearchCondition];
 }>();
 
-const customFilter = (value: string, query: string) =>
-  query.split(" ").every((q) => value.includes(q));
-
-const handleSearch = () => {
+const searchCondition = computed(() => {
   let q = query.value;
   if (channel.value) {
     q += ` in:#${channel.value}`;
   }
 
-  emit("enter", q, { bot: flags.value.includes("bot") });
+  return {
+    query: q,
+    option: { bot: flags.value.includes("bot") },
+  };
+});
+watch(
+  () => searchCondition.value,
+  (cond) => {
+    emit("update:condition", cond);
+  },
+  { immediate: true },
+);
+
+const customFilter = (value: string, query: string) =>
+  query.split(" ").every((q) => value.includes(q));
+
+const handleSearch = () => {
+  emit("search", searchCondition.value);
 };
 </script>
 

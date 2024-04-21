@@ -3,14 +3,26 @@ import { quickReactionEmojisStorage } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
 import { Channel, Message } from "@/clients/slack/models";
 import { getSearchMessages, postReactionsAdd } from "@/clients/slack";
-import SearchMessageQueryInput from "./SearchMessageQueryInput.vue";
+import SearchMessageQueryInput, {
+  SearchCondition,
+} from "./SearchMessageQueryInput.vue";
 import Loading from "./Loading.vue";
 import { useCardActions } from "@/composables/CardActions";
 import { ts2Divider } from "@/utils/date";
+import { Search } from "wxt/browser";
+
+const query = ref("");
+const searchCondition = ref<SearchCondition>({
+  query: "",
+  option: { bot: false },
+});
 
 const loading = ref(false);
-
 const messages = ref<Message[]>([]);
+
+const loadingPaging = ref(false);
+const nextCursor = ref<string>("");
+
 const reactionEmojis = ref<string[]>([]);
 onMounted(async () => {
   reactionEmojis.value = await quickReactionEmojisStorage.getValue();
@@ -19,14 +31,15 @@ onMounted(async () => {
   });
 });
 
-const search = async (query: string, option: { bot: boolean }) => {
+const search = async (cond: SearchCondition) => {
   loading.value = true;
 
   const [res, error] = (
     await getSearchMessages({
-      query,
+      query: cond.query,
       sort: "timestamp",
-      search_exclude_bots: !option.bot,
+      search_exclude_bots: !cond.option.bot,
+      cursor: "*",
     })
   ).unwrap();
 
@@ -36,7 +49,31 @@ const search = async (query: string, option: { bot: boolean }) => {
     return showErrorToast(error);
   }
 
+  nextCursor.value = res.messages.paging.next_cursor;
   messages.value = res.messages.matches;
+};
+
+const searchPaging = async () => {
+  const cond = searchCondition.value;
+  loadingPaging.value = true;
+
+  const [res, error] = (
+    await getSearchMessages({
+      query: cond.query,
+      sort: "timestamp",
+      search_exclude_bots: !cond.option.bot,
+      cursor: nextCursor.value,
+    })
+  ).unwrap();
+
+  loadingPaging.value = false;
+
+  if (error) {
+    return showErrorToast(error);
+  }
+
+  nextCursor.value = res.messages.paging.next_cursor;
+  messages.value = messages.value.concat(res.messages.matches);
 };
 
 const { reactAsEmoji } = useCardActions();
@@ -44,12 +81,17 @@ const { reactAsEmoji } = useCardActions();
 const hideMessage = (message: Message) => {
   messages.value = messages.value.filter((x) => x.ts !== message.ts);
 };
+
+const handleUpdateSearchCondition = (cond: SearchCondition) => {
+  searchCondition.value = cond;
+};
 </script>
 
 <template>
   <div class="d-flex flex-column align-center pa-5">
     <SearchMessageQueryInput
-      @enter="search"
+      @search="search"
+      @update:condition="handleUpdateSearchCondition"
       style="width: 745px"
       class="pr-5"
     />
@@ -86,6 +128,15 @@ const hideMessage = (message: Message) => {
             />
           </template>
         </transition-group>
+        <v-btn
+          v-if="nextCursor !== ''"
+          :loading="loadingPaging"
+          style="width: 100%"
+          color="primary"
+          variant="tonal"
+          @click="searchPaging"
+          >次の20件を検索する</v-btn
+        >
       </template>
     </div>
   </div>

@@ -2,9 +2,12 @@ import { AsyncResult } from "owlelia";
 import { RequestError, getRequest, postRequest } from "./slack/base";
 import { PostBlock, Channel, Message, User, Usergroup } from "./slack/models";
 
-export async function getSearchMessages(args: {
+type HasString<C> = C extends string ? true : false;
+
+export async function getSearchMessages<C extends string | undefined>(args: {
   query: string;
   sort: "timestamp";
+  cursor?: C;
   count?: number; // def: 20
   search_exclude_bots?: boolean; // undocumented: https://stackoverflow.com/questions/61939243/exclude-bot-users-from-slack-search-api-results
 }) {
@@ -13,12 +16,18 @@ export async function getSearchMessages(args: {
     query: string;
     messages: {
       total: number;
-      paging: {
-        count: number;
-        total: number;
-        page: number; // 現在ページ
-        pages: number; // ページ総数
-      };
+      paging: HasString<C> extends true
+        ? {
+            count: number;
+            total: number;
+            next_cursor: string | ""; // 空文字はなしの意味
+          }
+        : {
+            count: number;
+            total: number;
+            page: number; // 現在ページ
+            pages: number; // ページ総数
+          };
       matches: Message[];
     };
   }>({
