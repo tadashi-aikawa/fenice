@@ -18,6 +18,10 @@ defineProps<{
     <template v-else-if="['mp4'].includes(file.filetype)">
       <video muted controls :src="file.url_private" style="max-width: 600px" />
     </template>
+    <template v-else-if="['zip'].includes(file.filetype)">
+      <v-icon>mdi-zip-box-outline</v-icon>
+      <a :href="file.url_private">{{ file.name }}</a>
+    </template>
     <template v-else>
       <b>今はFeniceでサポートしていない形式です</b>
     </template>
