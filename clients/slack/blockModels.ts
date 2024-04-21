@@ -4,6 +4,14 @@ export interface AttachmentField {
   short: boolean;
 }
 
+export interface AttachmentMessageBlock {
+  channel: string;
+  message: {
+    blocks: Block[];
+  };
+  ts: string;
+}
+
 export type Block = SectionBlock | ContextBlock | RichTextBlock;
 
 export interface SectionBlock {

@@ -1,4 +1,4 @@
-import { AttachmentField, Block } from "./blockModels";
+import { AttachmentField, AttachmentMessageBlock, Block } from "./blockModels";
 
 // TODO: Blockと統合したい。。
 export type PostBlock = SectionBlock | ImageBlock | ContextBlock | DividerBlock;
@@ -131,12 +131,6 @@ export interface Attachment {
   service_icon?: string;
   service_name?: string;
   blocks?: Block[];
-  message_blocks?: {
-    channel: string;
-    message: {
-      blocks: Block[];
-    };
-    ts: string;
-  }[];
+  message_blocks?: AttachmentMessageBlock[];
   fields?: AttachmentField[];
 }

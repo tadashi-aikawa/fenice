@@ -18,7 +18,7 @@ defineProps<{
         :item="childItem"
       />
       <RichTextQuote
-        v-if="childItem.type === 'rich_text_quote'"
+        v-else-if="childItem.type === 'rich_text_quote'"
         :item="childItem"
       />
       <RichTextList
