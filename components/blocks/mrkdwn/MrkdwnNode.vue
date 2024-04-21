@@ -3,6 +3,7 @@ import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
 import { getEmojiUrl, usersByIdCache } from "@/global-cache";
 
+// XXX: node.text.trimStart() は 必ず先頭に入る改行の削除するために使っている
 defineProps<{
   node: Node;
 }>();
@@ -54,7 +55,9 @@ defineProps<{
   </template>
 
   <template v-else-if="node.type === NodeType.PreText">
-    <div class="pre">{{ node.text }}</div>
+    <div class="pre">
+      {{ node.text.trimStart() }}
+    </div>
   </template>
 
   <template v-else-if="node.type === NodeType.Code">

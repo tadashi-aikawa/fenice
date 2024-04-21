@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <div>
+  <div class="mt-4">
     <img :src="item.image_url" style="max-width: 600px" />
   </div>
 </template>
