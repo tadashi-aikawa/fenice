@@ -31,8 +31,17 @@ const channelName = computed(() =>
               <div>
                 {{ authorName }}
               </div>
-              <div class="text-caption text-grey-darken-1">
-                {{ channelName }}
+              <div class="d-flex align-center text-caption text-grey-darken-1">
+                <span>{{ channelName }}</span>
+                <v-icon
+                  size="small"
+                  class="ml-3"
+                  style="font-size: 120%; margin-top: 2px"
+                  >mdi-clock-outline</v-icon
+                >
+                <span style="font-size: 90%; margin-left: 2px; height: 18px">{{
+                  ts2display(messageBlock.ts)
+                }}</span>
               </div>
             </div>
           </div>
@@ -52,11 +61,6 @@ const channelName = computed(() =>
           <template v-for="block in messageBlock.message.blocks">
             <Block :item="block" style="font-size: 14px" />
           </template>
-        </div>
-
-        <div class="d-flex justify-end text-grey-darken-1 ga-1 mt-3">
-          <v-icon>mdi-clock</v-icon>
-          <span>{{ ts2display(messageBlock.ts) }}</span>
         </div>
       </div>
     </div>
