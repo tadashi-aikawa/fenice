@@ -88,15 +88,19 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                   {{ postUsername }}
                 </div>
                 <div
-                  class="d-flex align-center text-caption text-grey-darken-1 ga-2"
+                  class="d-flex align-center text-caption text-grey-darken-1"
                 >
                   <span>{{ channelName }}</span>
-                  <div class="d-inline-flex align-center">
-                    <v-icon size="small">mdi-clock-outline</v-icon>
-                    <span style="margin-left: 2px">{{
-                      ts2display(message.ts)
-                    }}</span>
-                  </div>
+                  <v-icon
+                    size="small"
+                    class="ml-3"
+                    style="font-size: 120%; margin-top: 2px"
+                    >mdi-clock-outline</v-icon
+                  >
+                  <span
+                    style="font-size: 90%; margin-left: 2px; height: 18px"
+                    >{{ ts2display(message.ts) }}</span
+                  >
                 </div>
               </div>
             </div>
