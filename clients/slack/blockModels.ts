@@ -12,7 +12,13 @@ export interface AttachmentMessageBlock {
   ts: string;
 }
 
-export type Block = SectionBlock | ContextBlock | RichTextBlock | ActionsBlock;
+export type Block =
+  | SectionBlock
+  | ContextBlock
+  | RichTextBlock
+  | ActionsBlock
+  | ImageBlock
+  | DividerBlock;
 
 export interface SectionBlock {
   block_id: string;
@@ -43,6 +49,20 @@ export interface ActionsBlock {
   type: "actions";
   // XXX: 今のところ対応予定はないのでelementsは適当
   elements: unknown[];
+}
+
+export interface ImageBlock {
+  block_id: string;
+  type: "image";
+  image_url: string;
+  alt_text: string;
+  image_width: number;
+  image_height: number;
+}
+
+export interface DividerBlock {
+  block_id: string;
+  type: "divider";
 }
 
 //---
