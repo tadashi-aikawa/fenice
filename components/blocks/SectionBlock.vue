@@ -12,10 +12,11 @@ defineProps<{
     <template v-if="item.text">
       <SectionText :item="item.text" />
     </template>
-    <template v-if="item.fields">
+    <template v-else-if="item.fields">
       <div class="d-flex ga-8">
         <SectionText v-for="f in item.fields" :item="f" />
       </div>
     </template>
+    <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
   </div>
 </template>

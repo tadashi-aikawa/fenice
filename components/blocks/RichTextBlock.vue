@@ -29,6 +29,7 @@ defineProps<{
         v-else-if="childItem.type === 'rich_text_preformatted'"
         :item="childItem"
       />
+      <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
     </template>
   </div>
 </template>

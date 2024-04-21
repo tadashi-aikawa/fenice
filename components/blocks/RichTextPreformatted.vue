@@ -13,6 +13,7 @@ defineProps<{
     <template v-for="childItem in item.elements">
       <Text v-if="childItem.type === 'text'" :item="childItem" />
       <Link v-if="childItem.type === 'link'" :item="childItem" />
+      <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
     </template>
   </div>
 </template>

@@ -20,5 +20,6 @@ defineProps<{
     <template v-if="item.type === 'rich_text'">
       <RichTextBlock :item="item" />
     </template>
+    <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
   </div>
 </template>

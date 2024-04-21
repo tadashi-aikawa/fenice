@@ -19,6 +19,7 @@ defineProps<{
       <User v-else-if="childItem.type === 'user'" :item="childItem" />
       <Usergroup v-else-if="childItem.type === 'usergroup'" :item="childItem" />
       <Emoji v-else-if="childItem.type === 'emoji'" :item="childItem" />
+      <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
     </template>
   </div>
 </template>

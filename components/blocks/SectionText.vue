@@ -15,5 +15,6 @@ defineProps<{
     <template v-else-if="item.type === 'mrkdwn'">
       <MrkdwnView :text="item.text" />
     </template>
+    <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
   </div>
 </template>

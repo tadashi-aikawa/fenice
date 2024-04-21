@@ -18,6 +18,7 @@ defineProps<{
           <MrkdwnView :text="el.text" />
         </span>
       </template>
+      <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
     </template>
   </div>
 </template>

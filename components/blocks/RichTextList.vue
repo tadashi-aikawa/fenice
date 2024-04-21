@@ -15,6 +15,9 @@ defineProps<{
           v-if="childItem.type === 'rich_text_section'"
           :item="childItem"
         />
+        <template v-else>
+          <b>今はFeniceでサポートしていない形式です</b></template
+        >
       </li>
     </template>
   </ul>
