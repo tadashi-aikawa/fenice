@@ -71,6 +71,7 @@ async function refreshTokens() {
     return;
   }
 
+  console.debug(res);
   await accessTokenStorage.setValue(res.access_token);
   await refreshTokenStorage.setValue(res.refresh_token);
 }
