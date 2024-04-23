@@ -52,7 +52,6 @@ const postMessage = async () => {
     }));
 
   const _dest = dest.value!;
-  console.log(_dest);
   const res = await postChatPostMessage({
     channel: dest2channel(_dest).id,
     thread_ts: !isChannel(_dest) ? _dest.ts : undefined,
