@@ -102,12 +102,26 @@ export interface RichTextListItem {
 
 export interface RichTextSectionItem {
   type: "rich_text_section";
-  elements: (TextItem | LinkItem | UserItem | UsergroupItem | EmojiItem)[];
+  elements: (
+    | TextItem
+    | LinkItem
+    | UserItem
+    | UsergroupItem
+    | EmojiItem
+    | BroadcastItem
+  )[];
 }
 
 export interface RichTextQuoteItem {
   type: "rich_text_quote";
-  elements: (TextItem | LinkItem | UserItem | UsergroupItem | EmojiItem)[];
+  elements: (
+    | TextItem
+    | LinkItem
+    | UserItem
+    | UsergroupItem
+    | EmojiItem
+    | BroadcastItem
+  )[];
 }
 
 export interface RichTextPreformattedItem {
@@ -144,6 +158,10 @@ export interface UserItem {
 export interface UsergroupItem {
   type: "usergroup";
   usergroup_id: string;
+}
+export interface BroadcastItem {
+  type: "broadcast";
+  range: "channel" | "here";
 }
 export interface EmojiItem {
   type: "emoji";

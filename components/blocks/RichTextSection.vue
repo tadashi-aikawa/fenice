@@ -5,6 +5,7 @@ import Link from "./Link.vue";
 import User from "./User.vue";
 import Emoji from "./Emoji.vue";
 import Usergroup from "./Usergroup.vue";
+import Broadcast from "./Broadcast.vue";
 
 defineProps<{
   item: RichTextSectionItem;
@@ -17,6 +18,7 @@ defineProps<{
     <Link v-else-if="childItem.type === 'link'" :item="childItem" />
     <User v-else-if="childItem.type === 'user'" :item="childItem" />
     <Usergroup v-else-if="childItem.type === 'usergroup'" :item="childItem" />
+    <Broadcast v-else-if="childItem.type === 'broadcast'" :item="childItem" />
     <Emoji v-else-if="childItem.type === 'emoji'" :item="childItem" />
     <template v-else> <b>今はFeniceでサポートしていない形式です</b></template>
   </template>
