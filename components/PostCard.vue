@@ -2,12 +2,13 @@
 import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
-import { channelsByIdCache, usersByIdCache } from "@/global-cache";
+import { usersByIdCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
 import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
 import File from "./File.vue";
 import Emoji from "./blocks/Emoji.vue";
+import { lockOnMessageStorage } from "@/utils/storage";
 
 interface Props {
   message: Message;
@@ -55,6 +56,11 @@ const handleClickRead = () => {
 const handleClickEmojiReaction = (emoji: string) => {
   reactedEmojis.value.add(emoji);
   emit("click:reaction", props.message, emoji);
+};
+
+const handleLockOn = async () => {
+  await lockOnMessageStorage.setValue(props.message);
+  showSuccessToast("スレッドロックオンに成功しました");
 };
 
 const postUser = computed<User | null>(
@@ -105,21 +111,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               </div>
             </div>
             <v-spacer />
-            <v-btn
-              icon="mdi-google-chrome"
-              @click="handleOpenBrowser"
-              variant="tonal"
-              density="compact"
-              style="color: goldenrod"
-            />
-            <v-btn
-              icon="mdi-slack"
-              @click="handleOpenSlack"
-              variant="tonal"
-              density="compact"
-              style="color: goldenrod"
-            />
-            <v-menu location="end">
+            <v-menu location="end" :close-on-content-click="false">
               <template v-slot:activator="{ props }">
                 <v-btn
                   icon="mdi-code-json"
@@ -134,6 +126,27 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                 style="width: 570px; white-space: pre-wrap"
               />
             </v-menu>
+            <v-btn
+              icon="mdi-google-chrome"
+              @click="handleOpenBrowser"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
+            <v-btn
+              icon="mdi-slack"
+              @click="handleOpenSlack"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
+            <v-btn
+              icon="mdi-target-variant"
+              @click="handleLockOn"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
           </div>
 
           <v-divider class="pb-3" />

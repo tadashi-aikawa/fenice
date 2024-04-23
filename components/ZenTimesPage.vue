@@ -1,12 +1,19 @@
 <script lang="ts" setup>
 import { showSuccessToast } from "@/utils/toast";
-import { Resource, isImageResource, isVideoResource } from "@/models";
+import {
+  Dest,
+  Resource,
+  dest2channel,
+  isChannel,
+  isImageResource,
+  isVideoResource,
+} from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { Channel, ImageBlock, SectionBlock } from "@/clients/slack/models";
+import { ImageBlock, SectionBlock } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
 
-const channel = ref<Channel | null>(null);
+const dest = ref<Dest | null>(null);
 const text = ref("");
 const files = ref<Resource[]>([]);
 
@@ -44,8 +51,11 @@ const postMessage = async () => {
       },
     }));
 
+  const _dest = dest.value!;
+  console.log(_dest);
   const res = await postChatPostMessage({
-    channel: channel.value!.id,
+    channel: dest2channel(_dest).id,
+    thread_ts: !isChannel(_dest) ? _dest.ts : undefined,
     blocks: [
       ...sectionBlocks,
       ...imageBlocks,
@@ -80,7 +90,7 @@ const postMessage = async () => {
 
   text.value = "";
   files.value = [];
-  showSuccessToast(`channelに投稿しました`);
+  showSuccessToast(`投稿に成功しました`);
 };
 
 const handlePaste = async (e: ClipboardEvent) => {
@@ -108,9 +118,10 @@ const handlePaste = async (e: ClipboardEvent) => {
   files.value = [{ type: fileType, blobUrl: URL.createObjectURL(file) }];
 
   uploading.value = true;
+  const _dest = dest.value!;
   const [res, err] = (
     await postFilesUpload({
-      channel: channel.value!.id,
+      channel: dest2channel(_dest).id,
       file,
     })
   ).unwrap();
@@ -137,9 +148,9 @@ const handlePaste = async (e: ClipboardEvent) => {
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
-    <FavoriteChannelToggle v-model="channel" />
+    <FavoriteChannelToggle v-model="dest" />
     <v-card
-      v-if="channel"
+      v-if="dest"
       :elevation="4"
       class="d-flex flex-column align-center pa-5"
     >

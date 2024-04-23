@@ -18,6 +18,10 @@ export const selectedChannelIdsStorage = storage.defineItem<string[]>(
   "local:selectedChannelIds",
   { defaultValue: [] },
 );
+export const lockOnMessageStorage = storage.defineItem<Message | null>(
+  "local:lockOnMessage",
+  { defaultValue: null },
+);
 
 // Settings
 export const clientIdStorage = storage.defineItem<string>("local:clientId");

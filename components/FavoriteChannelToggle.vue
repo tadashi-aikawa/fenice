@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import { getUsersConversations } from "@/clients/slack";
-import { Channel } from "@/clients/slack/models";
-import { selectedChannelIdsStorage } from "@/utils/storage";
+import { Channel, Message } from "@/clients/slack/models";
+import {
+  lockOnMessageStorage,
+  selectedChannelIdsStorage,
+} from "@/utils/storage";
 import { isPresent } from "@/utils/collections";
+import PostCard from "./PostCard.vue";
+import { Dest, isChannel } from "@/models";
 
-const activeChannel = defineModel<Channel | null>();
+const dest = defineModel<Dest | null>({ default: null });
 
 const channels = ref<Channel[]>([]);
 const selectedChannels = ref<Channel[]>([]);
+const lockOnMessage = ref<Message | null>(null);
 
 onMounted(async () => {
   const [res, err] = (
@@ -30,6 +36,11 @@ onMounted(async () => {
   selectedChannels.value = channelIds
     .map((x) => channelById[x])
     .filter(isPresent);
+
+  lockOnMessage.value = await lockOnMessageStorage.getValue();
+  lockOnMessageStorage.watch((newValue) => {
+    lockOnMessage.value = newValue;
+  });
 });
 
 const customFilter = (value: string, query: string) =>
@@ -39,8 +50,8 @@ const handleUpdate = async (channels: Channel[]) => {
   const channelIds = channels.map((x) => x.id);
 
   // 選択していたchannelを削除した場合はdeactivateする
-  if (activeChannel.value && !channelIds.includes(activeChannel.value.id)) {
-    activeChannel.value = null;
+  if (isChannel(dest.value) && !channelIds.includes(dest.value.id)) {
+    dest.value = null;
   }
 
   await selectedChannelIdsStorage.setValue(channelIds);
@@ -50,12 +61,30 @@ const handleUpdate = async (channels: Channel[]) => {
 <template>
   <div class="d-flex align-center ga-3 mb-3">
     <v-btn-toggle
-      v-model="activeChannel"
+      v-model="dest"
       color="primary"
       rounded="0"
       group
       density="compact"
     >
+      <v-menu
+        v-if="lockOnMessage"
+        location="bottom center"
+        :close-on-content-click="false"
+        open-on-hover
+        :open-delay="20"
+        :offset="10"
+      >
+        <template v-slot:activator="{ props }">
+          <v-btn
+            :value="lockOnMessage"
+            style="text-transform: unset"
+            icon="mdi-target-variant"
+            v-bind="props"
+          />
+        </template>
+        <PostCard :message="lockOnMessage" />
+      </v-menu>
       <template v-for="ch in selectedChannels">
         <v-btn :value="ch" style="text-transform: unset">
           #{{ ch.name }}

@@ -105,20 +105,24 @@ export async function getUsersConversations(args: {
 export async function postChatPostMessage<R extends { ok: boolean }>(args: {
   channel: string;
   text: string;
+  thread_ts?: string;
 }): AsyncResult<R, RequestError>;
 export async function postChatPostMessage<R extends { ok: boolean }>(args: {
   channel: string;
   blocks: PostBlock[];
+  thread_ts?: string;
 }): AsyncResult<R, RequestError>;
 export async function postChatPostMessage<R extends { ok: boolean }>(
   args: {
     channel: string;
+    thread_ts?: string;
   } & ({ text: string } | { blocks: PostBlock[] }),
 ): AsyncResult<R, RequestError> {
   return await postRequest<R>({
     path: "/chat.postMessage",
     json: {
       channel: args.channel,
+      thread_ts: args.thread_ts,
       ...("text" in args ? { text: args.text } : { blocks: args.blocks }),
     },
   });
