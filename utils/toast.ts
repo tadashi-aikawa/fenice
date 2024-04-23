@@ -21,6 +21,7 @@ export function showSuccessToast(message: string): Id {
   return toast.success(message, {
     autoClose: 3000,
     transition: "flip",
+    position: "top-center",
     pauseOnFocusLoss: false,
     hideProgressBar: true,
   });
