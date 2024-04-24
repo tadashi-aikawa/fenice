@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+// @ts-expect-error 型定義がないので...
+import AtTa from "vue-at/dist/vue-at-textarea";
+
 import { showSuccessToast } from "@/utils/toast";
 import {
   Dest,
@@ -149,6 +152,16 @@ const handlePaste = async (e: ClipboardEvent) => {
       break;
   }
 };
+
+const members = ref<string[]>([]);
+onMounted(async () => {
+  usersCacheStorage.watch((newValue) => {
+    members.value = newValue.members.map((x) => x.name);
+  });
+  members.value = (await usersCacheStorage.getValue()).members.map(
+    (x) => x.name,
+  );
+});
 </script>
 
 <template>
@@ -159,14 +172,16 @@ const handlePaste = async (e: ClipboardEvent) => {
       :elevation="4"
       class="d-flex flex-column align-center pa-5 pb-1"
     >
-      <v-textarea
-        v-model="text"
-        style="width: 640px"
-        :rows="12"
-        @paste="handlePaste"
-        @keyup.ctrl.enter.exact="postMessage"
-        @keyup.meta.enter.exact="postMessage"
-      />
+      <at-ta :members="members">
+        <v-textarea
+          v-model="text"
+          style="width: 640px"
+          :rows="12"
+          @paste="handlePaste"
+          @keyup.ctrl.enter.exact="postMessage"
+          @keyup.meta.enter.exact="postMessage"
+        />
+      </at-ta>
 
       <UploadingImage
         v-if="files.length > 0"
@@ -196,3 +211,10 @@ const handlePaste = async (e: ClipboardEvent) => {
     </v-card>
   </div>
 </template>
+
+<style scoped>
+.atwho-wrap >>> .atwho-view {
+  position: relative;
+  margin-top: 3em;
+}
+</style>
