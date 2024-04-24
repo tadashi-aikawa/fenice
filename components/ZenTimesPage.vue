@@ -10,12 +10,13 @@ import {
 } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock, SectionBlock } from "@/clients/slack/models";
+import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
 const files = ref<Resource[]>([]);
+const excludeCaption = ref(false);
 
 const uploading = ref(false);
 const posting = ref(false);
@@ -50,6 +51,26 @@ const postMessage = async () => {
         text: `<${x.url!}| >`,
       },
     }));
+  const captionBlocks: PostBlock[] = excludeCaption.value
+    ? []
+    : [
+        { type: "divider" },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "image",
+              image_url:
+                "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
+              alt_text: "fenice",
+            },
+            {
+              type: "mrkdwn",
+              text: "Posted via Fenice",
+            },
+          ],
+        },
+      ];
 
   const _dest = dest.value!;
   const res = await postChatPostMessage({
@@ -59,22 +80,7 @@ const postMessage = async () => {
       ...sectionBlocks,
       ...imageBlocks,
       ...videoBlocks,
-      { type: "divider" },
-      {
-        type: "context",
-        elements: [
-          {
-            type: "image",
-            image_url:
-              "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
-            alt_text: "fenice",
-          },
-          {
-            type: "mrkdwn",
-            text: "Posted via Fenice",
-          },
-        ],
-      },
+      ...captionBlocks,
     ],
   });
 
@@ -151,7 +157,7 @@ const handlePaste = async (e: ClipboardEvent) => {
     <v-card
       v-if="dest"
       :elevation="4"
-      class="d-flex flex-column align-center pa-5"
+      class="d-flex flex-column align-center pa-5 pb-1"
     >
       <v-textarea
         v-model="text"
@@ -174,12 +180,19 @@ const handlePaste = async (e: ClipboardEvent) => {
         :disabled="(!text && files.length === 0) || uploading || posting"
         :loading="posting"
         style="width: 240px"
-        class="mt-3"
+        class="mt-3 mb-1"
         prepend-icon="mdi-send-variant"
         color="primary"
         @click="postMessage"
         >ポストする</v-btn
       >
+
+      <v-checkbox
+        v-model="excludeCaption"
+        color="primary"
+        label="captionを投稿に含めない"
+        hide-details
+      />
     </v-card>
   </div>
 </template>
