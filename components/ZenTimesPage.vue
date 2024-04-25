@@ -213,7 +213,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.atwho-wrap >>> .atwho-view {
+.atwho-wrap :deep(.atwho-view) {
   position: relative;
   margin-top: 3em;
 }
