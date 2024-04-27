@@ -3,7 +3,7 @@
 import { Mentionable } from "vue-mention";
 import { getUnicodeEmojis } from "@/utils/strings";
 import Emoji from "./blocks/Emoji.vue";
-import { lastUsedByEmojiStorage } from "@/utils/storage";
+import { lastUsedEmojiMapStorage } from "@/utils/storage";
 import { DateTime } from "owlelia";
 
 type EmojiSuggestion = { value: string; label: string };
@@ -32,10 +32,10 @@ onMounted(async () => {
 
 const lastUsedByEmoji = ref<Record<string, number>>({});
 onMounted(async () => {
-  lastUsedByEmojiStorage.watch((newValue) => {
+  lastUsedEmojiMapStorage.watch((newValue) => {
     lastUsedByEmoji.value = newValue;
   });
-  lastUsedByEmoji.value = await lastUsedByEmojiStorage.getValue();
+  lastUsedByEmoji.value = await lastUsedEmojiMapStorage.getValue();
 });
 
 const suggestions = computed(() =>
@@ -45,7 +45,7 @@ const suggestions = computed(() =>
 );
 
 const handleApply = (item: EmojiSuggestion) => {
-  lastUsedByEmojiStorage.setValue({
+  lastUsedEmojiMapStorage.setValue({
     [item.label]: DateTime.now().unix,
     ...lastUsedByEmoji.value,
   });

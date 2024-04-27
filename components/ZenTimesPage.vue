@@ -12,10 +12,10 @@ import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
-import { doSinglePatternMatching, getUnicodeEmojis } from "@/utils/strings";
+import { doSinglePatternMatching } from "@/utils/strings";
 import { usersByNameCache } from "@/global-cache";
-import UserMentionable from "./UserMentionable.vue";
-import EmojiMentionable from "./EmojiMentionable.vue";
+import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
+import UserSuggestWrapper from "./UserSuggestWrapper.vue";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
@@ -172,8 +172,8 @@ const mentionUsers = computed(() =>
       :elevation="4"
       class="d-flex flex-column align-center pa-5 pb-1"
     >
-      <EmojiMentionable>
-        <UserMentionable>
+      <EmojiSuggestWrapper>
+        <UserSuggestWrapper>
           <v-textarea
             v-model="text"
             style="width: 640px"
@@ -182,8 +182,8 @@ const mentionUsers = computed(() =>
             @keyup.ctrl.enter.exact="postMessage"
             @keyup.meta.enter.exact="postMessage"
           />
-        </UserMentionable>
-      </EmojiMentionable>
+        </UserSuggestWrapper>
+      </EmojiSuggestWrapper>
 
       <div class="d-flex ga-3">
         <img v-for="user in mentionUsers" :src="user.profile.image_48" />

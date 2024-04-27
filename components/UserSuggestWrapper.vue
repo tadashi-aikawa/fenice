@@ -2,7 +2,7 @@
 // @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
 import { Mentionable } from "vue-mention";
 import { User } from "@/clients/slack/models";
-import { lastMentionedByUserStorage } from "@/utils/storage";
+import { lastMentionedUserMapStorage } from "@/utils/storage";
 import { DateTime } from "owlelia";
 
 type UserSuggestion = { value: string; label: string; user: User };
@@ -25,10 +25,10 @@ onMounted(async () => {
 
 const lastMentionedByUser = ref<Record<string, number>>({});
 onMounted(async () => {
-  lastMentionedByUserStorage.watch((newValue) => {
+  lastMentionedUserMapStorage.watch((newValue) => {
     lastMentionedByUser.value = newValue;
   });
-  lastMentionedByUser.value = await lastMentionedByUserStorage.getValue();
+  lastMentionedByUser.value = await lastMentionedUserMapStorage.getValue();
 });
 
 const suggestions = computed(() =>
@@ -38,7 +38,7 @@ const suggestions = computed(() =>
 );
 
 const handleApply = (item: UserSuggestion) => {
-  lastMentionedByUserStorage.setValue({
+  lastMentionedUserMapStorage.setValue({
     [item.user.id]: DateTime.now().unix,
     ...lastMentionedByUser.value,
   });
