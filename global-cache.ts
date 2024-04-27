@@ -102,6 +102,37 @@ export async function refreshChannelsCaches(): AsyncResult<
 
   return ok(channels);
 }
+export function toDisplayChannelName(channel: Channel | undefined) {
+  if (!channel) {
+    return "❓Unknown channel";
+  }
+
+  if (channel.is_im) {
+    return `📬${usersByIdCache[channel.name]?.real_name}`;
+  }
+  if (channel.is_mpim) {
+    const members = channel.name
+      .replace("mpdm-", "")
+      .replace(/-\d+$/, "")
+      .split("--")
+      .map((x) => usersByNameCache[x]?.real_name)
+      .join(", ");
+    return `🏠${members}`;
+  }
+
+  let channelName = channel.name;
+  if (channel.is_private) {
+    channelName = `🔒${channelName}`;
+  }
+  if (channel.is_channel) {
+    channelName = `#${channelName}`;
+  }
+  if (channel.is_archived) {
+    channelName = `🧊${channelName}`;
+  }
+
+  return channelName;
+}
 
 // emojiキャッシュ
 export let emojiCache: { [name: string]: string } = {};

@@ -17,6 +17,9 @@ import {
   User,
 } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
+import { doSinglePatternMatching } from "@/utils/strings";
+import { usersByNameCache } from "@/global-cache";
+// @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
 import { Mentionable } from "vue-mention";
 
 const dest = ref<Dest | null>(null);
@@ -174,6 +177,15 @@ onMounted(async () => {
 
   userSuggestions.value = to((await usersCacheStorage.getValue()).members);
 });
+
+const mentionUsers = computed(() =>
+  uniqBy(
+    doSinglePatternMatching(text.value, /@[^ \n]+/g)
+      .map((x) => usersByNameCache[x.slice(1)])
+      .filter(isPresent),
+    (x) => x.id,
+  ),
+);
 </script>
 
 <template>
@@ -206,6 +218,10 @@ onMounted(async () => {
         </template>
         <template v-slot:no-result> <div style="display: none" /></template>
       </Mentionable>
+
+      <div class="d-flex ga-3">
+        <img v-for="user in mentionUsers" :src="user.profile.image_48" />
+      </div>
 
       <UploadingImage
         v-if="files.length > 0"

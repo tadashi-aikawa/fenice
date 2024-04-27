@@ -2,10 +2,10 @@
 import { Message, User } from "@/clients/slack/models";
 import { ts2display } from "@/utils/date";
 import HighlightCode from "./HighlightCode.vue";
-import { usersByIdCache } from "@/global-cache";
+import { toDisplayChannelName, usersByIdCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
-import { toBrowserUrl, toDisplayChannelName } from "@/utils/strings";
+import { toBrowserUrl } from "@/utils/strings";
 import File from "./File.vue";
 import Emoji from "./blocks/Emoji.vue";
 import { lockOnMessageStorage } from "@/utils/storage";
