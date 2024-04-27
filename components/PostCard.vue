@@ -17,7 +17,6 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   reactionEmojis: () => [],
-  readIcon: "mdi-check-circle-outline",
 });
 
 const emit = defineEmits<{
@@ -81,7 +80,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
   <v-card variant="elevated" max-width="720" class="mb-3" :elevation="2">
     <v-card-item class="ma-0 pa-0">
       <div class="d-flex">
-        <div class="read-button" @click="handleClickRead">
+        <div v-if="readIcon" class="read-button" @click="handleClickRead">
           <v-icon size="large">{{ readIcon }}</v-icon>
         </div>
 

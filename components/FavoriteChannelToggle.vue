@@ -7,7 +7,6 @@ import {
   selectedChannelIdsStorage,
 } from "@/utils/storage";
 import { isPresent } from "@/utils/collections";
-import PostCard from "./PostCard.vue";
 import { Dest, isChannel } from "@/models";
 
 const dest = defineModel<Dest | null>({ default: null });
@@ -56,6 +55,13 @@ const handleUpdate = async (channels: Channel[]) => {
 
   await selectedChannelIdsStorage.setValue(channelIds);
 };
+
+watch(
+  () => lockOnMessage.value,
+  (m) => {
+    dest.value = m;
+  },
+);
 </script>
 
 <template>
@@ -67,24 +73,12 @@ const handleUpdate = async (channels: Channel[]) => {
       group
       density="compact"
     >
-      <v-menu
+      <v-btn
         v-if="lockOnMessage"
-        location="bottom center"
-        :close-on-content-click="false"
-        open-on-hover
-        :open-delay="20"
-        :offset="10"
-      >
-        <template v-slot:activator="{ props }">
-          <v-btn
-            :value="lockOnMessage"
-            style="text-transform: unset"
-            icon="mdi-target-variant"
-            v-bind="props"
-          />
-        </template>
-        <PostCard :message="lockOnMessage" />
-      </v-menu>
+        :value="lockOnMessage"
+        style="text-transform: unset"
+        icon="mdi-target-variant"
+      />
       <template v-for="ch in selectedChannels">
         <v-btn :value="ch" style="text-transform: unset">
           #{{ ch.name }}

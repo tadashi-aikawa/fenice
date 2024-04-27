@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { quickReactionEmojisStorage } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
-import { Channel, Message } from "@/clients/slack/models";
-import { getSearchMessages, postReactionsAdd } from "@/clients/slack";
+import { Message } from "@/clients/slack/models";
+import { getSearchMessages } from "@/clients/slack";
 import SearchMessageQueryInput, {
   SearchCondition,
 } from "./SearchMessageQueryInput.vue";

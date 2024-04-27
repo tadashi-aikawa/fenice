@@ -53,6 +53,7 @@ const { reactAsEmoji } = useCardActions();
         <PostCard
           :key="message.ts"
           v-for="message in messages"
+          read-icon="mdi-check-circle-outline"
           :message="message"
           @click:read="markAsRead"
           @click:reaction="reactAsEmoji"

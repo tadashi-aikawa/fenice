@@ -16,6 +16,7 @@ import { doSinglePatternMatching } from "@/utils/strings";
 import { usersByNameCache } from "@/global-cache";
 import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
 import UserSuggestWrapper from "./UserSuggestWrapper.vue";
+import PostCard from "./PostCard.vue";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
@@ -24,6 +25,11 @@ const excludeCaption = ref(false);
 
 const uploading = ref(false);
 const posting = ref(false);
+
+const lockOnMessage = computed(() => {
+  console.log(dest.value);
+  return isChannel(dest.value) ? null : dest.value;
+});
 
 const postMessage = async () => {
   posting.value = true;
@@ -215,5 +221,10 @@ const mentionUsers = computed(() =>
         hide-details
       />
     </v-card>
+
+    <div v-if="lockOnMessage" class="d-flex flex-column align-center">
+      <span class="py-3" style="font-size: 24px">↓</span>
+      <PostCard :message="lockOnMessage" />
+    </div>
   </div>
 </template>
