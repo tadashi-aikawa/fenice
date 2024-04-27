@@ -10,18 +10,12 @@ import {
 } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import {
-  ImageBlock,
-  SectionBlock,
-  PostBlock,
-  User,
-} from "@/clients/slack/models";
+import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
 import { doSinglePatternMatching, getUnicodeEmojis } from "@/utils/strings";
 import { usersByNameCache } from "@/global-cache";
-// @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
-import { Mentionable } from "vue-mention";
-import Emoji from "./blocks/Emoji.vue";
+import UserMentionable from "./UserMentionable.vue";
+import EmojiMentionable from "./EmojiMentionable.vue";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
@@ -160,24 +154,6 @@ const handlePaste = async (e: ClipboardEvent) => {
   }
 };
 
-type UserSuggestion = { value: string; label: string; user: User };
-const userSuggestions = ref<UserSuggestion[]>([]);
-onMounted(async () => {
-  const to = (users: User[]) =>
-    users
-      .filter((x) => !x.deleted)
-      .map((x) => ({
-        value: x.name,
-        label: x.name,
-        user: x,
-      }));
-
-  usersCacheStorage.watch((newValue) => {
-    userSuggestions.value = to(newValue.members);
-  });
-
-  userSuggestions.value = to((await usersCacheStorage.getValue()).members);
-});
 const mentionUsers = computed(() =>
   uniqBy(
     doSinglePatternMatching(text.value, /@[^ \n]+/g)
@@ -186,30 +162,6 @@ const mentionUsers = computed(() =>
     (x) => x.id,
   ),
 );
-
-type EmojiSuggestion = { value: string; label: string };
-const unicodeEmojiSuggestions = getUnicodeEmojis().map((x) => ({
-  value: `${x}:`,
-  label: x,
-}));
-const emojiSuggestions = ref<EmojiSuggestion[]>([]);
-onMounted(async () => {
-  const to = (emojis: string[]) =>
-    emojis.map((x) => ({
-      value: `${x}:`,
-      label: x,
-    }));
-
-  emojiCacheStorage.watch((newValue) => {
-    emojiSuggestions.value = to(Object.keys(newValue.emoji)).concat(
-      unicodeEmojiSuggestions,
-    );
-  });
-
-  emojiSuggestions.value = to(
-    Object.keys((await emojiCacheStorage.getValue()).emoji),
-  ).concat(unicodeEmojiSuggestions);
-});
 </script>
 
 <template>
@@ -220,20 +172,8 @@ onMounted(async () => {
       :elevation="4"
       class="d-flex flex-column align-center pa-5 pb-1"
     >
-      <Mentionable
-        :keys="[':']"
-        :items="emojiSuggestions"
-        offset="6"
-        :limit="10"
-        insert-space
-      >
-        <Mentionable
-          :keys="['@']"
-          :items="userSuggestions"
-          offset="6"
-          :limit="10"
-          insert-space
-        >
+      <EmojiMentionable>
+        <UserMentionable>
           <v-textarea
             v-model="text"
             style="width: 640px"
@@ -242,30 +182,8 @@ onMounted(async () => {
             @keyup.ctrl.enter.exact="postMessage"
             @keyup.meta.enter.exact="postMessage"
           />
-          <template v-slot:item="{ item }">
-            <div class="d-flex align-center ga-2" style="font-size: 16px">
-              <img :src="item.user.profile.image_24" />
-              <span style="font-weight: bold">
-                {{ item.user.real_name }}
-              </span>
-              <span class="username">
-                {{ item.user.name }}
-              </span>
-            </div>
-          </template>
-          <template v-slot:no-result> <div style="display: none" /></template>
-        </Mentionable>
-
-        <template v-slot:item="{ item }">
-          <div class="d-flex align-center ga-2" style="font-size: 16px">
-            <Emoji :item="{ type: 'emoji', name: item.label }" />
-            <span>
-              {{ item.label }}
-            </span>
-          </div>
-        </template>
-        <template v-slot:no-result> <div style="display: none" /></template>
-      </Mentionable>
+        </UserMentionable>
+      </EmojiMentionable>
 
       <div class="d-flex ga-3">
         <img v-for="user in mentionUsers" :src="user.profile.image_48" />
