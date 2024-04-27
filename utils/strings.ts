@@ -4,6 +4,10 @@ export function name2emoji(name: string): string | undefined {
   return emoji.get(name) ?? fallbackEmojiMap[name];
 }
 
+export function getUnicodeEmojis(): string[] {
+  return emoji.search("").map((x) => x.name);
+}
+
 export function toBrowserUrl(permalink: string): string {
   return permalink.replace("/archives", "/messages");
 }

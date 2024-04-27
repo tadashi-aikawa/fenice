@@ -17,10 +17,11 @@ import {
   User,
 } from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
-import { doSinglePatternMatching } from "@/utils/strings";
+import { doSinglePatternMatching, getUnicodeEmojis } from "@/utils/strings";
 import { usersByNameCache } from "@/global-cache";
 // @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
 import { Mentionable } from "vue-mention";
+import Emoji from "./blocks/Emoji.vue";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
@@ -177,7 +178,6 @@ onMounted(async () => {
 
   userSuggestions.value = to((await usersCacheStorage.getValue()).members);
 });
-
 const mentionUsers = computed(() =>
   uniqBy(
     doSinglePatternMatching(text.value, /@[^ \n]+/g)
@@ -186,6 +186,30 @@ const mentionUsers = computed(() =>
     (x) => x.id,
   ),
 );
+
+type EmojiSuggestion = { value: string; label: string };
+const unicodeEmojiSuggestions = getUnicodeEmojis().map((x) => ({
+  value: `${x}:`,
+  label: x,
+}));
+const emojiSuggestions = ref<EmojiSuggestion[]>([]);
+onMounted(async () => {
+  const to = (emojis: string[]) =>
+    emojis.map((x) => ({
+      value: `${x}:`,
+      label: x,
+    }));
+
+  emojiCacheStorage.watch((newValue) => {
+    emojiSuggestions.value = to(Object.keys(newValue.emoji)).concat(
+      unicodeEmojiSuggestions,
+    );
+  });
+
+  emojiSuggestions.value = to(
+    Object.keys((await emojiCacheStorage.getValue()).emoji),
+  ).concat(unicodeEmojiSuggestions);
+});
 </script>
 
 <template>
@@ -196,23 +220,47 @@ const mentionUsers = computed(() =>
       :elevation="4"
       class="d-flex flex-column align-center pa-5 pb-1"
     >
-      <Mentionable :keys="['@']" :items="userSuggestions" offset="6">
-        <v-textarea
-          v-model="text"
-          style="width: 640px"
-          :rows="12"
-          @paste="handlePaste"
-          @keyup.ctrl.enter.exact="postMessage"
-          @keyup.meta.enter.exact="postMessage"
-        />
+      <Mentionable
+        :keys="[':']"
+        :items="emojiSuggestions"
+        offset="6"
+        :limit="10"
+        insert-space
+      >
+        <Mentionable
+          :keys="['@']"
+          :items="userSuggestions"
+          offset="6"
+          :limit="10"
+          insert-space
+        >
+          <v-textarea
+            v-model="text"
+            style="width: 640px"
+            :rows="12"
+            @paste="handlePaste"
+            @keyup.ctrl.enter.exact="postMessage"
+            @keyup.meta.enter.exact="postMessage"
+          />
+          <template v-slot:item="{ item }">
+            <div class="d-flex align-center ga-2" style="font-size: 16px">
+              <img :src="item.user.profile.image_24" />
+              <span style="font-weight: bold">
+                {{ item.user.real_name }}
+              </span>
+              <span class="username">
+                {{ item.user.name }}
+              </span>
+            </div>
+          </template>
+          <template v-slot:no-result> <div style="display: none" /></template>
+        </Mentionable>
+
         <template v-slot:item="{ item }">
           <div class="d-flex align-center ga-2" style="font-size: 16px">
-            <img :src="item.user.profile.image_24" />
-            <span style="font-weight: bold">
-              {{ item.user.real_name }}
-            </span>
-            <span class="username">
-              {{ item.user.name }}
+            <Emoji :item="{ type: 'emoji', name: item.label }" />
+            <span>
+              {{ item.label }}
             </span>
           </div>
         </template>
