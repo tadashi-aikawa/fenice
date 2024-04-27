@@ -2,6 +2,8 @@
 // @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
 import { Mentionable } from "vue-mention";
 import { User } from "@/clients/slack/models";
+import { lastMentionedByUserStorage } from "@/utils/storage";
+import { DateTime } from "owlelia";
 
 type UserSuggestion = { value: string; label: string; user: User };
 const userSuggestions = ref<UserSuggestion[]>([]);
@@ -18,18 +20,39 @@ onMounted(async () => {
   usersCacheStorage.watch((newValue) => {
     userSuggestions.value = to(newValue.members);
   });
-
   userSuggestions.value = to((await usersCacheStorage.getValue()).members);
 });
+
+const lastMentionedByUser = ref<Record<string, number>>({});
+onMounted(async () => {
+  lastMentionedByUserStorage.watch((newValue) => {
+    lastMentionedByUser.value = newValue;
+  });
+  lastMentionedByUser.value = await lastMentionedByUserStorage.getValue();
+});
+
+const suggestions = computed(() =>
+  userSuggestions.value.sort(
+    sorter((x) => lastMentionedByUser.value[x.user.id] ?? -1, "desc"),
+  ),
+);
+
+const handleApply = (item: UserSuggestion) => {
+  lastMentionedByUserStorage.setValue({
+    [item.user.id]: DateTime.now().unix,
+    ...lastMentionedByUser.value,
+  });
+};
 </script>
 
 <template>
   <Mentionable
     :keys="['@']"
-    :items="userSuggestions"
+    :items="suggestions"
     offset="6"
     :limit="10"
     insert-space
+    @apply="handleApply"
   >
     <slot></slot>
 

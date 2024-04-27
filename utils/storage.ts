@@ -23,6 +23,14 @@ export const lockOnMessageStorage = storage.defineItem<Message | null>(
   { defaultValue: null },
 );
 
+// Personalized
+export const lastMentionedByUserStorage = storage.defineItem<
+  Record<string, number>
+>("local:lastMentionedByUser", { defaultValue: {} });
+export const lastUsedByEmojiStorage = storage.defineItem<
+  Record<string, number>
+>("local:lastUsedByEmoji", { defaultValue: {} });
+
 // Settings
 export const clientIdStorage = storage.defineItem<string>("local:clientId");
 export const clientSecretStorage =

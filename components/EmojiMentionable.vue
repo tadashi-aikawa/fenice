@@ -3,6 +3,8 @@
 import { Mentionable } from "vue-mention";
 import { getUnicodeEmojis } from "@/utils/strings";
 import Emoji from "./blocks/Emoji.vue";
+import { lastUsedByEmojiStorage } from "@/utils/storage";
+import { DateTime } from "owlelia";
 
 type EmojiSuggestion = { value: string; label: string };
 const unicodeEmojiSuggestions = getUnicodeEmojis().map((x) => ({
@@ -27,15 +29,37 @@ onMounted(async () => {
     Object.keys((await emojiCacheStorage.getValue()).emoji),
   ).concat(unicodeEmojiSuggestions);
 });
+
+const lastUsedByEmoji = ref<Record<string, number>>({});
+onMounted(async () => {
+  lastUsedByEmojiStorage.watch((newValue) => {
+    lastUsedByEmoji.value = newValue;
+  });
+  lastUsedByEmoji.value = await lastUsedByEmojiStorage.getValue();
+});
+
+const suggestions = computed(() =>
+  emojiSuggestions.value.sort(
+    sorter((x) => lastUsedByEmoji.value[x.label] ?? -1, "desc"),
+  ),
+);
+
+const handleApply = (item: EmojiSuggestion) => {
+  lastUsedByEmojiStorage.setValue({
+    [item.label]: DateTime.now().unix,
+    ...lastUsedByEmoji.value,
+  });
+};
 </script>
 
 <template>
   <Mentionable
     :keys="[':']"
-    :items="emojiSuggestions"
+    :items="suggestions"
     offset="6"
     :limit="10"
     insert-space
+    @apply="handleApply"
   >
     <slot></slot>
 
