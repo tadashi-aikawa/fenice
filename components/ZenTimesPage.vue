@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-// @ts-expect-error 型定義がないので...
-import AtTa from "vue-at/dist/vue-at-textarea";
-
 import { showSuccessToast } from "@/utils/toast";
 import {
   Dest,
@@ -13,8 +10,14 @@ import {
 } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
+import {
+  ImageBlock,
+  SectionBlock,
+  PostBlock,
+  User,
+} from "@/clients/slack/models";
 import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
+import { Mentionable } from "vue-mention";
 
 const dest = ref<Dest | null>(null);
 const text = ref("");
@@ -153,14 +156,23 @@ const handlePaste = async (e: ClipboardEvent) => {
   }
 };
 
-const members = ref<string[]>([]);
+type UserSuggestion = { value: string; label: string; user: User };
+const userSuggestions = ref<UserSuggestion[]>([]);
 onMounted(async () => {
+  const to = (users: User[]) =>
+    users
+      .filter((x) => !x.deleted)
+      .map((x) => ({
+        value: x.name,
+        label: x.name,
+        user: x,
+      }));
+
   usersCacheStorage.watch((newValue) => {
-    members.value = newValue.members.map((x) => x.name);
+    userSuggestions.value = to(newValue.members);
   });
-  members.value = (await usersCacheStorage.getValue()).members.map(
-    (x) => x.name,
-  );
+
+  userSuggestions.value = to((await usersCacheStorage.getValue()).members);
 });
 </script>
 
@@ -172,7 +184,7 @@ onMounted(async () => {
       :elevation="4"
       class="d-flex flex-column align-center pa-5 pb-1"
     >
-      <at-ta :members="members">
+      <Mentionable :keys="['@']" :items="userSuggestions" offset="6">
         <v-textarea
           v-model="text"
           style="width: 640px"
@@ -181,7 +193,19 @@ onMounted(async () => {
           @keyup.ctrl.enter.exact="postMessage"
           @keyup.meta.enter.exact="postMessage"
         />
-      </at-ta>
+        <template v-slot:item="{ item }">
+          <div class="d-flex align-center ga-2" style="font-size: 16px">
+            <img :src="item.user.profile.image_24" />
+            <span style="font-weight: bold">
+              {{ item.user.real_name }}
+            </span>
+            <span class="username">
+              {{ item.user.name }}
+            </span>
+          </div>
+        </template>
+        <template v-slot:no-result> <div style="display: none" /></template>
+      </Mentionable>
 
       <UploadingImage
         v-if="files.length > 0"
@@ -211,10 +235,3 @@ onMounted(async () => {
     </v-card>
   </div>
 </template>
-
-<style scoped>
-.atwho-wrap :deep(.atwho-view) {
-  position: relative;
-  margin-top: 3em;
-}
-</style>

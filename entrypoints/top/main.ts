@@ -20,6 +20,9 @@ const vuetify = createVuetify({
 import "prismjs/themes/prism-okaidia.css";
 import "prismjs/components/prism-json";
 
+// vue-mention
+import "floating-vue/dist/style.css";
+
 createApp(App)
   .use(vuetify)
   .use(Vue3Toastify, { autoClose: 1000 })
