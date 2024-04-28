@@ -21,5 +21,7 @@ export const isVideoResource = (r: Resource): r is VideoResource =>
 export type Dest = Channel | Message;
 export const isChannel = (d: Dest | null): d is Channel =>
   d != null && !("channel" in d);
+export const isMessage = (d: Dest | null): d is Message =>
+  d != null && "channel" in d;
 export const dest2channel = (d: Dest): Channel =>
   isChannel(d) ? d : d.channel;

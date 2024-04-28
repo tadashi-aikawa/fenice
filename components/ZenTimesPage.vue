@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Dest, isChannel } from "@/models";
-import FavoriteChannelToggle from "./FavoriteChannelToggle.vue";
+import DestToggle from "./DestToggle.vue";
 import PostCard from "./PostCard.vue";
 import PostForm from "./PostForm.vue";
 
@@ -13,7 +13,7 @@ const lockOnMessage = computed(() =>
 
 <template>
   <div class="d-flex flex-column align-center ga-1 pa-6 ma-6">
-    <FavoriteChannelToggle v-model="dest" />
+    <DestToggle v-model="dest" />
     <PostForm v-if="dest" :dest="dest" />
 
     <div v-if="lockOnMessage" class="d-flex flex-column align-center">

@@ -7,7 +7,7 @@ import {
   selectedChannelIdsStorage,
 } from "@/utils/storage";
 import { isPresent } from "@/utils/collections";
-import { Dest, isChannel } from "@/models";
+import { Dest, isChannel, isMessage } from "@/models";
 
 const dest = defineModel<Dest | null>({ default: null });
 
@@ -59,7 +59,9 @@ const handleUpdate = async (channels: Channel[]) => {
 watch(
   () => lockOnMessage.value,
   (m) => {
-    dest.value = m;
+    if (isMessage(dest.value)) {
+      dest.value = m;
+    }
   },
 );
 </script>
