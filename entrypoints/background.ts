@@ -6,6 +6,7 @@ import {
   crucialMessageConditionsStorage,
   refreshTokenStorage,
   unreadMessagesStorage,
+  updateMessages,
 } from "@/utils/storage";
 import { AsyncResult, DateTime, err, ok } from "owlelia";
 
@@ -157,16 +158,7 @@ export default defineBackground(() => {
         return;
       }
 
-      const readByTs = await readByTsStorage.getValue();
-      const uniqMessages = uniqBy(
-        messages.filter((x) => !(x.ts in readByTs)),
-        (m) => m.ts,
-      );
-      const unreadMessages = await unreadMessagesStorage.getValue();
-      const newMessages = uniqMessages.filter(
-        (x) => !unreadMessages.find((um) => um.ts === x.ts),
-      );
-
+      const newMessages = await updateMessages(messages);
       if (newMessages.length === 0) {
         return;
       }
@@ -183,12 +175,6 @@ export default defineBackground(() => {
         iconUrl: FENICE_ICON_URL,
       });
       notifiedIds.add(notificationId);
-
-      const newUnreadMessages = unreadMessages
-        .concat(newMessages)
-        .toSorted(sorter((x) => Number(x.ts), "desc"));
-
-      await unreadMessagesStorage.setValue(newUnreadMessages);
     }
   });
 });

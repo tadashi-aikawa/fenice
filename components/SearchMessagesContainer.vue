@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { quickReactionEmojisStorage } from "@/utils/storage";
+import { quickReactionEmojisStorage, updateMessages } from "@/utils/storage";
 import PostCard from "./PostCard.vue";
 import { Message } from "@/clients/slack/models";
 import { getSearchMessages } from "@/clients/slack";
@@ -83,6 +83,11 @@ const hideMessage = (message: Message) => {
 const handleUpdateSearchCondition = (cond: SearchCondition) => {
   searchCondition.value = cond;
 };
+
+const handleStock = async (message: Message) => {
+  await updateMessages([message], { forceUnread: true });
+  showSuccessToast("重要メッセージに追加しました");
+};
 </script>
 
 <template>
@@ -121,8 +126,10 @@ const handleUpdateSearchCondition = (cond: SearchCondition) => {
               :reaction-emojis="reactionEmojis"
               read-icon="mdi-eye-off"
               disable-unread
+              enable-stock
               @click:reaction="reactAsEmoji"
               @click:read="hideMessage"
+              @click:stock="handleStock"
             />
           </template>
         </transition-group>

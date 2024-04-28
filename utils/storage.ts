@@ -8,13 +8,6 @@ export const refreshTokenStorage =
 export const lastSelectedByChannelId = storage.defineItem<
   Record<string, number>
 >("local:lastSelectedByChannelId", { defaultValue: {} });
-export const unreadMessagesStorage = storage.defineItem<Message[]>(
-  "local:unreadMessages",
-  { defaultValue: [] },
-);
-export const readByTsStorage = storage.defineItem<{
-  [ts: string]: true;
-}>("local:readMessages", { defaultValue: {} });
 export const selectedChannelIdsStorage = storage.defineItem<string[]>(
   "local:selectedChannelIds",
   { defaultValue: [] },
@@ -23,6 +16,43 @@ export const lockOnMessageStorage = storage.defineItem<Message | null>(
   "local:lockOnMessage",
   { defaultValue: null },
 );
+
+// Message
+export const unreadMessagesStorage = storage.defineItem<Message[]>(
+  "local:unreadMessages",
+  { defaultValue: [] },
+);
+export const readByTsStorage = storage.defineItem<{
+  [ts: string]: true;
+}>("local:readMessages", { defaultValue: {} });
+/**
+ * messagesと取得済メッセージの既読状態などを考慮し、状態を更新したうえで、新規メッセージのリストを返却します
+ */
+export async function updateMessages(
+  messages: Message[],
+  option?: { forceUnread?: boolean },
+): Promise<Message[]> {
+  let uniqMessages = uniqBy(messages, (m) => m.ts);
+  if (!option?.forceUnread) {
+    const readByTs = await readByTsStorage.getValue();
+    uniqMessages = uniqMessages.filter((x) => !(x.ts in readByTs));
+  }
+
+  const unreadMessages = await unreadMessagesStorage.getValue();
+  const newMessages = uniqMessages.filter(
+    (x) => !unreadMessages.find((um) => um.ts === x.ts),
+  );
+  if (newMessages.length === 0) {
+    return [];
+  }
+
+  const newUnreadMessages = unreadMessages
+    .concat(newMessages)
+    .toSorted(sorter((x) => Number(x.ts), "desc"));
+  await unreadMessagesStorage.setValue(newUnreadMessages);
+
+  return newMessages;
+}
 
 // Personalized
 export const lastMentionedUserMapStorage = storage.defineItem<
