@@ -23,7 +23,7 @@ export function doSinglePatternMatching(
 }
 
 // Feniceで対応できなかった絵文字を気合でmappingしていく
-const fallbackEmojiMap = {
+export const fallbackEmojiMap = {
   cut_of_meat: "🥩",
   bow: "🙇",
   "man-bowing": "🙇‍♂️",

@@ -1,13 +1,16 @@
 <script setup lang="ts">
 // @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
 import { Mentionable } from "vue-mention";
-import { getUnicodeEmojis } from "@/utils/strings";
+import { fallbackEmojiMap, getUnicodeEmojis } from "@/utils/strings";
 import Emoji from "./blocks/Emoji.vue";
-import { lastUsedEmojiMapStorage } from "@/utils/storage";
-import { DateTime } from "owlelia";
+import { lastUsedEmojiMapStorage, updateLastUsedEmojis } from "@/utils/storage";
 
 type EmojiSuggestion = { value: string; label: string };
 const unicodeEmojiSuggestions = getUnicodeEmojis().map((x) => ({
+  value: `${x}:`,
+  label: x,
+}));
+const fallbackEmojiSuggestions = Object.keys(fallbackEmojiMap).map((x) => ({
   value: `${x}:`,
   label: x,
 }));
@@ -20,14 +23,16 @@ onMounted(async () => {
     }));
 
   emojiCacheStorage.watch((newValue) => {
-    emojiSuggestions.value = to(Object.keys(newValue.emoji)).concat(
-      unicodeEmojiSuggestions,
-    );
+    emojiSuggestions.value = to(Object.keys(newValue.emoji))
+      .concat(unicodeEmojiSuggestions)
+      .concat(fallbackEmojiSuggestions);
   });
 
   emojiSuggestions.value = to(
     Object.keys((await emojiCacheStorage.getValue()).emoji),
-  ).concat(unicodeEmojiSuggestions);
+  )
+    .concat(unicodeEmojiSuggestions)
+    .concat(fallbackEmojiSuggestions);
 });
 
 const lastUsedByEmoji = ref<Record<string, number>>({});
@@ -44,11 +49,8 @@ const suggestions = computed(() =>
   ),
 );
 
-const handleApply = (item: EmojiSuggestion) => {
-  lastUsedEmojiMapStorage.setValue({
-    [item.label]: DateTime.now().unix,
-    ...lastUsedByEmoji.value,
-  });
+const handleApply = async (item: EmojiSuggestion) => {
+  await updateLastUsedEmojis([item.label]);
 };
 </script>
 

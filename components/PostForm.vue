@@ -12,9 +12,10 @@ import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
 import { doSinglePatternMatching } from "@/utils/strings";
-import { usersByNameCache } from "@/global-cache";
+import { isEmoji, usersByNameCache } from "@/global-cache";
 import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
 import UserSuggestWrapper from "./UserSuggestWrapper.vue";
+import { updateLastUsedEmojis } from "@/utils/storage";
 
 const props = defineProps<{
   dest: Dest;
@@ -99,6 +100,8 @@ const postMessage = async () => {
     return;
   }
 
+  await updateLastUsedEmojis(usedEmojis.value);
+
   text.value = "";
   files.value = [];
   showSuccessToast(`投稿に成功しました`);
@@ -162,6 +165,15 @@ const mentionUsers = computed(() =>
       .map((x) => usersByNameCache[x.slice(1)])
       .filter(isPresent),
     (x) => x.id,
+  ),
+);
+
+const usedEmojis = computed(() =>
+  uniqBy(
+    doSinglePatternMatching(text.value, /:[^ \n]+:/g)
+      .map((x) => x.slice(1, x.length - 1))
+      .filter(isEmoji),
+    (x) => x,
   ),
 );
 </script>

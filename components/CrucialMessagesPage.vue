@@ -7,6 +7,7 @@ import PostCard from "./PostCard.vue";
 import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
+import PostForm from "./PostForm.vue";
 
 const messages = ref<Message[]>([]);
 const reactionEmojis = ref<string[]>([]);
@@ -21,6 +22,8 @@ onMounted(async () => {
     reactionEmojis.value = newValue;
   });
 });
+
+const rightDrawer = ref<boolean>(false);
 
 const markAsRead = async (message: Message) => {
   const unreadMessages = await unreadMessagesStorage.getValue();
@@ -41,6 +44,12 @@ const markAllAsRead = async () => {
 };
 
 const { reactAsEmoji } = useCardActions();
+
+const messageToReply = ref<Message | null>(null);
+const handleReply = (message: Message) => {
+  rightDrawer.value = true;
+  messageToReply.value = message;
+};
 </script>
 
 <template>
@@ -55,8 +64,10 @@ const { reactAsEmoji } = useCardActions();
           v-for="message in messages"
           read-icon="mdi-check-circle-outline"
           :message="message"
+          enable-reply
           @click:read="markAsRead"
           @click:reaction="reactAsEmoji"
+          @click:reply="handleReply"
           :reaction-emojis="reactionEmojis"
         />
       </transition-group>
@@ -69,6 +80,19 @@ const { reactAsEmoji } = useCardActions();
       @click="markAllAsRead"
       >すべて既読にする</v-btn
     >
+
+    <v-navigation-drawer
+      v-model="rightDrawer"
+      location="end"
+      temporary
+      width="800"
+    >
+      <div v-if="messageToReply" class="d-flex flex-column align-center pa-5">
+        <PostForm :dest="messageToReply" />
+        <span class="py-3" style="font-size: 24px">↓</span>
+        <PostCard :message="messageToReply" />
+      </div>
+    </v-navigation-drawer>
   </div>
 </template>
 

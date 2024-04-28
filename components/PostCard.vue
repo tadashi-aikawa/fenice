@@ -14,6 +14,7 @@ interface Props {
   message: Message;
   reactionEmojis?: string[];
   readIcon?: `mdi-${string}`;
+  enableReply?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   reactionEmojis: () => [],
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   "click:read": [message: Message];
   "click:reaction": [message: Message, emoji: string];
+  "click:reply": [message: Message];
 }>();
 
 const reactedEmojis = ref<Set<string>>(new Set());
@@ -60,6 +62,10 @@ const handleClickEmojiReaction = (emoji: string) => {
 const handleLockOn = async () => {
   await lockOnMessageStorage.setValue(props.message);
   showSuccessToast("スレッドロックオンに成功しました");
+};
+
+const handleReply = () => {
+  emit("click:reply", props.message);
 };
 
 const postUser = computed<User | null>(
@@ -142,6 +148,14 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <v-btn
               icon="mdi-target-variant"
               @click="handleLockOn"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
+            <v-btn
+              v-if="enableReply"
+              icon="mdi-reply"
+              @click="handleReply"
               variant="tonal"
               density="compact"
               style="color: goldenrod"

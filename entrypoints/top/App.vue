@@ -335,7 +335,7 @@ onKeyStroke("9", (e) => {
       <v-navigation-drawer
         v-model="rightDrawer"
         location="end"
-        width="800px"
+        width="800"
         temporary
       >
         <v-tabs v-model="currentTab" align-tabs="title">

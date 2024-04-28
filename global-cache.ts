@@ -160,6 +160,9 @@ export function getEmojiUrl(name: string): string | undefined {
 
   return resource;
 }
+export function isEmoji(str: string): boolean {
+  return Boolean(name2emoji(str) ?? getEmojiUrl(str));
+}
 
 // 初期化
 export async function initGlobalCaches() {

@@ -1,4 +1,5 @@
 import { Channel, Message, User, Usergroup } from "@/clients/slack/models";
+import { DateTime } from "owlelia";
 
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
@@ -27,9 +28,23 @@ export const lockOnMessageStorage = storage.defineItem<Message | null>(
 export const lastMentionedUserMapStorage = storage.defineItem<
   Record<string, number>
 >("local:lastMentionedUserMap", { defaultValue: {} });
+
 export const lastUsedEmojiMapStorage = storage.defineItem<
   Record<string, number>
 >("local:lastUsedEmojiMap", { defaultValue: {} });
+export async function updateLastUsedEmojis(emojis: string[]) {
+  const value = await lastUsedEmojiMapStorage.getValue();
+  const now = DateTime.now().unix;
+
+  const newMap = emojis
+    .map((x) => ({ [x]: now }))
+    .reduce((a, x) => ({ ...a, ...x }), {});
+
+  lastUsedEmojiMapStorage.setValue({
+    ...value,
+    ...newMap,
+  });
+}
 
 // Settings
 export const clientIdStorage = storage.defineItem<string>("local:clientId");
