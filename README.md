@@ -33,6 +33,7 @@ bun dev
 
 ```console
 npm version 1.2.3
+git push --tags
 bun zip
 ```
 
