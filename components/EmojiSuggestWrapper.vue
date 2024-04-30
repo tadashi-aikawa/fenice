@@ -3,9 +3,14 @@
 import { Mentionable } from "vue-mention";
 import { fallbackEmojiMap, getUnicodeEmojis } from "@/utils/strings";
 import Emoji from "./blocks/Emoji.vue";
-import { lastUsedEmojiMapStorage, updateLastUsedEmojis } from "@/utils/storage";
+import {
+  lastUsedEmojiMapStorage,
+  maxNumberOfEmojiSuggestionsStorage,
+  updateLastUsedEmojis,
+} from "@/utils/storage";
 
 type EmojiSuggestion = { value: string; label: string };
+
 const unicodeEmojiSuggestions = getUnicodeEmojis().map((x) => ({
   value: `${x}:`,
   label: x,
@@ -15,6 +20,8 @@ const fallbackEmojiSuggestions = Object.keys(fallbackEmojiMap).map((x) => ({
   label: x,
 }));
 const emojiSuggestions = ref<EmojiSuggestion[]>([]);
+const limit = ref(10);
+
 onMounted(async () => {
   const to = (emojis: string[]) =>
     emojis.map((x) => ({
@@ -33,6 +40,11 @@ onMounted(async () => {
   )
     .concat(unicodeEmojiSuggestions)
     .concat(fallbackEmojiSuggestions);
+
+  limit.value = await maxNumberOfEmojiSuggestionsStorage.getValue();
+  maxNumberOfEmojiSuggestionsStorage.watch((newValue) => {
+    limit.value = newValue;
+  });
 });
 
 const lastUsedByEmoji = ref<Record<string, number>>({});
@@ -44,13 +56,19 @@ onMounted(async () => {
 });
 
 const suggestions = computed(() =>
-  emojiSuggestions.value.sort(
-    sorter((x) => lastUsedByEmoji.value[x.label] ?? -1, "desc"),
-  ),
+  emojiSuggestions.value
+    .sort(sorter((x) => x.value.length))
+    .sort(sorter((x) => lastUsedByEmoji.value[x.label] ?? -1, "desc"))
+    .sort(sorter((x) => Number(x.value.startsWith(keyword.value)), "desc")),
 );
 
 const handleApply = async (item: EmojiSuggestion) => {
   await updateLastUsedEmojis([item.label]);
+};
+
+const keyword = ref("");
+const search = (word: string) => {
+  keyword.value = word;
 };
 </script>
 
@@ -59,9 +77,10 @@ const handleApply = async (item: EmojiSuggestion) => {
     :keys="[':']"
     :items="suggestions"
     offset="6"
-    :limit="10"
+    :limit="limit"
     insert-space
     @apply="handleApply"
+    @search="search"
   >
     <slot></slot>
 

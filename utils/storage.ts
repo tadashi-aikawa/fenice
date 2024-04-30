@@ -84,6 +84,10 @@ export const crucialMessageConditionsStorage = storage.defineItem<string[]>(
   "local:crucialMessageConditionsStorage",
   { defaultValue: [] },
 ); // 改行区切り複数指定
+export const maxNumberOfEmojiSuggestionsStorage = storage.defineItem<number>(
+  "local:maxNumberOfEmojiSuggestions",
+  { defaultValue: 20 },
+);
 export const quickReactionEmojisStorage = storage.defineItem<string[]>(
   "local:quickReactionEmojisStorage",
   { defaultValue: [] },
