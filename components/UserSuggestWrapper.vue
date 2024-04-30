@@ -32,9 +32,9 @@ onMounted(async () => {
 });
 
 const suggestions = computed(() =>
-  userSuggestions.value.sort(
-    sorter((x) => lastMentionedByUser.value[x.user.id] ?? -1, "desc"),
-  ),
+  userSuggestions.value
+    .sort(sorter((x) => Number(x.value.startsWith(keyword.value)), "desc"))
+    .sort(sorter((x) => lastMentionedByUser.value[x.user.id] ?? -1, "desc")),
 );
 
 const handleApply = (item: UserSuggestion) => {
@@ -42,6 +42,11 @@ const handleApply = (item: UserSuggestion) => {
     [item.user.id]: DateTime.now().unix,
     ...lastMentionedByUser.value,
   });
+};
+
+const keyword = ref("");
+const search = (word: string) => {
+  keyword.value = word;
 };
 </script>
 
@@ -53,6 +58,7 @@ const handleApply = (item: UserSuggestion) => {
     :limit="10"
     insert-space
     @apply="handleApply"
+    @search="search"
   >
     <slot></slot>
 
