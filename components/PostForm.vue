@@ -10,7 +10,7 @@ import {
 } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock, SectionBlock, PostBlock } from "@/clients/slack/models";
+import { ImageBlock, SectionBlock } from "@/clients/slack/models";
 import { doSinglePatternMatching } from "@/utils/strings";
 import { isEmoji, usersByNameCache } from "@/global-cache";
 import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
@@ -19,6 +19,10 @@ import { updateLastUsedEmojis } from "@/utils/storage";
 
 const props = defineProps<{
   dest: Dest;
+}>();
+
+const emit = defineEmits<{
+  posted: [];
 }>();
 
 const text = ref("");
@@ -79,6 +83,8 @@ const postMessage = async () => {
   text.value = "";
   files.value = [];
   showSuccessToast(`投稿に成功しました`);
+
+  emit("posted");
 };
 
 const handlePaste = async (e: ClipboardEvent) => {
@@ -171,7 +177,7 @@ const usedEmojis = computed(() =>
       </UserSuggestWrapper>
     </EmojiSuggestWrapper>
 
-    <div class="d-flex ga-3">
+    <div class="d-flex ga-3 mb-3">
       <img v-for="user in mentionUsers" :src="user.profile.image_48" />
     </div>
 
@@ -181,13 +187,14 @@ const usedEmojis = computed(() =>
       :file="files[0]"
       width="160px"
       height="160px"
+      class="mb-3"
     />
 
     <v-btn
       :disabled="(!text && files.length === 0) || uploading || posting"
       :loading="posting"
       style="width: 240px"
-      class="mt-3 mb-1"
+      class="mb-3"
       prepend-icon="mdi-send-variant"
       color="primary"
       @click="postMessage"

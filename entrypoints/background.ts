@@ -5,7 +5,6 @@ import { uniqBy } from "@/utils/collections";
 import {
   crucialMessageConditionsStorage,
   refreshTokenStorage,
-  unreadMessagesStorage,
   updateMessages,
 } from "@/utils/storage";
 import { AsyncResult, DateTime, err, ok } from "owlelia";
@@ -72,7 +71,6 @@ async function refreshTokens() {
     return;
   }
 
-  console.debug(res);
   await accessTokenStorage.setValue(res.access_token);
   await refreshTokenStorage.setValue(res.refresh_token);
 }

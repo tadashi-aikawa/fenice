@@ -14,8 +14,8 @@ interface Props {
   message: Message;
   reactionEmojis?: string[];
   readIcon?: `mdi-${string}`;
-  enableReply?: boolean;
   enableStock?: boolean;
+  enableThread?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   reactionEmojis: () => [],
@@ -24,8 +24,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   "click:read": [message: Message];
   "click:reaction": [message: Message, emoji: string];
-  "click:reply": [message: Message];
   "click:stock": [message: Message];
+  "click:thread": [message: Message];
 }>();
 
 const reactedEmojis = ref<Set<string>>(new Set());
@@ -66,12 +66,12 @@ const handleLockOn = async () => {
   showSuccessToast("スレッドロックオンに成功しました");
 };
 
-const handleReply = () => {
-  emit("click:reply", props.message);
-};
-
 const handleStock = () => {
   emit("click:stock", props.message);
+};
+
+const handleShowThread = () => {
+  emit("click:thread", props.message);
 };
 
 const postUser = computed<User | null>(
@@ -83,6 +83,7 @@ const postUsername = computed(
 const postUserImage = computed(
   () => postUser.value?.profile.image_72 ?? "/icon/384.png",
 );
+const isThread = computed(() => Message.isThread(props.message));
 
 const channel = computed(() => props.message.channel);
 const channelName = computed(() => toDisplayChannelName(channel.value));
@@ -98,11 +99,14 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
 
         <div style="width: 675px" class="px-3 pt-1 pb-2">
           <div class="d-flex align-center my-1 ga-2">
-            <div class="text-body-2 font-weight-bold d-flex align-top ga-2">
+            <div class="d-flex align-top ga-2">
               <img :src="postUserImage" width="36px" height="36px" />
               <div>
-                <div>
-                  {{ postUsername }}
+                <div class="d-flex align-center">
+                  <span class="text-body-2 font-weight-bold">{{
+                    postUsername
+                  }}</span>
+                  <div v-if="isThread">thread</div>
                 </div>
                 <div
                   class="d-flex align-center text-caption text-grey-darken-1"
@@ -159,17 +163,17 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               style="color: goldenrod"
             />
             <v-btn
-              v-if="enableReply"
-              icon="mdi-reply"
-              @click="handleReply"
+              v-if="enableStock"
+              icon="mdi-message-alert-outline"
+              @click="handleStock"
               variant="tonal"
               density="compact"
               style="color: goldenrod"
             />
             <v-btn
-              v-if="enableStock"
-              icon="mdi-message-alert-outline"
-              @click="handleStock"
+              v-if="enableThread"
+              icon="mdi-forum"
+              @click="handleShowThread"
               variant="tonal"
               density="compact"
               style="color: goldenrod"

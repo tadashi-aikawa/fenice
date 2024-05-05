@@ -7,7 +7,6 @@ import PostCard from "./PostCard.vue";
 import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
-import PostForm from "./PostForm.vue";
 
 const messages = ref<Message[]>([]);
 const reactionEmojis = ref<string[]>([]);
@@ -22,8 +21,6 @@ onMounted(async () => {
     reactionEmojis.value = newValue;
   });
 });
-
-const rightDrawer = ref<boolean>(false);
 
 const markAsRead = async (message: Message) => {
   const unreadMessages = await unreadMessagesStorage.getValue();
@@ -43,12 +40,10 @@ const markAllAsRead = async () => {
   }
 };
 
-const { reactAsEmoji } = useCardActions();
+const { reactAsEmoji, showThread } = useCardActions();
 
-const messageToReply = ref<Message | null>(null);
-const handleReply = (message: Message) => {
-  rightDrawer.value = true;
-  messageToReply.value = message;
+const handleThread = (message: Message) => {
+  showThread(message.channel.id, Message.getThreadTs(message) ?? message.ts);
 };
 </script>
 
@@ -64,10 +59,10 @@ const handleReply = (message: Message) => {
           v-for="message in messages"
           read-icon="mdi-check-circle-outline"
           :message="message"
-          enable-reply
+          enable-thread
           @click:read="markAsRead"
           @click:reaction="reactAsEmoji"
-          @click:reply="handleReply"
+          @click:thread="handleThread"
           :reaction-emojis="reactionEmojis"
         />
       </transition-group>
@@ -80,19 +75,6 @@ const handleReply = (message: Message) => {
       @click="markAllAsRead"
       >すべて既読にする</v-btn
     >
-
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      location="end"
-      temporary
-      width="800"
-    >
-      <div v-if="messageToReply" class="d-flex flex-column align-center pa-5">
-        <PostForm :dest="messageToReply" />
-        <span class="py-3" style="font-size: 24px">↓</span>
-        <PostCard :message="messageToReply" />
-      </div>
-    </v-navigation-drawer>
   </div>
 </template>
 

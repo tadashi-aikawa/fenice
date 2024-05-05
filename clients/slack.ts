@@ -36,6 +36,21 @@ export async function getSearchMessages<C extends string | undefined>(args: {
   });
 }
 
+// default: 1000件なのでcursorは一旦定義に含めない
+export async function getConversationsReplies(args: {
+  channel: string;
+  ts: string;
+}) {
+  return await getRequest<{
+    ok: boolean;
+    has_more: boolean;
+    messages: Omit<Message, "channel" | "permalink">[];
+  }>({
+    path: "/conversations.replies",
+    query: args,
+  });
+}
+
 export async function getEmojiList() {
   return await getRequest<{
     ok: boolean;

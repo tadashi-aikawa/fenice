@@ -12,6 +12,11 @@ export function toBrowserUrl(permalink: string): string {
   return permalink.replace("/archives", "/messages");
 }
 
+export function getQueriesFromUrl(url: string, query: string): string | null {
+  const params = new URL(url).searchParams;
+  return params.get(query);
+}
+
 /**
  * 1種類のパターンでパターンマッチした結果を文字列のリストで取得します
  */

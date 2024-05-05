@@ -1,3 +1,4 @@
+import { getQueriesFromUrl } from "@/utils/strings";
 import { AttachmentField, AttachmentMessageBlock, Block } from "./blockModels";
 
 // TODO: Blockと統合したい。。
@@ -84,6 +85,18 @@ export interface Message {
   no_reactions: boolean;
   attachments?: Attachment[];
   files?: File[];
+  reply_count?: number; // threadの先頭だけ
+  reply_user_count?: number; // threadの先頭だけ
+  reply_users?: string[]; // threadの先頭だけ
+}
+export namespace Message {
+  export function isThread(message: Message): boolean {
+    return message.permalink.includes("thread_ts=");
+  }
+
+  export function getThreadTs(message: Message): string | null {
+    return getQueriesFromUrl(message.permalink, "thread_ts");
+  }
 }
 
 export interface Channel {

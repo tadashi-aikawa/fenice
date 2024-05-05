@@ -15,6 +15,8 @@ const searchCondition = ref<SearchCondition>({
   option: { bot: false },
 });
 
+const { reactAsEmoji, showThread } = useCardActions();
+
 const loading = ref(false);
 const messages = ref<Message[]>([]);
 
@@ -74,8 +76,6 @@ const searchPaging = async () => {
   messages.value = messages.value.concat(res.messages.matches);
 };
 
-const { reactAsEmoji } = useCardActions();
-
 const hideMessage = (message: Message) => {
   messages.value = messages.value.filter((x) => x.ts !== message.ts);
 };
@@ -87,6 +87,10 @@ const handleUpdateSearchCondition = (cond: SearchCondition) => {
 const handleStock = async (message: Message) => {
   await updateMessages([message], { forceUnread: true });
   showSuccessToast("重要メッセージに追加しました");
+};
+
+const handleThread = (message: Message) => {
+  showThread(message.channel.id, Message.getThreadTs(message) ?? message.ts);
 };
 </script>
 
@@ -125,11 +129,12 @@ const handleStock = async (message: Message) => {
               :message="message"
               :reaction-emojis="reactionEmojis"
               read-icon="mdi-eye-off"
-              disable-unread
               enable-stock
+              enable-thread
               @click:reaction="reactAsEmoji"
               @click:read="hideMessage"
               @click:stock="handleStock"
+              @click:thread="handleThread"
             />
           </template>
         </transition-group>

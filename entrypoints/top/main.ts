@@ -23,7 +23,12 @@ import "prismjs/components/prism-json";
 // vue-mention
 import "floating-vue/dist/style.css";
 
+// Pinia
+import { createPinia } from "pinia";
+const pinia = createPinia();
+
 createApp(App)
   .use(vuetify)
   .use(Vue3Toastify, { autoClose: 1000 })
+  .use(pinia)
   .mount("#app");

@@ -28,16 +28,20 @@ import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { onKeyStroke } from "@vueuse/core";
 import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
 import * as pkg from "../../package.json";
+import { useThreadDrawerStore } from "@/stores";
+import ThreadContainer from "@/components/ThreadContainer.vue";
 
 const version = pkg.version;
 
 type Page = "zen-times" | "crucial-messages" | "settings";
 const page = ref<Page>("zen-times");
 
-const rightDrawer = ref<boolean>(false);
+const searchDrawer = ref<boolean>(false);
 let serialTabNo = 1;
 const tabs = ref<number[]>([1]);
 const currentTab = ref(1);
+
+const threadDrawerStore = useThreadDrawerStore();
 
 // nullは未取得. 空文字はなし
 const accessToken = ref<string | null>(null);
@@ -232,18 +236,28 @@ const handleClickRemoveTab = (tab: number) => {
   }
   tabs.value = tabs.value.filter((x) => x !== tab);
 };
+const handleThreadPosted = () => {
+  threadDrawerStore.show = false;
+};
 
 onKeyStroke("p", (e) => {
   // Alt+P でトグル
   if (hasModifierKeyPressedOnly(e, "alt")) {
-    rightDrawer.value = !rightDrawer.value;
+    searchDrawer.value = !searchDrawer.value;
   }
 });
 onKeyStroke("Escape", (e) => {
   // ESCで閉じる
-  if (!hasModifierKeyPressed(e)) {
-    rightDrawer.value = false;
+  if (hasModifierKeyPressed(e)) {
+    return;
   }
+
+  if (threadDrawerStore.show) {
+    threadDrawerStore.show = false;
+    return;
+  }
+
+  searchDrawer.value = false;
 });
 onKeyStroke("8", (e) => {
   if (hasModifierKeyPressedOnly(e, "alt")) {
@@ -329,11 +343,20 @@ onKeyStroke("9", (e) => {
         variant="tonal"
         color="primary"
         style="position: absolute; bottom: 15px; right: 15px"
-        @click="rightDrawer = !rightDrawer"
+        @click="searchDrawer = !searchDrawer"
       ></v-btn>
 
       <v-navigation-drawer
-        v-model="rightDrawer"
+        v-model="threadDrawerStore.show"
+        location="end"
+        width="750"
+        temporary
+      >
+        <ThreadContainer @posted="handleThreadPosted" />
+      </v-navigation-drawer>
+
+      <v-navigation-drawer
+        v-model="searchDrawer"
         location="end"
         width="800"
         temporary
