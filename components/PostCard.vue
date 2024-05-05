@@ -102,7 +102,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <div class="d-flex align-top ga-2">
               <img :src="postUserImage" width="36px" height="36px" />
               <div>
-                <div class="d-flex align-center">
+                <div class="d-flex">
                   <span class="text-body-2 font-weight-bold">{{
                     postUsername
                   }}</span>
