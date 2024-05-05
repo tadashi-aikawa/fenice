@@ -240,13 +240,46 @@ const handleThreadPosted = () => {
   threadDrawerStore.show = false;
 };
 
+onKeyStroke("j", (e) => {
+  // Alt+J で2画面のトグル
+  if (!hasModifierKeyPressedOnly(e, "alt")) {
+    return;
+  }
+  // accessTokenがない場合は認証できていないので無効
+  if (!accessToken.value) {
+    return;
+  }
+
+  switch (page.value) {
+    case "zen-times":
+      page.value = "crucial-messages";
+      break;
+    case "crucial-messages":
+      page.value = "zen-times";
+      break;
+    case "settings":
+      page.value = "zen-times";
+      break;
+    default:
+      throw new ExhaustiveError(page.value);
+  }
+});
+
 onKeyStroke("p", (e) => {
+  // accessTokenがない場合は認証できていないので無効
+  if (!accessToken.value) {
+    return;
+  }
   // Alt+P でトグル
   if (hasModifierKeyPressedOnly(e, "alt")) {
     searchDrawer.value = !searchDrawer.value;
   }
 });
 onKeyStroke("Escape", (e) => {
+  // accessTokenがない場合は認証できていないので無効
+  if (!accessToken.value) {
+    return;
+  }
   // ESCで閉じる
   if (hasModifierKeyPressed(e)) {
     return;
@@ -260,12 +293,20 @@ onKeyStroke("Escape", (e) => {
   searchDrawer.value = false;
 });
 onKeyStroke("8", (e) => {
+  // accessTokenがない場合は認証できていないので無効
+  if (!accessToken.value) {
+    return;
+  }
   if (hasModifierKeyPressedOnly(e, "alt")) {
     movePreviousTab();
     e.preventDefault();
   }
 });
 onKeyStroke("9", (e) => {
+  // accessTokenがない場合は認証できていないので無効
+  if (!accessToken.value) {
+    return;
+  }
   if (hasModifierKeyPressedOnly(e, "alt")) {
     moveNextTab();
     e.preventDefault();
@@ -294,7 +335,6 @@ onKeyStroke("9", (e) => {
             title="禅 times"
             value="zen-times"
             :active="page === 'zen-times'"
-            accesskey="k"
           >
             <template v-slot:prepend>
               <v-icon icon="mdi-meditation" size="x-large"></v-icon>
@@ -312,7 +352,6 @@ onKeyStroke("9", (e) => {
               title="重要メッセージ"
               value="crucial-messages"
               :active="page === 'crucial-messages'"
-              accesskey="j"
             >
               <template v-slot:prepend>
                 <v-icon icon="mdi-message-alert" size="x-large"></v-icon>
