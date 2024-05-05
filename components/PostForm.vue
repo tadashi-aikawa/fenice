@@ -4,8 +4,8 @@ import {
   Dest,
   Resource,
   dest2channel,
-  isChannel,
   isImageResource,
+  isMessage,
   isVideoResource,
 } from "@/models";
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
@@ -23,7 +23,6 @@ const props = defineProps<{
 
 const text = ref("");
 const files = ref<Resource[]>([]);
-const excludeCaption = ref(false);
 
 const uploading = ref(false);
 const posting = ref(false);
@@ -58,37 +57,12 @@ const postMessage = async () => {
         text: `<${x.url!}| >`,
       },
     }));
-  const captionBlocks: PostBlock[] = excludeCaption.value
-    ? []
-    : [
-        { type: "divider" },
-        {
-          type: "context",
-          elements: [
-            {
-              type: "image",
-              image_url:
-                "https://github.com/tadashi-aikawa/fenice/raw/master/public/icon/384.png",
-              alt_text: "fenice",
-            },
-            {
-              type: "mrkdwn",
-              text: "Posted via Fenice",
-            },
-          ],
-        },
-      ];
 
   const _dest = props.dest;
   const res = await postChatPostMessage({
     channel: dest2channel(_dest).id,
-    thread_ts: !isChannel(_dest) ? _dest.ts : undefined,
-    blocks: [
-      ...sectionBlocks,
-      ...imageBlocks,
-      ...videoBlocks,
-      ...captionBlocks,
-    ],
+    thread_ts: isMessage(_dest) ? _dest.ts : undefined,
+    blocks: [...sectionBlocks, ...imageBlocks, ...videoBlocks],
   });
 
   const [_, err] = res.unwrap();
@@ -219,12 +193,5 @@ const usedEmojis = computed(() =>
       @click="postMessage"
       >ポストする</v-btn
     >
-
-    <v-checkbox
-      v-model="excludeCaption"
-      color="primary"
-      label="captionを投稿に含めない"
-      hide-details
-    />
   </v-card>
 </template>
