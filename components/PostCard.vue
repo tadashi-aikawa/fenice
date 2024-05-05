@@ -106,7 +106,16 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
                   <span class="text-body-2 font-weight-bold">{{
                     postUsername
                   }}</span>
-                  <div v-if="isThread">thread</div>
+                  <v-chip
+                    v-if="isThread"
+                    class="ml-2"
+                    color="#AAA"
+                    density="compact"
+                    size="small"
+                    label
+                  >
+                    reply to a thread
+                  </v-chip>
                 </div>
                 <div
                   class="d-flex align-center text-caption text-grey-darken-1"
