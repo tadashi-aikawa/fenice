@@ -8,6 +8,8 @@ import { sleep } from "@/utils/os";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
 
+const { reactAsEmoji, showThread } = useCardActions();
+
 const messages = ref<Message[]>([]);
 const reactionEmojis = ref<string[]>([]);
 onMounted(async () => {
@@ -39,12 +41,6 @@ const markAllAsRead = async () => {
     await sleep(10);
   }
 };
-
-const { reactAsEmoji, showThread } = useCardActions();
-
-const handleThread = (message: Message) => {
-  showThread(message.channel.id, Message.getThreadTs(message) ?? message.ts);
-};
 </script>
 
 <template>
@@ -62,7 +58,7 @@ const handleThread = (message: Message) => {
           enable-thread
           @click:read="markAsRead"
           @click:reaction="reactAsEmoji"
-          @click:thread="handleThread"
+          @click:thread="showThread"
           :reaction-emojis="reactionEmojis"
         />
       </transition-group>

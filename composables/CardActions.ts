@@ -37,8 +37,8 @@ export function useCardActions() {
     showSuccessToast("重要メッセージに追加しました");
   };
 
-  const showThread = (channel: string, threadTs: string) => {
-    openThread(channel, threadTs);
+  const showThread = (message: Message) => {
+    openThread(message.channel.id, Message.getThreadTs(message) ?? message.ts);
   };
 
   return {
