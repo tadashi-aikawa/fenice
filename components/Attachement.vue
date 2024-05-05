@@ -64,14 +64,15 @@ defineProps<{
     </template>
 
     <template v-else>
-      <v-sheet max-width="625" class="mb-3" :elevation="2">
+      <v-sheet max-width="480" class="mb-3" :elevation="2">
         <div class="d-flex">
-          <div style="width: 625px" class="px-3 pt-1 pb-2">
+          <div style="width: 480px" class="px-3 pt-1 pb-2">
             <div class="text-caption d-flex flex-column align-top ga-1">
               <img
                 v-if="attachment.image_url"
                 :src="attachment.image_url"
-                style="max-width: 600px"
+                style="max-width: 480px"
+                class="pb-3"
               />
 
               <div v-if="attachment.service_name" class="d-flex ga-1">
