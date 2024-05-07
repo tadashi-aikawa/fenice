@@ -124,6 +124,8 @@ export interface File {
     | "gdoc"
     | "gpres"
     | "pdf"
+    | "xlsx"
+    | "gsheet"
     | string;
   mimetype: string;
   name: string;
