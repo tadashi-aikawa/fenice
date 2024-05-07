@@ -63,11 +63,18 @@ const postMessage = async () => {
     }));
 
   const _dest = props.dest;
-  const res = await postChatPostMessage({
-    channel: dest2channel(_dest).id,
-    thread_ts: isMessage(_dest) ? _dest.ts : undefined,
-    blocks: [...sectionBlocks, ...imageBlocks, ...videoBlocks],
-  });
+  const hasAttachments = imageBlocks.length > 0 || videoBlocks.length > 0;
+
+  const channel = dest2channel(_dest).id;
+  const thread_ts = isMessage(_dest) ? _dest.ts : undefined;
+
+  const res = hasAttachments
+    ? await postChatPostMessage({
+        channel,
+        thread_ts,
+        blocks: [...sectionBlocks, ...imageBlocks, ...videoBlocks],
+      })
+    : await postChatPostMessage({ channel, thread_ts, text: text.value });
 
   const [_, err] = res.unwrap();
 
