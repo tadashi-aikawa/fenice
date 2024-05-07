@@ -28,7 +28,7 @@ const emit = defineEmits<{
 const text = ref("");
 const files = ref<Resource[]>([]);
 
-const uploading = ref(false);
+const uploadings = ref<boolean[]>([]);
 const posting = ref(false);
 
 const postMessage = async () => {
@@ -109,9 +109,15 @@ const handlePaste = async (e: ClipboardEvent) => {
 
   e.preventDefault();
 
-  files.value = [{ type: fileType, blobUrl: URL.createObjectURL(file) }];
+  const i = files.value.length;
 
-  uploading.value = true;
+  const attachmentFile = {
+    type: fileType,
+    blobUrl: URL.createObjectURL(file),
+  } as Resource;
+  files.value.push(attachmentFile);
+  uploadings.value.push(true);
+
   const _dest = props.dest;
   const [res, err] = (
     await postFilesUpload({
@@ -119,14 +125,15 @@ const handlePaste = async (e: ClipboardEvent) => {
       file,
     })
   ).unwrap();
-  uploading.value = false;
+
+  uploadings.value[i] = false;
 
   if (err) {
     showErrorToast(err);
     return;
   }
 
-  const f = files.value[0];
+  const f = files.value[i];
   switch (f.type) {
     case "image":
       f.url = res.file.url_private;
@@ -156,6 +163,22 @@ const usedEmojis = computed(() =>
     (x) => x,
   ),
 );
+
+const enabledPost = computed(() => {
+  if (!text.value && files.value.length === 0) {
+    return false;
+  }
+
+  if (uploadings.value.some(Boolean)) {
+    return false;
+  }
+
+  if (posting.value) {
+    return false;
+  }
+
+  return true;
+});
 </script>
 
 <template>
@@ -181,17 +204,19 @@ const usedEmojis = computed(() =>
       <img v-for="user in mentionUsers" :src="user.profile.image_48" />
     </div>
 
-    <UploadingImage
-      v-if="files.length > 0"
-      :uploading="uploading"
-      :file="files[0]"
-      width="160px"
-      height="160px"
-      class="mb-3"
-    />
+    <div class="d-flex ga-5">
+      <UploadingImage
+        v-for="(f, i) in files"
+        :uploading="uploadings[i]"
+        :file="f"
+        width="160px"
+        height="160px"
+        class="mb-3"
+      />
+    </div>
 
     <v-btn
-      :disabled="(!text && files.length === 0) || uploading || posting"
+      :disabled="!enabledPost"
       :loading="posting"
       style="width: 240px"
       class="mb-3"
