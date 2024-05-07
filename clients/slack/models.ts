@@ -114,10 +114,23 @@ export interface Channel {
 }
 
 export interface File {
-  filetype: string; // png など
+  filetype:
+    | "png"
+    | "jpg"
+    | "jpeg"
+    | "webp"
+    | "gif"
+    | "mp4"
+    | "gdoc"
+    | "gpres"
+    | "pdf"
+    | string;
   mimetype: string;
   name: string;
   url_private: string;
+  is_external: boolean;
+  thumb_480?: string; // GoogleDocでは確認
+  thumb_pdf?: string; // PDFのみ
 }
 
 export interface Attachment {
