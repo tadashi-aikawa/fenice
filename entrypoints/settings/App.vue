@@ -5,6 +5,7 @@ import {
   crucialMessageConditionsStorage,
   emojiCacheStorage,
   quickReactionEmojisStorage,
+  visibledButtonsStorage,
 } from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import { DateTime } from "owlelia";
@@ -15,6 +16,7 @@ import {
   clearUsersCaches,
 } from "@/global-cache";
 import Emoji from "@/components/blocks/Emoji.vue";
+import { CardActionButtonType, useSettingStore } from "@/stores";
 
 interface State {
   tab: "auth" | "search" | "appearance" | "cache";
@@ -22,6 +24,7 @@ interface State {
   clientId: string;
   clientSecret: string;
   crucialMessageConditions: string;
+  visibledButtons: CardActionButtonType[];
   quickReactionEmojis: string;
   cache: {
     users?: { lastUpdated: string; num: number };
@@ -36,9 +39,12 @@ const state = reactive<State>({
   clientId: "",
   clientSecret: "",
   crucialMessageConditions: "",
+  visibledButtons: [],
   quickReactionEmojis: "",
   cache: {},
 });
+
+const settingStore = useSettingStore();
 
 const updateCacheMeta = async () => {
   const userCache = await usersCacheStorage.getValue();
@@ -73,6 +79,7 @@ onBeforeMount(async () => {
   state.clientSecret = (await clientSecretStorage.getValue()) ?? "";
   state.crucialMessageConditions =
     (await crucialMessageConditionsStorage.getValue())?.join("\n") ?? "";
+  state.visibledButtons = settingStore.visibledButtons;
   state.quickReactionEmojis =
     (await quickReactionEmojisStorage.getValue())?.join("\n") ?? "";
 
@@ -97,6 +104,10 @@ const handleClickSave = async () => {
   await clientSecretStorage.setValue(state.clientSecret);
   await crucialMessageConditionsStorage.setValue(
     smartLineBreakSplit(state.crucialMessageConditions),
+  );
+  // `state.visibledButtons` は Proxy {0: .., 1: .., ...} のようになるので...
+  await visibledButtonsStorage.setValue(
+    Array.from(state.visibledButtons.values()),
   );
   await quickReactionEmojisStorage.setValue(
     smartLineBreakSplit(state.quickReactionEmojis),
@@ -193,19 +204,114 @@ const emojis = computed(() => {
         </v-window-item>
 
         <v-window-item value="appearance">
-          <v-textarea
-            v-model="state.quickReactionEmojis"
-            label="リアクションの絵文字 (改行区切りで複数指定)(ex: smile)"
-            auto-grow
-            :max-rows="20"
-          />
-          <div class="d-flex ga-2 flex-wrap">
-            <template v-for="emoji in emojis">
-              <v-btn variant="elevated" icon density="compact">
-                <Emoji :item="{ type: 'emoji', name: emoji }" />
-              </v-btn>
-            </template>
-          </div>
+          <v-list lines="two">
+            <v-list-item
+              title="利用するボタン"
+              subtitle="メッセージカードに表示するアクションボタン"
+            >
+              <template v-slot:append>
+                <v-btn-toggle
+                  v-model="state.visibledButtons"
+                  multiple
+                  color="primary"
+                  class="ga-2"
+                  rounded="0"
+                >
+                  <v-tooltip
+                    text="ブラウザでメッセージを開く"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-google-chrome"
+                        value="open-browser"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip text="アプリでメッセージを開く" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-slack"
+                        value="open-slack"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip
+                    text="スレッドを禅timesの投稿ターゲットにする"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-target-variant"
+                        value="lock-on"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip
+                    text="メッセージを重要メッセージに追加する"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-message-alert-outline"
+                        value="stock"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip
+                    text="メッセージの生データをJSONで表示する"
+                    location="bottom"
+                  >
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-code-json"
+                        value="json"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                </v-btn-toggle>
+              </template>
+            </v-list-item>
+
+            <v-list-item
+              title="利用する絵文字"
+              subtitle="メッセージにリアクションする絵文字を登録"
+            >
+              <div class="d-flex ga-2 flex-wrap py-3 pr-3">
+                <template v-for="emoji in emojis">
+                  <v-btn variant="elevated" icon density="compact">
+                    <Emoji :item="{ type: 'emoji', name: emoji }" />
+                  </v-btn>
+                </template>
+              </div>
+              <template v-slot:append>
+                <v-textarea
+                  v-model="state.quickReactionEmojis"
+                  label="改行区切りで複数指定"
+                  placeholder="smile"
+                  auto-grow
+                  :max-rows="10"
+                  style="width: 340px"
+                  @keydown.stop
+                />
+              </template>
+            </v-list-item>
+          </v-list>
         </v-window-item>
 
         <v-window-item value="cache">

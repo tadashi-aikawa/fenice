@@ -1,6 +1,9 @@
 import { Channel, Message, User, Usergroup } from "@/clients/slack/models";
 import { DateTime } from "owlelia";
 
+// ----------------------------------
+// App state
+// ----------------------------------
 export const accessTokenStorage =
   storage.defineItem<string>("local:accessToken");
 export const refreshTokenStorage =
@@ -17,7 +20,9 @@ export const lockOnMessageStorage = storage.defineItem<Message | null>(
   { defaultValue: null },
 );
 
+// ----------------------------------
 // Message
+// ----------------------------------
 export const unreadMessagesStorage = storage.defineItem<Message[]>(
   "local:unreadMessages",
   { defaultValue: [] },
@@ -54,7 +59,9 @@ export async function updateMessages(
   return newMessages;
 }
 
+// ----------------------------------
 // Personalized
+// ----------------------------------
 export const lastMentionedUserMapStorage = storage.defineItem<
   Record<string, number>
 >("local:lastMentionedUserMap", { defaultValue: {} });
@@ -76,24 +83,38 @@ export async function updateLastUsedEmojis(emojis: string[]) {
   });
 }
 
+// ----------------------------------
 // Settings
+// ----------------------------------
+
+// auth
 export const clientIdStorage = storage.defineItem<string>("local:clientId");
 export const clientSecretStorage =
   storage.defineItem<string>("local:clientSecret");
+
+// search
 export const crucialMessageConditionsStorage = storage.defineItem<string[]>(
   "local:crucialMessageConditionsStorage",
   { defaultValue: [] },
 ); // 改行区切り複数指定
-export const maxNumberOfEmojiSuggestionsStorage = storage.defineItem<number>(
-  "local:maxNumberOfEmojiSuggestions",
-  { defaultValue: 20 },
+
+// appearance
+export const visibledButtonsStorage = storage.defineItem<string[]>(
+  "local:visibledButtonStorage",
+  { defaultValue: ["open-browser", "lock-on", "stock"] },
 );
 export const quickReactionEmojisStorage = storage.defineItem<string[]>(
   "local:quickReactionEmojisStorage",
   { defaultValue: [] },
 ); // 改行区切り複数指定
+export const maxNumberOfEmojiSuggestionsStorage = storage.defineItem<number>(
+  "local:maxNumberOfEmojiSuggestions",
+  { defaultValue: 20 },
+); // 隠しオプション(非公開)
 
+// ----------------------------------
 // Caches
+// ----------------------------------
 export const DEFAULT_USERS_CACHE = { updated: -1, members: [] };
 export const usersCacheStorage = storage.defineItem<{
   updated: number;

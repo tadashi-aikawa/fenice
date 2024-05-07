@@ -9,6 +9,7 @@ import { toBrowserUrl } from "@/utils/strings";
 import File from "./File.vue";
 import Emoji from "./blocks/Emoji.vue";
 import { lockOnMessageStorage } from "@/utils/storage";
+import { useSettingStore } from "@/stores";
 
 interface Props {
   message: Message;
@@ -29,6 +30,8 @@ const emit = defineEmits<{
 }>();
 
 const reactedEmojis = ref<Set<string>>(new Set());
+
+const settingStore = useSettingStore();
 
 const handleOpenBrowser = async () => {
   const url = toBrowserUrl(props.message.permalink);
@@ -87,6 +90,8 @@ const isThread = computed(() => Message.isThread(props.message));
 
 const channel = computed(() => props.message.channel);
 const channelName = computed(() => toDisplayChannelName(channel.value));
+
+const actions = computed(() => settingStore.visibledButtons);
 </script>
 
 <template>
@@ -138,9 +143,11 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
             <v-menu location="end" :close-on-content-click="false">
               <template v-slot:activator="{ props }">
                 <v-btn
+                  v-if="actions.includes('json')"
                   icon="mdi-code-json"
-                  variant="plain"
+                  variant="tonal"
                   density="compact"
+                  style="color: goldenrod"
                   v-bind="props"
                 />
               </template>
@@ -151,6 +158,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               />
             </v-menu>
             <v-btn
+              v-if="actions.includes('open-browser')"
               icon="mdi-google-chrome"
               @click="handleOpenBrowser"
               variant="tonal"
@@ -158,6 +166,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               style="color: goldenrod"
             />
             <v-btn
+              v-if="actions.includes('open-slack')"
               icon="mdi-slack"
               @click="handleOpenSlack"
               variant="tonal"
@@ -165,6 +174,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               style="color: goldenrod"
             />
             <v-btn
+              v-if="actions.includes('lock-on')"
               icon="mdi-target-variant"
               @click="handleLockOn"
               variant="tonal"
@@ -172,7 +182,7 @@ const channelName = computed(() => toDisplayChannelName(channel.value));
               style="color: goldenrod"
             />
             <v-btn
-              v-if="enableStock"
+              v-if="enableStock && actions.includes('stock')"
               icon="mdi-message-alert-outline"
               @click="handleStock"
               variant="tonal"

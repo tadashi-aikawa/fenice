@@ -2,6 +2,34 @@ import { getConversationsReplies } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { channelsByIdCache } from "@/global-cache";
 import { defineStore } from "pinia";
+import { visibledButtonsStorage } from "@/utils/storage";
+
+export const cardActionButtonTypes = [
+  "open-browser",
+  "open-slack",
+  "lock-on",
+  "stock",
+  "json",
+];
+export type CardActionButtonType = (typeof cardActionButtonTypes)[number];
+
+// 設定に関するグローバルストア
+// TODO: ここに集約したい
+export const useSettingStore = defineStore("setting", () => {
+  const visibledButtons = ref<CardActionButtonType[]>([]);
+  visibledButtonsStorage.watch((xs) => {
+    visibledButtons.value = xs;
+  });
+
+  const init = async () => {
+    visibledButtons.value = await visibledButtonsStorage.getValue();
+  };
+  init();
+
+  return {
+    visibledButtons,
+  };
+});
 
 export const useThreadDrawerStore = defineStore("threadDrawer", () => {
   const show = ref(false);
