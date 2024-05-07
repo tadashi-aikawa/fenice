@@ -89,6 +89,7 @@ const postMessage = async () => {
 
   text.value = "";
   files.value = [];
+  uploadings.value = [];
   showSuccessToast(`投稿に成功しました`);
 
   emit("posted");
