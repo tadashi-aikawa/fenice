@@ -7,8 +7,21 @@ const props = defineProps<{
 }>();
 
 const tree = computed(() =>
-  // XXX: `<http://...|hoge>` がリンクではなく丸ごとインラインコードとみなされてしまうため無理やり回避
-  slackMessageParser(props.text.replaceAll("`<", "<").replaceAll(">`", ">")),
+  slackMessageParser(
+    // XXX: slack-message-parserの挙動により一部無理やり調整している
+    //      完璧な対応は不可能なので頻度の高いものを優先
+    props.text
+      .split("\n")
+      .map((line) =>
+        line
+          // Block quoteが成立しない問題の回避
+          .replaceAll(/^>/g, "&gt;")
+          // `<url|name>` がそのまま表示されてしまう問題の回避
+          .replaceAll(/`</g, "<")
+          .replaceAll(/>`/g, ">"),
+      )
+      .join("\n"),
+  ),
 );
 </script>
 

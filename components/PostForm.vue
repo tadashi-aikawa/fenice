@@ -16,6 +16,8 @@ import { isEmoji, usersByNameCache } from "@/global-cache";
 import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
 import UserSuggestWrapper from "./UserSuggestWrapper.vue";
 import { updateLastUsedEmojis } from "@/utils/storage";
+import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
+import { refDebounced, onKeyStroke } from "@vueuse/core";
 
 const props = defineProps<{
   dest: Dest;
@@ -25,6 +27,7 @@ const emit = defineEmits<{
   posted: [];
 }>();
 
+const tab = ref("edit");
 const text = ref("");
 const files = ref<Resource[]>([]);
 
@@ -156,7 +159,7 @@ const handlePaste = async (e: ClipboardEvent) => {
 
 const mentionUsers = computed(() =>
   uniqBy(
-    doSinglePatternMatching(text.value, /@[^ \n]+/g)
+    doSinglePatternMatching(debouncedText.value, /@[^ \n]+/g)
       .map((x) => usersByNameCache[x.slice(1)])
       .filter(isPresent),
     (x) => x.id,
@@ -165,7 +168,7 @@ const mentionUsers = computed(() =>
 
 const usedEmojis = computed(() =>
   uniqBy(
-    doSinglePatternMatching(text.value, /:[^ \n]+:/g)
+    doSinglePatternMatching(debouncedText.value, /:[^ \n]+:/g)
       .map((x) => x.slice(1, x.length - 1))
       .filter(isEmoji),
     (x) => x,
@@ -187,26 +190,87 @@ const enabledPost = computed(() => {
 
   return true;
 });
+
+const debouncedText = refDebounced(text, 300);
+
+const input = ref<HTMLElement | null>();
+onKeyStroke("o", (e) => {
+  // Alt+O でトグル
+  if (hasModifierKeyPressedOnly(e, "alt")) {
+    if (tab.value === "edit") {
+      tab.value = "preview";
+    } else {
+      tab.value = "edit";
+      setTimeout(() => {
+        input?.value?.focus();
+      }, 0);
+    }
+  }
+});
 </script>
 
 <template>
   <v-card
     v-if="dest"
     :elevation="4"
-    class="d-flex flex-column align-center pa-5 pb-1"
+    class="d-flex flex-column align-center pa-5 pt-3 pb-1"
   >
-    <EmojiSuggestWrapper>
-      <UserSuggestWrapper>
-        <v-textarea
-          v-model="text"
-          style="width: 640px"
-          :rows="12"
-          @paste="handlePaste"
-          @keyup.ctrl.enter.exact="postMessage"
-          @keyup.meta.enter.exact="postMessage"
-        />
-      </UserSuggestWrapper>
-    </EmojiSuggestWrapper>
+    <div>
+      <v-tabs
+        v-model="tab"
+        align-tabs="center"
+        color="deep-purple-accent-4"
+        density="compact"
+      >
+        <v-tab value="edit">Edit</v-tab>
+        <v-tab value="preview">Preview</v-tab>
+      </v-tabs>
+
+      <v-window v-model="tab" class="mb-3">
+        <v-window-item
+          key="edit"
+          value="edit"
+          transition="none"
+          reverse-transition="none"
+        >
+          <EmojiSuggestWrapper>
+            <UserSuggestWrapper>
+              <v-textarea
+                ref="input"
+                v-model="text"
+                style="width: 640px"
+                :rows="12"
+                hide-details
+                @paste="handlePaste"
+                @keyup.ctrl.enter.exact="postMessage"
+                @keyup.meta.enter.exact="postMessage"
+              />
+            </UserSuggestWrapper>
+          </EmojiSuggestWrapper>
+        </v-window-item>
+
+        <v-window-item
+          key="preview"
+          value="preview"
+          transition="none"
+          reverse-transition="none"
+        >
+          <div
+            class="pa-4"
+            style="
+              width: 640px;
+              height: 320px;
+              border: solid 1px lightgray;
+              border-radius: 6px;
+              font-size: 16px;
+              overflow-y: auto;
+            "
+          >
+            <MrkdwnView :text="debouncedText" />
+          </div>
+        </v-window-item>
+      </v-window>
+    </div>
 
     <div class="d-flex ga-3 mb-3">
       <img v-for="user in mentionUsers" :src="user.profile.image_48" />
