@@ -7,11 +7,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <span class="usergroup">@{{ item.range }}</span>
+  <span class="broadcast">@{{ item.range }}</span>
 </template>
 
 <style scoped>
-.usergroup {
+.broadcast {
   color: coral;
   background-color: lightyellow;
   font-weight: bold;

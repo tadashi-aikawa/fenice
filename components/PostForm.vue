@@ -12,7 +12,11 @@ import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { ImageBlock, SectionBlock } from "@/clients/slack/models";
 import { doSinglePatternMatching } from "@/utils/strings";
-import { isEmoji, usersByNameCache } from "@/global-cache";
+import {
+  isEmoji,
+  usergroupsByHandleCache,
+  usersByNameCache,
+} from "@/global-cache";
 import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
 import UserSuggestWrapper from "./UserSuggestWrapper.vue";
 import { updateLastUsedEmojis } from "@/utils/storage";
@@ -77,7 +81,11 @@ const postMessage = async () => {
         thread_ts,
         blocks: [...sectionBlocks, ...imageBlocks, ...videoBlocks],
       })
-    : await postChatPostMessage({ channel, thread_ts, text: text.value });
+    : await postChatPostMessage({
+        channel,
+        thread_ts,
+        text: toMrkdwn(text.value),
+      });
 
   const [_, err] = res.unwrap();
 
@@ -192,6 +200,7 @@ const enabledPost = computed(() => {
 });
 
 const debouncedText = refDebounced(text, 300);
+const debouncedMrkdwnText = computed(() => toMrkdwn(debouncedText.value));
 
 const input = ref<HTMLElement | null>();
 onKeyStroke("o", (e) => {
@@ -207,6 +216,27 @@ onKeyStroke("o", (e) => {
     }
   }
 });
+
+// 投稿メッセージを厳密なmrkdwnに可能な限り変換する (主にメンションなどに)
+const toMrkdwn = (str: string) => {
+  return str.replaceAll(/@([^ \n]+)/g, (_, s) => {
+    if (s === "channel" || s === "here") {
+      return `<!${s}>`;
+    }
+
+    const userId = usersByNameCache[s]?.id;
+    if (userId) {
+      return `<@${userId}>`;
+    }
+
+    const groupId = usergroupsByHandleCache[s]?.id;
+    if (groupId) {
+      return `<!subteam^${groupId}>`;
+    }
+
+    return "<想定外のメンションです>";
+  });
+};
 </script>
 
 <template>
@@ -266,7 +296,7 @@ onKeyStroke("o", (e) => {
               overflow-y: auto;
             "
           >
-            <MrkdwnView :text="debouncedText" />
+            <MrkdwnView :text="debouncedMrkdwnText" />
           </div>
         </v-window-item>
       </v-window>

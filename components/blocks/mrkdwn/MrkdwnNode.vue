@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
-import { getEmojiUrl, usersByIdCache } from "@/global-cache";
+import {
+  getEmojiUrl,
+  usergroupsByIdCache,
+  usersByIdCache,
+} from "@/global-cache";
 
 // XXX: node.text.trimStart() は 必ず先頭に入る改行の削除するために使っている
 defineProps<{
@@ -36,8 +40,18 @@ defineProps<{
   </template>
 
   <template v-else-if="node.type === NodeType.Command">
-    <template v-for="c in node.label">
-      <MrkdownNode :node="c" />
+    <template v-if="node.name === 'subteam'">
+      <span class="usergroup"
+        >@{{
+          usergroupsByIdCache[node.arguments[0]]?.handle ?? "unknown_group"
+        }}</span
+      >
+    </template>
+    <template v-else-if="node.name === 'here' || node.name === 'channel'">
+      <span class="broadcast"> @{{ node.name }} </span>
+    </template>
+    <template v-else>
+      <MrkdownNode v-for="c in node.label" :node="c" />
     </template>
   </template>
 
@@ -159,6 +173,23 @@ defineProps<{
 .user {
   color: dodgerblue;
   background-color: powderblue;
+  line-height: 30px;
+  border-radius: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.usergroup {
+  color: forestgreen;
+  background-color: lightgreen;
+  line-height: 30px;
+  border-radius: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.broadcast {
+  color: coral;
+  background-color: lightyellow;
+  font-weight: bold;
   line-height: 30px;
   border-radius: 2px;
   padding-left: 2px;

@@ -49,8 +49,10 @@ export async function refreshAllUserCaches(): AsyncResult<
 
 // ユーザーグループキャッシュ
 export let usergroupsByIdCache: { [id: string]: Usergroup } = {};
+export let usergroupsByHandleCache: { [name: string]: Usergroup } = {};
 export async function clearUsergroupsCaches() {
   usergroupsByIdCache = {};
+  usergroupsByHandleCache = {};
   await usergroupsCacheStorage.setValue(DEFAULT_USERGROUPS_CACHE);
 }
 export async function refreshAllUsergroupsCaches(): AsyncResult<
@@ -182,6 +184,10 @@ export async function initGlobalCaches() {
   usergroupsByIdCache = keyBy(
     (await usergroupsCacheStorage.getValue()).usergroups,
     (x) => x.id,
+  );
+  usergroupsByHandleCache = keyBy(
+    (await usergroupsCacheStorage.getValue()).usergroups,
+    (x) => x.handle,
   );
   usergroupsCacheStorage.watch((newVal) => {
     usergroupsByIdCache = keyBy(newVal.usergroups, (x) => x.id);
