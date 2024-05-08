@@ -21,7 +21,7 @@ import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
 import UserSuggestWrapper from "./UserSuggestWrapper.vue";
 import { updateLastUsedEmojis } from "@/utils/storage";
 import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
-import { refDebounced, onKeyStroke } from "@vueuse/core";
+import { refDebounced } from "@vueuse/core";
 
 const props = defineProps<{
   dest: Dest;
@@ -31,7 +31,6 @@ const emit = defineEmits<{
   posted: [];
 }>();
 
-const tab = ref("edit");
 const text = ref("");
 const files = ref<Resource[]>([]);
 
@@ -203,19 +202,7 @@ const debouncedText = refDebounced(text, 300);
 const debouncedMrkdwnText = computed(() => toMrkdwn(debouncedText.value));
 
 const input = ref<HTMLElement | null>();
-onKeyStroke("o", (e) => {
-  // Alt+O でトグル
-  if (hasModifierKeyPressedOnly(e, "alt")) {
-    if (tab.value === "edit") {
-      tab.value = "preview";
-    } else {
-      tab.value = "edit";
-      setTimeout(() => {
-        input?.value?.focus();
-      }, 0);
-    }
-  }
-});
+const mode = ref<"edit" | "preview">("edit");
 
 // 投稿メッセージを厳密なmrkdwnに可能な限り変換する (主にメンションなどに)
 const toMrkdwn = (str: string) => {
@@ -237,6 +224,18 @@ const toMrkdwn = (str: string) => {
     return "<想定外のメンションです>";
   });
 };
+
+const handleUpdateFocused = (focused: boolean) => {
+  if (!focused) {
+    mode.value = "preview";
+  }
+};
+
+const enterEditMode = async () => {
+  mode.value = "edit";
+  await sleep(0);
+  input.value?.focus();
+};
 </script>
 
 <template>
@@ -246,63 +245,43 @@ const toMrkdwn = (str: string) => {
     class="d-flex flex-column align-center pa-5 pt-3 pb-1"
   >
     <div>
-      <v-tabs
-        v-model="tab"
-        align-tabs="center"
-        color="deep-purple-accent-4"
-        density="compact"
-      >
-        <v-tab value="edit">Edit</v-tab>
-        <v-tab value="preview">Preview</v-tab>
-      </v-tabs>
+      <template v-if="mode === 'edit'">
+        <EmojiSuggestWrapper>
+          <UserSuggestWrapper>
+            <v-textarea
+              ref="input"
+              v-model="text"
+              style="width: 640px"
+              :rows="12"
+              hide-details
+              variant="solo"
+              @paste="handlePaste"
+              @keyup.ctrl.enter.exact="postMessage"
+              @keyup.meta.enter.exact="postMessage"
+              @update:focused="handleUpdateFocused"
+            />
+          </UserSuggestWrapper>
+        </EmojiSuggestWrapper>
+      </template>
 
-      <v-window v-model="tab" class="mb-3">
-        <v-window-item
-          key="edit"
-          value="edit"
-          transition="none"
-          reverse-transition="none"
-        >
-          <EmojiSuggestWrapper>
-            <UserSuggestWrapper>
-              <v-textarea
-                ref="input"
-                v-model="text"
-                style="width: 640px"
-                :rows="12"
-                hide-details
-                @paste="handlePaste"
-                @keyup.ctrl.enter.exact="postMessage"
-                @keyup.meta.enter.exact="postMessage"
-              />
-            </UserSuggestWrapper>
-          </EmojiSuggestWrapper>
-        </v-window-item>
-
-        <v-window-item
-          key="preview"
-          value="preview"
-          transition="none"
-          reverse-transition="none"
-        >
-          <div
-            class="pa-4"
-            style="
-              width: 640px;
-              height: 320px;
-              border: solid 1px lightgray;
-              border-radius: 6px;
-              font-size: 16px;
-              overflow-y: auto;
-            "
-          >
-            <MrkdwnView :text="debouncedMrkdwnText" />
-          </div>
-        </v-window-item>
-      </v-window>
+      <template v-else-if="mode === 'preview'">
+        <v-hover>
+          <template v-slot:default="{ isHovering, props }">
+            <div
+              v-bind="props"
+              class="preview pa-4"
+              :class="{ hovering: isHovering }"
+              tabindex="0"
+              @focusin="enterEditMode"
+            >
+              <MrkdwnView :text="debouncedMrkdwnText" />
+            </div>
+          </template>
+        </v-hover>
+      </template>
     </div>
 
-    <div class="d-flex ga-3 mb-3">
+    <div class="d-flex ga-3 my-3">
       <img v-for="user in mentionUsers" :src="user.profile.image_48" />
     </div>
 
@@ -329,3 +308,20 @@ const toMrkdwn = (str: string) => {
     >
   </v-card>
 </template>
+
+<style scoped>
+.preview {
+  width: 640px;
+  height: 320px;
+  border: solid 1px lightgray;
+  border-radius: 6px;
+  font-size: 16px;
+  overflow-y: auto;
+  transition: background-color 0.5s;
+}
+.preview.hovering {
+  background-color: whitesmoke;
+  cursor: pointer;
+  transition: background-color 0.5s;
+}
+</style>
