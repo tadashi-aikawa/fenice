@@ -38,6 +38,10 @@ const uploadings = ref<boolean[]>([]);
 const posting = ref(false);
 
 const postMessage = async () => {
+  if (!enabledPost.value) {
+    return;
+  }
+
   posting.value = true;
 
   const sectionBlocks: SectionBlock[] = text.value
