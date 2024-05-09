@@ -20,19 +20,9 @@ export function showErrorToast(arg: RequestError | string): Id {
 export function showSuccessToast(message: string): Id {
   return toast.success(message, {
     autoClose: 3000,
-    transition: "flip",
+    transition: "slide",
     position: "top-center",
     pauseOnFocusLoss: false,
     hideProgressBar: true,
-  });
-}
-
-export function showInfoToast(message: string): Id {
-  return toast.info(message, {
-    autoClose: 3000,
-    transition: "bounce",
-    pauseOnFocusLoss: false,
-    hideProgressBar: true,
-    theme: "colored",
   });
 }
