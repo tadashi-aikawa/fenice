@@ -387,6 +387,7 @@ onKeyStroke("9", (e) => {
 
       <v-navigation-drawer
         v-model="threadDrawerStore.show"
+        :inert="!threadDrawerStore.show"
         location="end"
         width="750"
         temporary
@@ -396,6 +397,7 @@ onKeyStroke("9", (e) => {
 
       <v-navigation-drawer
         v-model="searchDrawer"
+        :inert="!searchDrawer"
         location="end"
         width="800"
         temporary
