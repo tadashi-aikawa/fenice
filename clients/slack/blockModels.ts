@@ -109,6 +109,7 @@ export interface RichTextSectionItem {
     | UsergroupItem
     | EmojiItem
     | BroadcastItem
+    | ChannelItem
   )[];
 }
 
@@ -121,6 +122,7 @@ export interface RichTextQuoteItem {
     | UsergroupItem
     | EmojiItem
     | BroadcastItem
+    | ChannelItem
   )[];
 }
 
@@ -162,6 +164,10 @@ export interface UsergroupItem {
 export interface BroadcastItem {
   type: "broadcast";
   range: "channel" | "here";
+}
+export interface ChannelItem {
+  type: "channel";
+  channel_id: string;
 }
 export interface EmojiItem {
   type: "emoji";

@@ -2,6 +2,7 @@
 import { Node, NodeType } from "slack-message-parser";
 import MrkdownNode from "./MrkdwnNode.vue";
 import {
+  channelsByIdCache,
   getEmojiUrl,
   usergroupsByIdCache,
   usersByIdCache,
@@ -18,7 +19,11 @@ defineProps<{
     <span class="text">{{ node.text }}</span>
   </template>
 
-  <template v-else-if="node.type === NodeType.ChannelLink">💩</template>
+  <template v-else-if="node.type === NodeType.ChannelLink">
+    <span class="channel"
+      >#{{ channelsByIdCache[node.channelID]?.name ?? "unknown_channel" }}</span
+    >
+  </template>
 
   <template v-else-if="node.type === NodeType.UserLink">
     <span class="user"
@@ -190,6 +195,14 @@ defineProps<{
   color: coral;
   background-color: lightyellow;
   font-weight: bold;
+  line-height: 30px;
+  border-radius: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.channel {
+  color: dodgerblue;
+  background-color: whitesmoke;
   line-height: 30px;
   border-radius: 2px;
   padding-left: 2px;
