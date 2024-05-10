@@ -225,7 +225,8 @@ const toMrkdwn = (str: string) => {
       return `<!subteam^${groupId}>`;
     }
 
-    return "<想定外のメンションです>";
+    // メンションターゲットが存在しなければそのまま
+    return `@${s}`;
   });
 };
 
