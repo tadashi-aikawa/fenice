@@ -87,7 +87,8 @@ const postMessage = async () => {
     : await postChatPostMessage({
         channel,
         thread_ts,
-        text: toMrkdwn(text.value),
+        // コードブロックの中でも書式が有効になるので無効化する
+        text: toMrkdwn(text.value, { escapeInCodeBlock: true }),
       });
 
   const [_, err] = res.unwrap();
@@ -209,25 +210,59 @@ const input = ref<HTMLElement | null>();
 const mode = ref<"edit" | "preview">("edit");
 
 // 投稿メッセージを厳密なmrkdwnに可能な限り変換する (主にメンションなどに)
-const toMrkdwn = (str: string) => {
-  return str.replaceAll(/@([^ \n]+)/g, (_, s) => {
-    if (s === "channel" || s === "here") {
-      return `<!${s}>`;
+const toMrkdwn = (str: string, option?: { escapeInCodeBlock?: boolean }) => {
+  const transformMentions = (str: string): string => {
+    return str.replaceAll(/@([^ \n]+)/g, (_, s) => {
+      if (s === "channel" || s === "here") {
+        return `<!${s}>`;
+      }
+
+      const userId = usersByNameCache[s]?.id;
+      if (userId) {
+        return `<@${userId}>`;
+      }
+
+      const groupId = usergroupsByHandleCache[s]?.id;
+      if (groupId) {
+        return `<!subteam^${groupId}>`;
+      }
+
+      // メンションターゲットが存在しなければそのまま
+      return `@${s}`;
+    });
+  };
+
+  const escapeMrkdwn = (str: string): string => {
+    return str
+      .replaceAll(/&/g, "&amp;")
+      .replaceAll(/>/g, "&gt;")
+      .replaceAll(/</g, "&lt;");
+  };
+
+  const lines = str.split("\n");
+  const mrkdwnLines = [];
+  let inCodeBlock = false;
+
+  for (const line of lines) {
+    const beginBlock = !inCodeBlock && line.startsWith("```");
+    if (beginBlock) {
+      inCodeBlock = true;
     }
 
-    const userId = usersByNameCache[s]?.id;
-    if (userId) {
-      return `<@${userId}>`;
-    }
+    mrkdwnLines.push(
+      inCodeBlock
+        ? option?.escapeInCodeBlock
+          ? escapeMrkdwn(line)
+          : line
+        : transformMentions(line),
+    );
 
-    const groupId = usergroupsByHandleCache[s]?.id;
-    if (groupId) {
-      return `<!subteam^${groupId}>`;
+    if (!beginBlock && inCodeBlock && line.endsWith("```")) {
+      inCodeBlock = false;
     }
+  }
 
-    // メンションターゲットが存在しなければそのまま
-    return `@${s}`;
-  });
+  return mrkdwnLines.join("\n");
 };
 
 const handleUpdateFocused = (focused: boolean) => {
