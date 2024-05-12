@@ -10,6 +10,8 @@ export const cardActionButtonTypes = [
   "lock-on",
   "stock",
   "json",
+  "copy-text",
+  "copy-link",
 ];
 export type CardActionButtonType = (typeof cardActionButtonTypes)[number];
 

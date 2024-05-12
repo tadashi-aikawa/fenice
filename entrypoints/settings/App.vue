@@ -214,9 +214,30 @@ const emojis = computed(() => {
                   v-model="state.visibledButtons"
                   multiple
                   color="primary"
-                  class="ga-2"
                   rounded="0"
                 >
+                  <v-tooltip text="URLをコピー" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-paperclip"
+                        value="copy-url"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
+                  <v-tooltip text="テキストをコピー" location="bottom">
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        icon="mdi-clipboard-text-outline"
+                        value="copy-text"
+                        v-bind="props"
+                        class="mt-2"
+                        style="color: lightgray"
+                      />
+                    </template>
+                  </v-tooltip>
                   <v-tooltip
                     text="ブラウザでメッセージを開く"
                     location="bottom"

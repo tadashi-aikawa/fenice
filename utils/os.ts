@@ -5,3 +5,7 @@ export async function sleep(ms: number): Promise<void> {
     }, ms);
   });
 }
+
+export async function copyToClipboard(text: string): Promise<void> {
+  await (navigator as any).clipboard.writeText(text);
+}

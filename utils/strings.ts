@@ -34,3 +34,17 @@ export const fallbackEmojiMap = {
   "man-bowing": "🙇‍♂️",
   "woman-bowing": "🙇‍♀️",
 } as Record<string, string>;
+
+export function escapeMrkdwn(str: string): string {
+  return str
+    .replaceAll(/&/g, "&amp;")
+    .replaceAll(/>/g, "&gt;")
+    .replaceAll(/</g, "&lt;");
+}
+
+export function unescapeMrkdwn(str: string): string {
+  return str
+    .replaceAll(/&amp;/g, "&")
+    .replaceAll(/&gt;/g, ">")
+    .replaceAll(/&lt;/g, "<");
+}

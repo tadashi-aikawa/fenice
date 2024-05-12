@@ -11,7 +11,7 @@ import {
 import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
 import UploadingImage from "./UploadingImage.vue";
 import { ImageBlock, SectionBlock } from "@/clients/slack/models";
-import { doSinglePatternMatching } from "@/utils/strings";
+import { doSinglePatternMatching, escapeMrkdwn } from "@/utils/strings";
 import {
   isEmoji,
   usergroupsByHandleCache,
@@ -230,13 +230,6 @@ const toMrkdwn = (str: string, option?: { escapeInCodeBlock?: boolean }) => {
       // メンションターゲットが存在しなければそのまま
       return `@${s}`;
     });
-  };
-
-  const escapeMrkdwn = (str: string): string => {
-    return str
-      .replaceAll(/&/g, "&amp;")
-      .replaceAll(/>/g, "&gt;")
-      .replaceAll(/</g, "&lt;");
   };
 
   const lines = str.split("\n");

@@ -5,11 +5,12 @@ import HighlightCode from "./HighlightCode.vue";
 import { toDisplayChannelName, usersByIdCache } from "@/global-cache";
 import Block from "./blocks/Block.vue";
 import Attachement from "./Attachement.vue";
-import { toBrowserUrl } from "@/utils/strings";
+import { toBrowserUrl, unescapeMrkdwn } from "@/utils/strings";
 import File from "./File.vue";
 import Emoji from "./blocks/Emoji.vue";
 import { lockOnMessageStorage } from "@/utils/storage";
 import { useSettingStore } from "@/stores";
+import { copyToClipboard } from "@/utils/os";
 
 interface Props {
   message: Message;
@@ -32,6 +33,15 @@ const emit = defineEmits<{
 const reactedEmojis = ref<Set<string>>(new Set());
 
 const settingStore = useSettingStore();
+
+const handleCopyUrl = async () => {
+  await copyToClipboard(props.message.permalink);
+  showSuccessToast("URLをコピーしました");
+};
+const handleCopyText = async () => {
+  await copyToClipboard(unescapeMrkdwn(props.message.text));
+  showSuccessToast("投稿メッセージをコピーしました");
+};
 
 const handleOpenBrowser = async () => {
   const url = toBrowserUrl(props.message.permalink);
@@ -157,6 +167,22 @@ const actions = computed(() => settingStore.visibledButtons);
                 style="width: 570px; white-space: pre-wrap"
               />
             </v-menu>
+            <v-btn
+              v-if="actions.includes('copy-url')"
+              icon="mdi-paperclip"
+              @click="handleCopyUrl"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
+            <v-btn
+              v-if="actions.includes('copy-text')"
+              icon="mdi-clipboard-text-outline"
+              @click="handleCopyText"
+              variant="tonal"
+              density="compact"
+              style="color: goldenrod"
+            />
             <v-btn
               v-if="actions.includes('open-browser')"
               icon="mdi-google-chrome"
