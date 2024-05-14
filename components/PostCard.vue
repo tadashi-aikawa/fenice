@@ -124,12 +124,13 @@ const actions = computed(() => settingStore.visibledButtons);
                   <v-chip
                     v-if="isThread"
                     class="ml-2"
-                    color="#AAA"
+                    color="primary"
                     density="compact"
                     size="small"
                     label
+                    prepend-icon="mdi-forum-outline"
                   >
-                    reply to a thread
+                    in thread
                   </v-chip>
                 </div>
                 <div
