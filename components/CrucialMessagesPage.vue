@@ -36,10 +36,18 @@ const markAsRead = async (message: Message) => {
 };
 
 const markAllAsRead = async () => {
-  for (const message of messages.value) {
-    await markAsRead(message);
-    await sleep(10);
+  const unreadMessages = await unreadMessagesStorage.getValue();
+  const newUnreadMessages = unreadMessages.filter(
+    (x) => !messages.value.map((t) => t.ts).includes(x.ts),
+  );
+
+  const readByTs = await readByTsStorage.getValue();
+  for (const m of messages.value) {
+    readByTs[m.ts] = true;
   }
+
+  await unreadMessagesStorage.setValue(newUnreadMessages);
+  await readByTsStorage.setValue(readByTs);
 };
 </script>
 
