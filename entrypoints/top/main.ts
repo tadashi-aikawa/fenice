@@ -27,8 +27,72 @@ import "floating-vue/dist/style.css";
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
+// CodeMirror
+import VueCodemirror from "vue-codemirror";
+import { basicSetup, EditorView } from "codemirror";
+import { getCM, vim } from "@replit/codemirror-vim";
+import { keymap } from "@codemirror/view";
+
+const moveFocus = (direction: "next" | "previous") => {
+  const activeElement = document.activeElement;
+  if (!activeElement) {
+    return true;
+  }
+
+  const focusableElements = Array.prototype.filter.call(
+    document.querySelectorAll(
+      'div.cm-content, button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    ),
+    (e) => e.offsetWidth > 0 || e.offsetHeight > 0 || e === activeElement,
+  );
+
+  const index = focusableElements.indexOf(activeElement);
+  if (index === -1) {
+    return true;
+  }
+
+  // XXX: 多分不完全
+  const nextElement =
+    focusableElements[direction === "next" ? index + 1 : index - 1] ||
+    focusableElements[0];
+  nextElement.focus();
+
+  return true;
+};
+
+const customKeymap = keymap.of([
+  {
+    key: "Tab",
+    run: (view) => {
+      const mode = getCM(view)?.state.vim?.mode;
+      if (mode === "normal" || mode === undefined) {
+        return moveFocus("next");
+      }
+      return false;
+    },
+  },
+  {
+    key: "Shift-Tab",
+    run: (view) => {
+      const mode = getCM(view)?.state.vim?.mode;
+      if (mode === "normal" || mode === undefined) {
+        return moveFocus("previous");
+      }
+      return false;
+    },
+  },
+  {
+    key: "Escape",
+    run: () => true,
+    stopPropagation: true,
+  },
+]);
+
 createApp(App)
   .use(vuetify)
   .use(Vue3Toastify, { autoClose: 1000 })
   .use(pinia)
+  .use(VueCodemirror, {
+    extensions: [vim(), basicSetup, EditorView.lineWrapping, customKeymap],
+  })
   .mount("#app");

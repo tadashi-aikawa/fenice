@@ -17,11 +17,10 @@ import {
   usergroupsByHandleCache,
   usersByNameCache,
 } from "@/global-cache";
-import EmojiSuggestWrapper from "./EmojiSuggestWrapper.vue";
-import UserSuggestWrapper from "./UserSuggestWrapper.vue";
 import { updateLastUsedEmojis } from "@/utils/storage";
 import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
 import { refDebounced } from "@vueuse/core";
+import CodeMirrorMessageForm from "./CodeMirrorMessageForm.vue";
 
 const props = defineProps<{
   dest: Dest;
@@ -279,22 +278,14 @@ const enterEditMode = async () => {
   >
     <div>
       <template v-if="mode === 'edit'">
-        <EmojiSuggestWrapper>
-          <UserSuggestWrapper>
-            <v-textarea
-              ref="input"
-              v-model="text"
-              style="width: 640px"
-              :rows="12"
-              hide-details
-              variant="solo"
-              @paste="handlePaste"
-              @keyup.ctrl.enter.exact="postMessage"
-              @keyup.meta.enter.exact="postMessage"
-              @update:focused="handleUpdateFocused"
-            />
-          </UserSuggestWrapper>
-        </EmojiSuggestWrapper>
+        <CodeMirrorMessageForm
+          v-model="text"
+          autofocus
+          width="640px"
+          height="400px"
+          @paste="handlePaste"
+          @blur="handleUpdateFocused(false)"
+        ></CodeMirrorMessageForm>
       </template>
 
       <template v-else-if="mode === 'preview'">
@@ -306,6 +297,7 @@ const enterEditMode = async () => {
               :class="{ hovering: isHovering }"
               tabindex="0"
               @focusin="enterEditMode"
+              style="font-size: 14px"
             >
               <MrkdwnView :text="debouncedMrkdwnText" />
             </div>

@@ -18,7 +18,9 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "@replit/codemirror-vim": "^6.2.1",
     "@vueuse/core": "^10.9.0",
+    "codemirror": "^6.0.1",
     "floating-vue": "2",
     "node-emoji": "^2.1.3",
     "owlelia": "^0.48.0",
@@ -26,6 +28,7 @@
     "prismjs": "^1.29.0",
     "slack-message-parser": "^3.0.2",
     "vue": "^3.4.0",
+    "vue-codemirror": "^6.1.1",
     "vue-mention": "^2.0.0-alpha.3",
     "vue3-toastify": "^0.2.1",
     "vuetify": "^3.5.13"
