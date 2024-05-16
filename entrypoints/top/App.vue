@@ -265,12 +265,12 @@ onKeyStroke("j", (e) => {
   }
 });
 
-onKeyStroke("p", (e) => {
+onKeyStroke("]", (e) => {
   // accessTokenがない場合は認証できていないので無効
   if (!accessToken.value) {
     return;
   }
-  // Alt+P でトグル
+  // Alt+] でトグル
   if (hasModifierKeyPressedOnly(e, "alt")) {
     searchDrawer.value = !searchDrawer.value;
   }

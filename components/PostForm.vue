@@ -19,7 +19,7 @@ import {
 } from "@/global-cache";
 import { updateLastUsedEmojis } from "@/utils/storage";
 import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
-import { refDebounced } from "@vueuse/core";
+import { onKeyStroke, refDebounced } from "@vueuse/core";
 import CodeMirrorMessageForm from "./CodeMirrorMessageForm.vue";
 
 const props = defineProps<{
@@ -268,6 +268,36 @@ const enterEditMode = async () => {
   await sleep(0);
   input.value?.focus();
 };
+
+const enterPreviewMode = async () => {
+  mode.value = "preview";
+};
+
+onKeyStroke("p", async (e) => {
+  // Alt+p でプレビュー切り替え
+  if (hasModifierKeyPressedOnly(e, "alt")) {
+    switch (mode.value) {
+      case "preview":
+        await enterEditMode();
+        break;
+      case "edit":
+        await enterPreviewMode();
+        break;
+      default:
+        throw new ExhaustiveError(mode.value);
+    }
+  }
+});
+
+onKeyStroke("Enter", async (e) => {
+  if (
+    hasModifierKeyPressedOnly(e, "ctrl") ||
+    hasModifierKeyPressedOnly(e, "meta")
+  ) {
+    e.stopPropagation();
+    await postMessage();
+  }
+});
 </script>
 
 <template>
