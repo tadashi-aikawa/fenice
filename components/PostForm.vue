@@ -282,7 +282,7 @@ const enterEditMode = async () => {
           v-model="text"
           autofocus
           width="640px"
-          height="400px"
+          height="320px"
           @paste="handlePaste"
           @blur="handleUpdateFocused(false)"
         ></CodeMirrorMessageForm>
