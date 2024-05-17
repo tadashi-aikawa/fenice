@@ -11,7 +11,8 @@ import Emoji from "./blocks/Emoji.vue";
 const text = defineModel<string>({ required: true });
 defineProps<{
   width: string;
-  height: string;
+  minHeight: string;
+  maxHeight: string;
 }>();
 
 type UserSuggestion = { label: string; user: User };
@@ -218,7 +219,8 @@ const customTheme = EditorView.theme({
     :extensions="[completionExtension, updateListenerExtension, customTheme]"
     :style="{
       width,
-      height,
+      minHeight,
+      maxHeight,
       fontSize: '14px',
     }"
   ></Codemirror>
