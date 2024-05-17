@@ -64,6 +64,12 @@ watch(
     }
   },
 );
+
+const handleClickRemoveDest = (channel: Channel) => {
+  const newChannels = selectedChannels.value.filter((x) => x.id !== channel.id);
+  selectedChannels.value = newChannels;
+  handleUpdate(newChannels);
+};
 </script>
 
 <template>
@@ -83,7 +89,10 @@ watch(
       />
       <template v-for="ch in selectedChannels">
         <v-btn :value="ch" style="text-transform: unset">
-          #{{ ch.name }}
+          <span>#{{ ch.name }}</span>
+          <v-icon end @click.stop="handleClickRemoveDest(ch)">
+            mdi-close-circle-outline
+          </v-icon>
         </v-btn>
       </template>
     </v-btn-toggle>
