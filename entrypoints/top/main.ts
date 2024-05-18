@@ -30,8 +30,9 @@ const pinia = createPinia();
 // CodeMirror
 import VueCodemirror from "vue-codemirror";
 import { basicSetup, EditorView } from "codemirror";
-import { getCM, vim } from "@replit/codemirror-vim";
+import { getCM, vim, Vim } from "@replit/codemirror-vim";
 import { keymap } from "@codemirror/view";
+import { yankGenerator } from "@/libs/yank";
 
 const moveFocus = (direction: "next" | "previous") => {
   const activeElement = document.activeElement;
@@ -87,6 +88,8 @@ const customKeymap = keymap.of([
     stopPropagation: true,
   },
 ]);
+
+Vim.defineOperator("yank", yankGenerator(Vim.getRegisterController(), true));
 
 createApp(App)
   .use(vuetify)
