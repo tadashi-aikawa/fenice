@@ -208,6 +208,9 @@ const customTheme = EditorView.theme({
   "*": {
     fontFamily: "'Segoe UI', Arial, Meiryo, sans-serif",
   },
+  ".cm-line": {
+    lineHeight: "1.5",
+  },
 });
 </script>
 

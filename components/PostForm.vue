@@ -308,6 +308,7 @@ onKeyStroke("Enter", async (e) => {
           width="640px"
           max-height="480px"
           @paste="handlePaste"
+          style="border: solid 1px lightgray; border-radius: 6px; padding: 12px"
         ></CodeMirrorMessageForm>
       </template>
 

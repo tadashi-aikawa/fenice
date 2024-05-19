@@ -29,7 +29,7 @@ const pinia = createPinia();
 
 // CodeMirror
 import VueCodemirror from "vue-codemirror";
-import { basicSetup, EditorView } from "codemirror";
+import { minimalSetup, EditorView } from "codemirror";
 import { getCM, vim, Vim } from "@replit/codemirror-vim";
 import { keymap } from "@codemirror/view";
 import { yankGenerator } from "@/libs/yank";
@@ -96,6 +96,6 @@ createApp(App)
   .use(Vue3Toastify, { autoClose: 1000 })
   .use(pinia)
   .use(VueCodemirror, {
-    extensions: [vim(), basicSetup, EditorView.lineWrapping, customKeymap],
+    extensions: [vim(), minimalSetup, EditorView.lineWrapping, customKeymap],
   })
   .mount("#app");
