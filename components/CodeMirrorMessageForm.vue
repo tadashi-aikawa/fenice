@@ -11,7 +11,6 @@ import Emoji from "./blocks/Emoji.vue";
 const text = defineModel<string>({ required: true });
 defineProps<{
   width: string;
-  minHeight: string;
   maxHeight: string;
 }>();
 
@@ -219,7 +218,6 @@ const customTheme = EditorView.theme({
     :extensions="[completionExtension, updateListenerExtension, customTheme]"
     :style="{
       width,
-      minHeight,
       maxHeight,
       fontSize: '14px',
     }"

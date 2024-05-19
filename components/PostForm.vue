@@ -306,7 +306,6 @@ onKeyStroke("Enter", async (e) => {
           v-model="text"
           autofocus
           width="640px"
-          min-height="160px"
           max-height="480px"
           @paste="handlePaste"
         ></CodeMirrorMessageForm>
@@ -362,7 +361,6 @@ onKeyStroke("Enter", async (e) => {
 <style scoped>
 .preview {
   width: 640px;
-  min-height: 160px;
   max-height: 480px;
   border: solid 1px lightgray;
   border-radius: 6px;
