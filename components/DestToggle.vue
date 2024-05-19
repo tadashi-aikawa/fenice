@@ -90,7 +90,7 @@ const handleClickRemoveDest = (channel: Channel) => {
       <template v-for="ch in selectedChannels">
         <v-btn :value="ch" style="text-transform: unset">
           <span>#{{ ch.name }}</span>
-          <v-icon end @click.stop="handleClickRemoveDest(ch)">
+          <v-icon end @click.stop="handleClickRemoveDest(ch)" tabindex="-1">
             mdi-close-circle-outline
           </v-icon>
         </v-btn>
