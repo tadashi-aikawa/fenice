@@ -257,12 +257,6 @@ const toMrkdwn = (str: string, option?: { escapeInCodeBlock?: boolean }) => {
   return mrkdwnLines.join("\n");
 };
 
-const handleUpdateFocused = (focused: boolean) => {
-  if (!focused) {
-    mode.value = "preview";
-  }
-};
-
 const enterEditMode = async () => {
   mode.value = "edit";
   await sleep(0);
@@ -315,7 +309,6 @@ onKeyStroke("Enter", async (e) => {
           min-height="160px"
           max-height="480px"
           @paste="handlePaste"
-          @blur="handleUpdateFocused(false)"
         ></CodeMirrorMessageForm>
       </template>
 
@@ -360,6 +353,7 @@ onKeyStroke("Enter", async (e) => {
       prepend-icon="mdi-send-variant"
       color="primary"
       @click="postMessage"
+      @focus="mode = 'preview'"
       >ポストする</v-btn
     >
   </v-card>
