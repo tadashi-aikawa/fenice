@@ -362,7 +362,7 @@ onKeyStroke("Enter", async (e) => {
 <style scoped>
 .preview {
   width: 640px;
-  max-height: 480px;
+  max-height: 560px;
   min-height: 56px;
   border: solid 1px lightgray;
   border-radius: 6px;
