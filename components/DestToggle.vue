@@ -73,26 +73,43 @@ const handleClickRemoveDest = (channel: Channel) => {
 </script>
 
 <template>
-  <div class="d-flex align-center ga-3 mb-3">
+  <div class="d-flex flex-column ga-3 mb-3" style="width: 300px">
     <v-btn-toggle
       v-model="dest"
       color="primary"
       rounded="0"
       group
-      density="compact"
+      style="height: 100%; width: 300px; display: contents"
     >
       <v-btn
         v-if="lockOnMessage"
         :value="lockOnMessage"
-        style="text-transform: unset"
-        icon="mdi-target-variant"
-      />
+        style="text-transform: unset; height: 36px; width: 300px"
+      >
+        <v-icon>mdi-target-variant</v-icon>
+        <span>Lock thread</span>
+      </v-btn>
       <template v-for="ch in selectedChannels">
-        <v-btn :value="ch" style="text-transform: unset">
-          <span>#{{ ch.name }}</span>
-          <v-icon end @click.stop="handleClickRemoveDest(ch)" tabindex="-1">
+        <v-btn
+          :value="ch"
+          style="
+            text-transform: unset;
+            height: 36px;
+            width: 300px;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
+          "
+        >
+          <v-icon
+            @click.stop="handleClickRemoveDest(ch)"
+            tabindex="-1"
+            class="mr-1"
+          >
             mdi-close-circle-outline
           </v-icon>
+          <span>#{{ ch.name }}</span>
         </v-btn>
       </template>
     </v-btn-toggle>

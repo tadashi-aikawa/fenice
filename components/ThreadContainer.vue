@@ -8,6 +8,7 @@ import { useScroll } from "@vueuse/core";
 
 const emit = defineEmits<{
   posted: [];
+  "click:closeThread": [];
 }>();
 
 const { reactAsEmoji, stock, reactionEmojis } = useCardActions();
@@ -27,11 +28,23 @@ watch(
 </script>
 
 <template>
-  <div class="d-flex flex-column align-center pa-5">
+  <div class="d-flex flex-column align-center pt-2 pl-5">
+    <v-btn
+      icon="mdi-close"
+      variant="tonal"
+      density="compact"
+      color="primary"
+      style="position: absolute; right: 15px; top: 30px"
+      @click="emit('click:closeThread')"
+    ></v-btn>
+    <div class="d-flex align-center ga-3">
+      <v-icon size="x-large">mdi-forum</v-icon>
+      <span class="font-weight-bold text-h6">スレッド</span>
+    </div>
     <div
       ref="container"
-      class="pa-1 mt-3 mb-1"
-      style="width: 700px; height: calc(100vh - 60px); overflow-y: auto"
+      class="pa-1 mt-3 mb-1 pb-6 pr-3"
+      style="width: 720px; height: calc(100vh - 150px); overflow-y: auto"
     >
       <template v-if="utdStore.loading">
         <Loading :loading="utdStore.loading" message="メッセージを検索中です" />

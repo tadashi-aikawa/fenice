@@ -53,9 +53,15 @@ const markAllAsRead = async () => {
 
 <template>
   <div class="d-flex flex-column align-center pa-5">
+    <v-btn
+      prepend-icon="mdi-check-circle-outline"
+      color="warning"
+      @click="markAllAsRead"
+      >すべて既読にする</v-btn
+    >
     <div
       class="pa-1 py-3"
-      style="width: 750px; height: calc(100vh - 125px); overflow-y: auto"
+      style="width: 750px; height: calc(100vh - 150px); overflow-y: auto"
     >
       <transition-group name="list">
         <PostCard
@@ -71,14 +77,6 @@ const markAllAsRead = async () => {
         />
       </transition-group>
     </div>
-
-    <v-btn
-      prepend-icon="mdi-check-circle-outline"
-      color="warning"
-      style="position: absolute; right: 30px; top: 30px"
-      @click="markAllAsRead"
-      >すべて既読にする</v-btn
-    >
   </div>
 </template>
 

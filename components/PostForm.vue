@@ -306,7 +306,7 @@ onKeyStroke("Enter", async (e) => {
           v-model="text"
           autofocus
           width="640px"
-          max-height="480px"
+          max-height="560px"
           @paste="handlePaste"
           style="border: solid 1px lightgray; border-radius: 6px; padding: 12px"
         ></CodeMirrorMessageForm>

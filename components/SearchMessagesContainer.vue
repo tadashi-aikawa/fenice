@@ -15,6 +15,10 @@ const searchCondition = ref<SearchCondition>({
   option: { bot: false },
 });
 
+const emit = defineEmits<{
+  "show:thread": [message: Message];
+}>();
+
 const { reactAsEmoji, showThread, stock } = useCardActions();
 
 const loading = ref(false);
@@ -83,6 +87,11 @@ const hideMessage = (message: Message) => {
 const handleUpdateSearchCondition = (cond: SearchCondition) => {
   searchCondition.value = cond;
 };
+
+const handleClickThread = (message: Message) => {
+  showThread(message);
+  emit("show:thread", message);
+};
 </script>
 
 <template>
@@ -125,7 +134,7 @@ const handleUpdateSearchCondition = (cond: SearchCondition) => {
               @click:reaction="reactAsEmoji"
               @click:read="hideMessage"
               @click:stock="stock"
-              @click:thread="showThread"
+              @click:thread="handleClickThread"
             />
           </template>
         </transition-group>

@@ -79,5 +79,5 @@ export const useThreadDrawerStore = defineStore("threadDrawer", () => {
     await search();
   });
 
-  return { show, openThread, messages, loading };
+  return { show, openThread, messages, loading, threadTs };
 });

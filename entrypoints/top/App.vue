@@ -236,9 +236,6 @@ const handleClickRemoveTab = (tab: number) => {
   }
   tabs.value = tabs.value.filter((x) => x !== tab);
 };
-const handleThreadPosted = () => {
-  threadDrawerStore.show = false;
-};
 
 onKeyStroke("j", (e) => {
   // Alt+J で2画面のトグル
@@ -282,11 +279,6 @@ onKeyStroke("Escape", (e) => {
   }
   // ESCで閉じる
   if (hasModifierKeyPressed(e)) {
-    return;
-  }
-
-  if (threadDrawerStore.show) {
-    threadDrawerStore.show = false;
     return;
   }
 
@@ -370,30 +362,36 @@ onKeyStroke("9", (e) => {
         </v-list>
       </v-navigation-drawer>
 
-      <v-main class="pa-6">
-        <KeepAlive>
-          <component :is="currentPage" />
-        </KeepAlive>
+      <v-main>
+        <div class="pa-6 d-flex" style="height: calc(100vh - 60px)">
+          <div class="flex-grow-1" style="min-width: 0">
+            <KeepAlive>
+              <component :is="currentPage" />
+            </KeepAlive>
+          </div>
+
+          <div
+            v-if="threadDrawerStore.show"
+            style="width: 750px"
+            class="border-s-lg"
+          >
+            <ThreadContainer
+              @posted="threadDrawerStore.show = false"
+              @click:close-thread="threadDrawerStore.show = false"
+            />
+          </div>
+        </div>
+
+        <div class="d-flex ga-3 pa-1 px-2 border-t-sm">
+          <v-spacer />
+          <v-btn
+            icon="mdi-comment-search"
+            variant="tonal"
+            color="primary"
+            @click="searchDrawer = !searchDrawer"
+          ></v-btn>
+        </div>
       </v-main>
-
-      <v-btn
-        icon="mdi-comment-search"
-        size="x-large"
-        variant="tonal"
-        color="primary"
-        style="position: absolute; bottom: 15px; right: 15px"
-        @click="searchDrawer = !searchDrawer"
-      ></v-btn>
-
-      <v-navigation-drawer
-        v-model="threadDrawerStore.show"
-        :inert="!threadDrawerStore.show"
-        location="end"
-        width="750"
-        temporary
-      >
-        <ThreadContainer @posted="handleThreadPosted" />
-      </v-navigation-drawer>
 
       <v-navigation-drawer
         v-model="searchDrawer"
@@ -430,7 +428,7 @@ onKeyStroke("9", (e) => {
             transition="none"
             reverse-transition="none"
           >
-            <SearchMessagesContainer />
+            <SearchMessagesContainer @show:thread="searchDrawer = false" />
           </v-window-item>
         </v-window>
       </v-navigation-drawer>

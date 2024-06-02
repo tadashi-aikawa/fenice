@@ -14,22 +14,3 @@
   border-radius: 10px;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
-
-/* v-mention */
-.v-popper__popper .mention-item {
-  padding: 4px 10px;
-  border-radius: 4px;
-}
-
-.v-popper__popper .mention-selected {
-  color: white;
-  background: rgb(var(--v-theme-primary));
-}
-
-.v-popper__popper .username {
-  color: gray;
-}
-
-.v-popper__popper .mention-selected .username {
-  color: white;
-}
