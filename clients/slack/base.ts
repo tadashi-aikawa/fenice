@@ -103,6 +103,15 @@ async function handleResponse<R>(res: Response): AsyncResult<R, RequestError> {
     });
   }
 
+  // refresh_tokenが無効の場合はOAuth 2.0をやり直しさせるためトークンを空にする
+  if (jr.error === "token_revoked") {
+    accessTokenStorage.setValue(null);
+    return err({
+      title: "リフレッシュトークンが無効です",
+      message: "Slackとの再認証が必要です",
+    });
+  }
+
   return err(
     "response_metadata" in jr
       ? {
