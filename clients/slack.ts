@@ -51,6 +51,20 @@ export async function getConversationsReplies(args: {
   });
 }
 
+export async function getPermalink(args: {
+  channel: string;
+  message_ts: string;
+}) {
+  return await getRequest<{
+    ok: boolean;
+    channel: string;
+    permalink: string;
+  }>({
+    path: "/chat.getPermalink",
+    query: args,
+  });
+}
+
 export async function getEmojiList() {
   return await getRequest<{
     ok: boolean;

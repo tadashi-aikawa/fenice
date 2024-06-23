@@ -1,4 +1,4 @@
-import { getConversationsReplies } from "@/clients/slack";
+import { getConversationsReplies, getPermalink } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { channelsByIdCache } from "@/global-cache";
 import { defineStore } from "pinia";
@@ -51,23 +51,35 @@ export const useThreadDrawerStore = defineStore("threadDrawer", () => {
   const search = async () => {
     loading.value = true;
 
-    const [res, error] = (
-      await getConversationsReplies({
-        channel: channel.value,
-        ts: threadTs.value,
-      })
-    ).unwrap();
+    const repliesRes = await getConversationsReplies({
+      channel: channel.value,
+      ts: threadTs.value,
+    });
+    if (repliesRes.isErr()) {
+      loading.value = false;
+      return showErrorToast(repliesRes.error);
+    }
+
+    const permalinkRes = await getPermalink({
+      channel: channel.value,
+      message_ts: threadTs.value,
+    });
+    if (permalinkRes.isErr()) {
+      loading.value = false;
+      return showErrorToast(permalinkRes.error);
+    }
 
     loading.value = false;
 
-    if (error) {
-      return showErrorToast(error);
-    }
-
-    messages.value = res.messages.map((m) => ({
+    // https://api.slack.com/methods/chat.getPermalink でthreadTsのpermalinkを取得
+    // ホストを抜き出してcreatePermalink をメッセージの数だけ呼び出す (これでリクエスト量を減らせる)
+    messages.value = repliesRes.value.messages.map((m) => ({
       ...m,
       channel: channelsByIdCache[channel.value],
-      permalink: "FIXME: いつか追加する",
+      permalink: permalinkRes.value.permalink.replace(
+        /\/p.+\?/,
+        `/p${m.ts.replace(".", "")}?`,
+      ),
     }));
   };
 
