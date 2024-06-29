@@ -76,9 +76,6 @@ async function refreshTokens() {
 }
 
 export default defineBackground(() => {
-  // 非同期だけどFeniceを開くまでの間におわっていればいいのでそこまでシビアじゃないはず...
-  refreshTokens();
-
   // アイコンクリック時の処理
   browser.action.onClicked.addListener(() => {
     browser.tabs.create({ url: browser.runtime.getURL("/top.html") });
@@ -115,15 +112,15 @@ export default defineBackground(() => {
   browser.alarms.create("background-refresh-token", { periodInMinutes: 60 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
+    // 完璧ではないけど一旦これで十分
+    const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
+    if (!feniceTab) {
+      return;
+    }
+
     if (alarm.name === "background-refresh-token") {
       await refreshTokens();
     } else if (alarm.name === "background-search") {
-      // 完璧ではないけど一旦これで十分
-      const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
-      if (!feniceTab) {
-        return;
-      }
-
       const conditions = await crucialMessageConditionsStorage.getValue();
       if (conditions.length === 0) {
         return;
