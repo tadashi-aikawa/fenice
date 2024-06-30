@@ -19,27 +19,26 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@replit/codemirror-vim": "^6.2.1",
-    "@vueuse/core": "^10.9.0",
+    "@vueuse/core": "^10.11.0",
     "codemirror": "^6.0.1",
-    "floating-vue": "2",
     "node-emoji": "^2.1.3",
-    "owlelia": "^0.48.0",
+    "owlelia": "^0.48.1",
     "pinia": "^2.1.7",
     "prismjs": "^1.29.0",
     "slack-message-parser": "^3.0.2",
-    "vue": "^3.4.0",
+    "vue": "^3.4.31",
     "vue-codemirror": "^6.1.1",
     "vue-mention": "^2.0.0-alpha.3",
-    "vue3-toastify": "^0.2.1",
-    "vuetify": "^3.5.13"
+    "vue3-toastify": "^0.2.2",
+    "vuetify": "^3.6.10"
   },
   "devDependencies": {
-    "@types/bun": "^1.0.12",
-    "@types/prismjs": "^1.26.3",
-    "@vitejs/plugin-vue": "^5.0.1",
+    "@types/bun": "^1.1.6",
+    "@types/prismjs": "^1.26.4",
+    "@wxt-dev/module-vue": "^1.0.0",
     "husky": "^9.0.11",
-    "typescript": "^5.3.3",
-    "vue-tsc": "^2.0.6",
-    "wxt": "^0.17.0"
+    "typescript": "^5.5.2",
+    "vue-tsc": "^2.0.22",
+    "wxt": "^0.18.10"
   }
 }
