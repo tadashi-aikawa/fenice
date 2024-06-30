@@ -9,14 +9,10 @@ import {
 } from "@/utils/storage";
 import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import { DateTime } from "owlelia";
-import {
-  clearChannelsCaches,
-  clearEmojiCaches,
-  clearUsergroupsCaches,
-  clearUsersCaches,
-} from "@/global-cache";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import Emoji from "@/components/blocks/Emoji.vue";
 import { CardActionButtonType, useSettingStore } from "@/stores";
+import { useCache } from "@/composables/useCache";
 
 interface State {
   tab: "auth" | "search" | "appearance" | "cache";
@@ -121,28 +117,36 @@ const clearAuth = async () => {
   showSuccessToast("Slackとの認証をクリアしました");
 };
 
-const clearCache = async (
+const {
+  loadingCacheMessage,
+  loadingCache,
+  refreshChannelsCache,
+  refreshUsergroupsCache,
+  refreshUsersCache,
+  refreshEmojiCache,
+} = useCache();
+
+const updateCache = async (
   target: "users" | "usergroups" | "channels" | "emoji",
 ) => {
   switch (target) {
     case "users":
-      await clearUsersCaches();
+      await refreshUsersCache();
       break;
     case "usergroups":
-      await clearUsergroupsCaches();
+      await refreshUsergroupsCache();
       break;
     case "channels":
-      await clearChannelsCaches();
+      await refreshChannelsCache();
       break;
     case "emoji":
-      await clearEmojiCaches();
+      await refreshEmojiCache();
       break;
     default:
       throw new ExhaustiveError(target);
   }
 
   await updateCacheMeta();
-  showSuccessToast("キャッシュをクリアしました");
 };
 
 const emojis = computed(() => {
@@ -342,8 +346,11 @@ const emojis = computed(() => {
               :subtitle="toCacheMessage(state.cache.users)"
             >
               <template v-slot:append>
-                <v-btn color="warning" @click="clearCache('users')"
-                  >クリア</v-btn
+                <v-btn
+                  color="warning"
+                  prepend-icon="mdi-cached"
+                  @click="updateCache('users')"
+                  >更新</v-btn
                 >
               </template>
             </v-list-item>
@@ -353,8 +360,11 @@ const emojis = computed(() => {
               :subtitle="toCacheMessage(state.cache.usergroups)"
             >
               <template v-slot:append>
-                <v-btn color="warning" @click="clearCache('usergroups')"
-                  >クリア</v-btn
+                <v-btn
+                  color="warning"
+                  @click="updateCache('usergroups')"
+                  prepend-icon="mdi-cached"
+                  >更新</v-btn
                 >
               </template>
             </v-list-item>
@@ -364,8 +374,11 @@ const emojis = computed(() => {
               :subtitle="toCacheMessage(state.cache.channels)"
             >
               <template v-slot:append>
-                <v-btn color="warning" @click="clearCache('channels')"
-                  >クリア</v-btn
+                <v-btn
+                  color="warning"
+                  @click="updateCache('channels')"
+                  prepend-icon="mdi-cached"
+                  >更新</v-btn
                 >
               </template>
             </v-list-item>
@@ -375,8 +388,11 @@ const emojis = computed(() => {
               :subtitle="toCacheMessage(state.cache.emoji)"
             >
               <template v-slot:append>
-                <v-btn color="warning" @click="clearCache('emoji')"
-                  >クリア</v-btn
+                <v-btn
+                  color="warning"
+                  @click="updateCache('emoji')"
+                  prepend-icon="mdi-cached"
+                  >更新</v-btn
                 >
               </template>
             </v-list-item>
@@ -388,5 +404,7 @@ const emojis = computed(() => {
     <div class="d-flex justify-center ga-4 mt-4">
       <v-btn color="primary" @click="handleClickSave">更新</v-btn>
     </div>
+
+    <LoadingOverlay :loading="loadingCache" :message="loadingCacheMessage" />
   </v-container>
 </template>

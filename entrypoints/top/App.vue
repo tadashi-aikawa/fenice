@@ -14,15 +14,7 @@ import {
   unreadMessagesStorage,
   usersCacheStorage,
 } from "@/utils/storage";
-import { AsyncNullable, DateTime } from "owlelia";
-import {
-  initGlobalCaches,
-  refreshChannelsCaches,
-  refreshEmojiCaches,
-  refreshAllUsergroupsCaches,
-  refreshAllUserCaches,
-} from "@/global-cache";
-import { RequestError } from "@/clients/slack/base";
+import { initGlobalCaches } from "@/global-cache";
 import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
 import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { onKeyStroke } from "@vueuse/core";
@@ -30,6 +22,7 @@ import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
 import * as pkg from "../../package.json";
 import { useThreadDrawerStore } from "@/stores";
 import ThreadContainer from "@/components/ThreadContainer.vue";
+import { useCache } from "@/composables/useCache";
 
 const version = pkg.version;
 
@@ -64,62 +57,14 @@ onMounted(async () => {
 });
 
 const loadingCache = ref(false);
-const loadingCacheMessage = ref("");
 
-const refreshUsersCache = async (): AsyncNullable<RequestError> => {
-  loadingCacheMessage.value =
-    "ユーザーキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [members, err] = (await refreshAllUserCaches()).unwrap();
-  if (err) {
-    return err;
-  }
-
-  await usersCacheStorage.setValue({
-    updated: DateTime.now().unix,
-    members,
-  });
-};
-
-const refreshUsergroupsCache = async (): AsyncNullable<RequestError> => {
-  loadingCacheMessage.value =
-    "ユーザーグループキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [usergroups, err] = (await refreshAllUsergroupsCaches()).unwrap();
-  if (err) {
-    return err;
-  }
-
-  await usergroupsCacheStorage.setValue({
-    updated: DateTime.now().unix,
-    usergroups,
-  });
-};
-
-const refreshChannelsCache = async (): AsyncNullable<RequestError> => {
-  loadingCacheMessage.value =
-    "Channelキャッシュをリフレッシュしています。この処理はしばらくかかりますのでこのままお待ちください。";
-  const [channels, err] = (await refreshChannelsCaches()).unwrap();
-  if (err) {
-    return err;
-  }
-
-  await channelsCacheStorage.setValue({
-    updated: DateTime.now().unix,
-    channels,
-  });
-};
-
-const refreshEmojiCache = async (): AsyncNullable<RequestError> => {
-  loadingCacheMessage.value = "絵文字キャッシュをリフレッシュしています。";
-  const [emoji, err] = (await refreshEmojiCaches()).unwrap();
-  if (err) {
-    return err;
-  }
-
-  await emojiCacheStorage.setValue({
-    updated: DateTime.now().unix,
-    emoji,
-  });
-};
+const {
+  loadingCacheMessage,
+  refreshEmojiCache,
+  refreshChannelsCache,
+  refreshUsersCache,
+  refreshUsergroupsCache,
+} = useCache();
 
 onMounted(async () => {
   loadingCache.value = true;
