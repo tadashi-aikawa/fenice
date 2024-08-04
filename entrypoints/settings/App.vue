@@ -10,6 +10,7 @@ import {
   crucialMessageConditionsStorage,
   emojiCacheStorage,
   quickReactionEmojisStorage,
+  searchIntervalMinutesStorage,
   visibledButtonsStorage,
 } from "@/utils/storage";
 import { DateTime } from "owlelia";
@@ -35,6 +36,7 @@ interface State {
   clientId: string;
   clientSecret: string;
   crucialMessageConditions: string;
+  searchIntervalMinutes: string;
   visibledButtons: CardActionButtonType[];
   quickReactionEmojis: string;
   cache: {
@@ -50,6 +52,7 @@ const state = reactive<State>({
   clientId: "",
   clientSecret: "",
   crucialMessageConditions: "",
+  searchIntervalMinutes: "",
   visibledButtons: [],
   quickReactionEmojis: "",
   cache: {},
@@ -90,6 +93,8 @@ onBeforeMount(async () => {
   state.clientSecret = (await clientSecretStorage.getValue()) ?? "";
   state.crucialMessageConditions =
     (await crucialMessageConditionsStorage.getValue())?.join("\n") ?? "";
+  state.searchIntervalMinutes =
+    (await searchIntervalMinutesStorage.getValue())?.toString() ?? "";
   state.visibledButtons = settingStore.visibledButtons;
   state.quickReactionEmojis =
     (await quickReactionEmojisStorage.getValue())?.join("\n") ?? "";
@@ -115,6 +120,9 @@ const handleClickSave = async () => {
   await clientSecretStorage.setValue(state.clientSecret);
   await crucialMessageConditionsStorage.setValue(
     smartLineBreakSplit(state.crucialMessageConditions),
+  );
+  await searchIntervalMinutesStorage.setValue(
+    Number(state.searchIntervalMinutes),
   );
   // `state.visibledButtons` は Proxy {0: .., 1: .., ...} のようになるので...
   await visibledButtonsStorage.setValue(
@@ -217,6 +225,11 @@ const emojis = computed(() => {
             v-model="state.crucialMessageConditions"
             label="重要メッセージの条件 (改行区切りで複数指定)"
             auto-grow
+          />
+          <v-text-field
+            v-model="state.searchIntervalMinutes"
+            label="メッセージ確認頻度(分) ※ 変更後は再起動が必要"
+            type="number"
           />
         </v-window-item>
 
@@ -415,7 +428,12 @@ const emojis = computed(() => {
     </v-card>
 
     <div class="d-flex justify-center ga-4 mt-4">
-      <v-btn color="primary" @click="handleClickSave">更新</v-btn>
+      <v-btn
+        color="primary"
+        @click="handleClickSave"
+        :disabled="!state.searchIntervalMinutes"
+        >更新</v-btn
+      >
     </div>
 
     <LoadingOverlay :loading="loadingCache" :message="loadingCacheMessage" />

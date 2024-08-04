@@ -97,6 +97,10 @@ export const crucialMessageConditionsStorage = storage.defineItem<string[]>(
   "local:crucialMessageConditionsStorage",
   { defaultValue: [] },
 ); // 改行区切り複数指定
+export const searchIntervalMinutesStorage = storage.defineItem<number>(
+  "local:searchIntervalMinutesStorage",
+  { defaultValue: 5 },
+);
 
 // appearance
 export const visibledButtonsStorage = storage.defineItem<string[]>(

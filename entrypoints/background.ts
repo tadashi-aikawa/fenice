@@ -110,7 +110,10 @@ export default defineBackground(() => {
 
   // 定期検索処理
   // ratelimitに引っかかるリスクあり、頻繁に確認したいときはSlackも開いてるはずなので少し間をあける
-  browser.alarms.create("background-search", { periodInMinutes: 5 });
+  searchIntervalMinutesStorage.getValue().then((min) => {
+    browser.alarms.create("background-search", { periodInMinutes: min });
+  });
+
   // 1時間に深い意味はない. 管理者権限のような強い操作はできないので10分などまで縮める必要はないと判断
   browser.alarms.create("background-refresh-token", { periodInMinutes: 60 });
 
