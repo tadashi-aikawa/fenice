@@ -1,9 +1,9 @@
 <script setup lang="ts">
-// @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
-import { Mentionable } from "vue-mention";
 import { User } from "@/clients/slack/models";
 import { lastMentionedUserMapStorage } from "@/utils/storage";
 import { DateTime } from "owlelia";
+// @ts-expect-error package.jsonのexportsに.d.tsファイルの定義がないから
+import { Mentionable } from "vue-mention";
 
 type UserSuggestion = { value: string; label: string; user: User };
 const userSuggestions = ref<UserSuggestion[]>([]);

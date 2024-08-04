@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { VIcon, VSheet } from "vuetify/components";
+
 defineProps<{
   url: string;
   title: string;

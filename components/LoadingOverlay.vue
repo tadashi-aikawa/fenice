@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { VOverlay } from "vuetify/components";
 import CharaLoading from "./CharaLoading.vue";
 
 defineProps<{

@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { Message } from "@/clients/slack/models";
+import { useCardActions } from "@/composables/CardActions";
 import {
   quickReactionEmojisStorage,
   unreadMessagesStorage,
 } from "@/utils/storage";
+import { VBtn } from "vuetify/components";
 import PostCard from "./PostCard.vue";
-import { sleep } from "@/utils/os";
-import { Message } from "@/clients/slack/models";
-import { useCardActions } from "@/composables/CardActions";
 
 const { reactAsEmoji, showThread } = useCardActions();
 

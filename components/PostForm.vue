@@ -1,5 +1,11 @@
 <script lang="ts" setup>
-import { showSuccessToast } from "@/utils/toast";
+import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
+import { ImageBlock, SectionBlock } from "@/clients/slack/models";
+import {
+  isEmoji,
+  usergroupsByHandleCache,
+  usersByNameCache,
+} from "@/global-cache";
 import {
   Dest,
   Resource,
@@ -8,19 +14,14 @@ import {
   isMessage,
   isVideoResource,
 } from "@/models";
-import { postChatPostMessage, postFilesUpload } from "@/clients/slack";
-import UploadingImage from "./UploadingImage.vue";
-import { ImageBlock, SectionBlock } from "@/clients/slack/models";
-import { doSinglePatternMatching, escapeMrkdwn } from "@/utils/strings";
-import {
-  isEmoji,
-  usergroupsByHandleCache,
-  usersByNameCache,
-} from "@/global-cache";
 import { updateLastUsedEmojis } from "@/utils/storage";
-import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
+import { doSinglePatternMatching, escapeMrkdwn } from "@/utils/strings";
+import { showSuccessToast } from "@/utils/toast";
 import { onKeyStroke, refDebounced } from "@vueuse/core";
+import { VBtn, VCard, VHover } from "vuetify/components";
+import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
 import CodeMirrorMessageForm from "./CodeMirrorMessageForm.vue";
+import UploadingImage from "./UploadingImage.vue";
 
 const props = defineProps<{
   dest: Dest;

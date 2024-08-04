@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { BroadcastItem } from "@/clients/slack/blockModels";
 
-const props = defineProps<{
+defineProps<{
   item: BroadcastItem;
 }>();
 </script>

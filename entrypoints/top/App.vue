@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import Badge from "@/components/Badge.vue";
 import CrucialMessagesPage from "@/components/CrucialMessagesPage.vue";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
+import ThreadContainer from "@/components/ThreadContainer.vue";
 import ZenTimesPage from "@/components/ZenTimesPage.vue";
+import { useCache } from "@/composables/useCache";
 import Settings from "@/entrypoints/settings/App.vue";
+import { initGlobalCaches } from "@/global-cache";
+import { useThreadDrawerStore } from "@/stores";
 import { ExhaustiveError } from "@/utils/errors";
+import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
 import {
   DEFAULT_CHANNELS_CACHE,
   DEFAULT_EMOJI_CACHE,
@@ -14,15 +21,26 @@ import {
   unreadMessagesStorage,
   usersCacheStorage,
 } from "@/utils/storage";
-import { initGlobalCaches } from "@/global-cache";
-import SearchMessagesContainer from "@/components/SearchMessagesContainer.vue";
-import LoadingOverlay from "@/components/LoadingOverlay.vue";
 import { onKeyStroke } from "@vueuse/core";
-import { hasModifierKeyPressed, hasModifierKeyPressedOnly } from "@/utils/keys";
+import {
+  VApp,
+  VAvatar,
+  VBtn,
+  VDivider,
+  VIcon,
+  VImg,
+  VLayout,
+  VList,
+  VListItem,
+  VMain,
+  VNavigationDrawer,
+  VSpacer,
+  VTab,
+  VTabs,
+  VWindow,
+  VWindowItem,
+} from "vuetify/components";
 import * as pkg from "../../package.json";
-import { useThreadDrawerStore } from "@/stores";
-import ThreadContainer from "@/components/ThreadContainer.vue";
-import { useCache } from "@/composables/useCache";
 
 const version = pkg.version;
 

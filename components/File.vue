@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { File } from "@/clients/slack/models";
+import { VIcon } from "vuetify/components";
 import FileBox from "./files/FileBox.vue";
 
 defineProps<{

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Attachment } from "@/clients/slack/models";
+import { VSheet } from "vuetify/components";
+import AttachmentMessageCard from "./AttachmentMessageCard.vue";
+import AttachmentField from "./blocks/AttachmentField.vue";
 import Block from "./blocks/Block.vue";
 import MrkdwnView from "./blocks/mrkdwn/MrkdwnView.vue";
-import AttachmentField from "./blocks/AttachmentField.vue";
-import AttachmentMessageCard from "./AttachmentMessageCard.vue";
 
 defineProps<{
   attachment: Attachment;

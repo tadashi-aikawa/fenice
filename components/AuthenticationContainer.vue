@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { RequestError } from "@/clients/slack/base";
-import LoadingOverlay from "./LoadingOverlay.vue";
 import { refreshTokenStorage } from "@/utils/storage";
+import { VBtn } from "vuetify/components";
+import LoadingOverlay from "./LoadingOverlay.vue";
 const props = defineProps<{
   clientId: string;
   clientSecret: string;

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { getUsersConversations } from "@/clients/slack";
-import { DateTime } from "owlelia";
-import { sorter } from "@/utils/collections";
 import { Channel } from "@/clients/slack/models";
+import { sorter } from "@/utils/collections";
+import { DateTime } from "owlelia";
+import { onMounted } from "vue";
+import { VAutocomplete } from "vuetify/components";
 
 const model = defineModel<Channel | null>();
 

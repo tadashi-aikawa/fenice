@@ -1,16 +1,28 @@
 <script setup lang="ts">
 import { Message, User } from "@/clients/slack/models";
-import { ts2display } from "@/utils/date";
-import HighlightCode from "./HighlightCode.vue";
 import { toDisplayChannelName, usersByIdCache } from "@/global-cache";
-import Block from "./blocks/Block.vue";
-import Attachement from "./Attachement.vue";
-import { toBrowserUrl, unescapeMrkdwn } from "@/utils/strings";
-import File from "./File.vue";
-import Emoji from "./blocks/Emoji.vue";
-import { lockOnMessageStorage } from "@/utils/storage";
 import { useSettingStore } from "@/stores";
+import { ts2display } from "@/utils/date";
 import { copyToClipboard } from "@/utils/os";
+import { lockOnMessageStorage } from "@/utils/storage";
+import { toBrowserUrl, unescapeMrkdwn } from "@/utils/strings";
+import {
+  VBtn,
+  VCard,
+  VCardItem,
+  VChip,
+  VDivider,
+  VIcon,
+  VMenu,
+  VSlideGroup,
+  VSlideGroupItem,
+  VSpacer,
+} from "vuetify/components";
+import Attachement from "./Attachement.vue";
+import File from "./File.vue";
+import HighlightCode from "./HighlightCode.vue";
+import Block from "./blocks/Block.vue";
+import Emoji from "./blocks/Emoji.vue";
 
 interface Props {
   message: Message;

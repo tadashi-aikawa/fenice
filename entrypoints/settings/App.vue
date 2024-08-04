@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
+import LoadingOverlay from "@/components/LoadingOverlay.vue";
+import Emoji from "@/components/blocks/Emoji.vue";
+import { useCache } from "@/composables/useCache";
+import { CardActionButtonType, useSettingStore } from "@/stores";
 import { smartLineBreakSplit } from "@/utils/collections";
 import {
   channelsCacheStorage,
@@ -7,12 +12,22 @@ import {
   quickReactionEmojisStorage,
   visibledButtonsStorage,
 } from "@/utils/storage";
-import AuthenticationContainer from "@/components/AuthenticationContainer.vue";
 import { DateTime } from "owlelia";
-import LoadingOverlay from "@/components/LoadingOverlay.vue";
-import Emoji from "@/components/blocks/Emoji.vue";
-import { CardActionButtonType, useSettingStore } from "@/stores";
-import { useCache } from "@/composables/useCache";
+import {
+  VBtn,
+  VBtnToggle,
+  VCard,
+  VContainer,
+  VList,
+  VListItem,
+  VTab,
+  VTabs,
+  VTextarea,
+  VTextField,
+  VTooltip,
+  VWindow,
+  VWindowItem,
+} from "vuetify/components";
 
 interface State {
   tab: "auth" | "search" | "appearance" | "cache";
@@ -173,14 +188,12 @@ const emojis = computed(() => {
             <v-text-field
               v-model="state.clientId"
               label="Slack appのclient_id"
-              required
               style="width: 480px"
             />
             <v-text-field
               v-model="state.clientSecret"
               label="Slack appのclient_secret"
               type="password"
-              required
               style="width: 480px"
             />
 

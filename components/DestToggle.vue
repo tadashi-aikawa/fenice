@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { onMounted } from "vue";
 import { getUsersConversations } from "@/clients/slack";
 import { Channel, Message } from "@/clients/slack/models";
+import { Dest, isChannel, isMessage } from "@/models";
+import { isPresent } from "@/utils/collections";
 import {
   lockOnMessageStorage,
   selectedChannelIdsStorage,
 } from "@/utils/storage";
-import { isPresent } from "@/utils/collections";
-import { Dest, isChannel, isMessage } from "@/models";
+import { onMounted } from "vue";
+import {
+  VAutocomplete,
+  VBtn,
+  VBtnToggle,
+  VIcon,
+  VMenu,
+} from "vuetify/components";
 
 const dest = defineModel<Dest | null>({ default: null });
 
@@ -78,7 +85,6 @@ const handleClickRemoveDest = (channel: Channel) => {
       v-model="dest"
       color="primary"
       rounded="0"
-      group
       style="height: 100%; width: 300px; display: contents"
     >
       <v-btn

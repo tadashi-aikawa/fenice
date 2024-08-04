@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
-import { fallbackEmojiMap, getUnicodeEmojis } from "@/utils/strings";
-import { lastUsedEmojiMapStorage, updateLastUsedEmojis } from "@/utils/storage";
 import { User } from "@/clients/slack/models";
-import { DateTime } from "owlelia";
+import { lastUsedEmojiMapStorage, updateLastUsedEmojis } from "@/utils/storage";
+import { fallbackEmojiMap, getUnicodeEmojis } from "@/utils/strings";
+import { autocompletion, CompletionContext } from "@codemirror/autocomplete";
 import { EditorView } from "codemirror";
+import { DateTime } from "owlelia";
 import { render } from "vue";
+import { Codemirror } from "vue-codemirror";
 import Emoji from "./blocks/Emoji.vue";
 
 const text = defineModel<string>({ required: true });

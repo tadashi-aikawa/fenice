@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import PostCard from "./PostCard.vue";
-import Loading from "./Loading.vue";
 import { useCardActions } from "@/composables/CardActions";
 import { useThreadDrawerStore } from "@/stores";
-import PostForm from "./PostForm.vue";
 import { useScroll } from "@vueuse/core";
+import { VBtn, VIcon } from "vuetify/components";
+import Loading from "./Loading.vue";
+import PostCard from "./PostCard.vue";
+import PostForm from "./PostForm.vue";
 
 const emit = defineEmits<{
   posted: [];

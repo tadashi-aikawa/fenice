@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { AttachmentMessageBlock } from "@/clients/slack/blockModels";
 import { channelsByIdCache, toDisplayChannelName } from "@/global-cache";
+import { VBtn, VDivider, VIcon, VSheet, VSpacer } from "vuetify/components";
 import Block from "./blocks/Block.vue";
 
 const props = defineProps<{

@@ -1,4 +1,11 @@
 <script setup lang="ts">
+import {
+  VBtn,
+  VBtnToggle,
+  VCombobox,
+  VTextField,
+  VTooltip,
+} from "vuetify/components";
 const query = defineModel("query", { default: "" });
 const channel = defineModel("channel", { default: "" });
 const channels = ref<string[]>([]);

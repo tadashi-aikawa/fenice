@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { quickReactionEmojisStorage, updateMessages } from "@/utils/storage";
-import PostCard from "./PostCard.vue";
-import { Message } from "@/clients/slack/models";
 import { getSearchMessages } from "@/clients/slack";
+import { Message } from "@/clients/slack/models";
+import { useCardActions } from "@/composables/CardActions";
+import { ts2Divider } from "@/utils/date";
+import { quickReactionEmojisStorage } from "@/utils/storage";
+import { VBtn, VDivider } from "vuetify/components";
+import Loading from "./Loading.vue";
+import PostCard from "./PostCard.vue";
 import SearchMessageQueryInput, {
   SearchCondition,
 } from "./SearchMessageQueryInput.vue";
-import Loading from "./Loading.vue";
-import { useCardActions } from "@/composables/CardActions";
-import { ts2Divider } from "@/utils/date";
 
 const searchCondition = ref<SearchCondition>({
   query: "",

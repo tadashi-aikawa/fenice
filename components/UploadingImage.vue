@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Resource } from "@/models";
+import { VOverlay, VProgressCircular } from "vuetify/components";
 
 defineProps<{
   uploading: boolean;
