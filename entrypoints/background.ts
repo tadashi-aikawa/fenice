@@ -19,9 +19,6 @@ async function searchMessages(
   let errors = [];
 
   for (const q of queries) {
-    // ratelimitに引っかからないよう複数クエリ間で間をあける
-    await sleep(5 * 1000);
-
     const [res, err] = (
       await getSearchMessages({
         query: [
