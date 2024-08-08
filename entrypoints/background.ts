@@ -4,6 +4,7 @@ import { Message } from "@/clients/slack/models";
 import { uniqBy } from "@/utils/collections";
 import {
   crucialMessageConditionsStorage,
+  lastBackgroundSearchMessageTimestampStorage,
   refreshTokenStorage,
   updateMessages,
 } from "@/utils/storage";
@@ -106,15 +107,15 @@ export default defineBackground(() => {
   });
 
   // 定期検索処理
-  // ratelimitに引っかかるリスクあり、頻繁に確認したいときはSlackも開いてるはずなので少し間をあける
-  searchIntervalMinutesStorage.getValue().then((min) => {
-    browser.alarms.create("background-search", { periodInMinutes: min });
-  });
-
+  // 検索頻度は設定値によるがalermは頻繁に実行させないとservice workerが停止するっぽいので
+  // また、ここでstoreの非同期値をとるとservice workerが無効化されそう
+  browser.alarms.create("background-search", { periodInMinutes: 1 });
   // 1時間に深い意味はない. 管理者権限のような強い操作はできないので10分などまで縮める必要はないと判断
   browser.alarms.create("background-refresh-token", { periodInMinutes: 60 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
+    console.debug(`[${DateTime.now().rfc3339}] 📣 alermの登録処理を実行`);
+
     // 完璧ではないけど一旦これで十分
     const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
     if (!feniceTab) {
@@ -123,7 +124,24 @@ export default defineBackground(() => {
 
     if (alarm.name === "background-refresh-token") {
       await refreshTokens();
-    } else if (alarm.name === "background-search") {
+      return;
+    }
+
+    if (alarm.name === "background-search") {
+      const intervalMinutes = await searchIntervalMinutesStorage.getValue();
+      const lastTimestamp =
+        await lastBackgroundSearchMessageTimestampStorage.getValue();
+      if (
+        DateTime.now().diffSeconds(DateTime.of(lastTimestamp)) <
+        intervalMinutes * 60
+      ) {
+        console.debug(
+          "[${DateTime.now().rfc3339}] 🥃 間隔が設定値未満なのでスキップ",
+        );
+        console.debug({ lastTimestamp, intervalMinutes });
+        return;
+      }
+
       const conditions = await crucialMessageConditionsStorage.getValue();
       if (conditions.length === 0) {
         return;
@@ -134,7 +152,9 @@ export default defineBackground(() => {
         return;
       }
 
-      const timestamp = DateTime.now().unix.toString();
+      const timestamp = DateTime.now().unix;
+      await lastBackgroundSearchMessageTimestampStorage.setValue(timestamp);
+
       const [messages, errors] = (await searchMessages(conditions)).unwrap();
       if (errors) {
         const errorMessage = errors
@@ -143,7 +163,7 @@ export default defineBackground(() => {
         const includesExpiredError = errors.find(
           (x) => x.title === "token_expired",
         );
-        browser.notifications.create(timestamp, {
+        browser.notifications.create(timestamp.toString(), {
           title: includesExpiredError
             ? "アクセストークンの有効期限が切れました"
             : "検索に失敗",
@@ -166,12 +186,15 @@ export default defineBackground(() => {
         (x) => x,
       ).join("\n");
       const title = `${newMessages.length}件の新しいメッセージがあります`;
-      const notificationId = await browser.notifications.create(timestamp, {
-        title,
-        message: `${channelNames}`,
-        type: "basic",
-        iconUrl: FENICE_ICON_URL,
-      });
+      const notificationId = await browser.notifications.create(
+        timestamp.toString(),
+        {
+          title,
+          message: `${channelNames}`,
+          type: "basic",
+          iconUrl: FENICE_ICON_URL,
+        },
+      );
       notifiedIds.add(notificationId);
     }
   });

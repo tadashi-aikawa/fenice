@@ -19,6 +19,11 @@ export const lockOnMessageStorage = storage.defineItem<Message | null>(
   "local:lockOnMessage",
   { defaultValue: null },
 );
+export const lastBackgroundSearchMessageTimestampStorage =
+  storage.defineItem<number>(
+    "local:lastBackgroundSearchMessageTimestampStorage",
+    { defaultValue: 0 },
+  );
 
 // ----------------------------------
 // Message
