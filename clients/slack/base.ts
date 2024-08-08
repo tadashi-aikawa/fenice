@@ -1,4 +1,4 @@
-import { AsyncResult, err, ok } from "owlelia";
+import { AsyncNullable, AsyncResult, err, ok } from "owlelia";
 
 const BASE_URL = "https://slack.com/api";
 
@@ -50,7 +50,24 @@ export async function getRequest<R>(args: {
   const url = buildUrl(args.path, args.query);
   const headers = await createDefaultHeaders();
   const res = await fetch(url, { headers });
-  return handleResponse<R>(res);
+  let result = await handleResponse<R>(res);
+
+  // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
+  if (result.isOk() && result.value.retry) {
+    const res = await fetch(url, { headers });
+    result = await handleResponse<R>(res);
+  }
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+  if (result.value.retry) {
+    return err({
+      title: "retryループエラー",
+      message: "ネストしてのretryリクエストはできません",
+    });
+  }
+  return ok(result.value.value);
 }
 
 export async function postRequest<R>(args: {
@@ -78,10 +95,30 @@ export async function postRequest<R>(args: {
   }
 
   const res = await fetch(url, { method: "POST", headers, body });
-  return handleResponse<R>(res);
+  let result = await handleResponse<R>(res);
+
+  // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
+  if (result.isOk() && result.value.retry) {
+    const res = await fetch(url, { method: "POST", headers, body });
+    result = await handleResponse<R>(res);
+  }
+
+  if (result.isErr()) {
+    return err(result.error);
+  }
+  if (result.value.retry) {
+    return err({
+      title: "retryループエラー",
+      message: "ネストしてのretryリクエストはできません",
+    });
+  }
+  return ok(result.value.value);
 }
 
-async function handleResponse<R>(res: Response): AsyncResult<R, RequestError> {
+// レスポンスを解析し、必要に応じて認証のリクエストを行うこともあります
+async function handleResponse<R>(
+  res: Response,
+): AsyncResult<{ retry: false; value: R } | { retry: true }, RequestError> {
   if (!res.ok) {
     return err({
       title: `通信が失敗しました`,
@@ -91,16 +128,18 @@ async function handleResponse<R>(res: Response): AsyncResult<R, RequestError> {
 
   const jr = (await res.json()) as ResponseBase;
   if (jr.ok) {
-    return ok(jr as R);
+    return ok({ retry: false, value: jr as R });
   }
 
-  // 認証期間切れの場合はOAuth 2.0をやり直しさせるためトークンを空にする
+  // 認証期間切れの場合はrefresh tokenでaccess tokenを更新する
   if (jr.error === "token_expired") {
-    accessTokenStorage.setValue(null);
-    return err({
-      title: "アクセストークンの有効期限が切れました",
-      message: "Slackとの再認証が必要です",
-    });
+    console.debug(`🐠 Refresh access token...`);
+    const rErr = await refreshTokens();
+    if (rErr) {
+      console.debug(`⚠️ Refresh error: ${JSON.stringify(rErr)}`);
+      return err(rErr);
+    }
+    return ok({ retry: true });
   }
 
   // refresh_tokenが無効の場合はOAuth 2.0をやり直しさせるためトークンを空にする
@@ -120,4 +159,61 @@ async function handleResponse<R>(res: Response): AsyncResult<R, RequestError> {
         }
       : { title: jr.error, message: "エラーが発生しました" },
   );
+}
+
+/**
+ * access tokenをrefreshします
+ */
+async function refreshTokens(): AsyncNullable<RequestError> {
+  const accessToken = await accessTokenStorage.getValue();
+  if (!accessToken) {
+    return;
+  }
+
+  const refreshToken = await refreshTokenStorage.getValue();
+  const clientId = await clientIdStorage.getValue();
+  const clientSecret = await clientSecretStorage.getValue();
+  if (!refreshToken || !clientId || !clientSecret) {
+    return;
+  }
+
+  const [res, error] = (
+    await postOauthV2Access({
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    })
+  ).unwrap();
+  if (error) {
+    return error;
+  }
+
+  await accessTokenStorage.setValue(res.access_token);
+  await refreshTokenStorage.setValue(res.refresh_token);
+
+  return null;
+}
+
+export async function postOauthV2Access(args: {
+  client_id: string;
+  client_secret: string;
+  grant_type: "refresh_token";
+  refresh_token: string;
+}) {
+  const formData = new FormData();
+  formData.append("client_id", args.client_id);
+  formData.append("client_secret", args.client_secret);
+  formData.append("grant_type", args.grant_type);
+  formData.append("refresh_token", args.refresh_token);
+
+  return await postRequest<{
+    ok: boolean;
+    access_token: string;
+    refresh_token: string;
+    expires_in: number;
+  }>({
+    path: "/oauth.v2.access",
+    formData,
+  });
 }

@@ -1,11 +1,10 @@
-import { getSearchMessages, postOauthV2Access } from "@/clients/slack";
+import { getSearchMessages } from "@/clients/slack";
 import { RequestError } from "@/clients/slack/base";
 import { Message } from "@/clients/slack/models";
 import { uniqBy } from "@/utils/collections";
 import {
   crucialMessageConditionsStorage,
   lastBackgroundSearchMessageTimestampStorage,
-  refreshTokenStorage,
   updateMessages,
 } from "@/utils/storage";
 import { AsyncResult, DateTime, err, ok } from "owlelia";
@@ -39,41 +38,6 @@ async function searchMessages(
   }
 
   return errors.length > 0 ? err(errors) : ok(results);
-}
-
-async function refreshTokens() {
-  const accessToken = await accessTokenStorage.getValue();
-  if (!accessToken) {
-    return;
-  }
-
-  const refreshToken = await refreshTokenStorage.getValue();
-  const clientId = await clientIdStorage.getValue();
-  const clientSecret = await clientSecretStorage.getValue();
-  if (!refreshToken || !clientId || !clientSecret) {
-    return;
-  }
-
-  const [res, error] = (
-    await postOauthV2Access({
-      client_id: clientId,
-      client_secret: clientSecret,
-      grant_type: "refresh_token",
-      refresh_token: refreshToken,
-    })
-  ).unwrap();
-  if (error) {
-    browser.notifications.create({
-      title: error.title,
-      message: error.message,
-      type: "basic",
-      iconUrl: FENICE_ICON_URL,
-    });
-    return;
-  }
-
-  await accessTokenStorage.setValue(res.access_token);
-  await refreshTokenStorage.setValue(res.refresh_token);
 }
 
 export default defineBackground(() => {
@@ -110,8 +74,6 @@ export default defineBackground(() => {
   // 検索頻度は設定値によるがalermは頻繁に実行させないとservice workerが停止するっぽいので
   // また、ここでstoreの非同期値をとるとservice workerが無効化されそう
   browser.alarms.create("background-search", { periodInMinutes: 1 });
-  // 1時間に深い意味はない. 管理者権限のような強い操作はできないので10分などまで縮める必要はないと判断
-  browser.alarms.create("background-refresh-token", { periodInMinutes: 60 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
     console.debug(`[${DateTime.now().rfc3339}] 📣 alermの登録処理を実行`);
@@ -119,11 +81,6 @@ export default defineBackground(() => {
     // 完璧ではないけど一旦これで十分
     const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
     if (!feniceTab) {
-      return;
-    }
-
-    if (alarm.name === "background-refresh-token") {
-      await refreshTokens();
       return;
     }
 
