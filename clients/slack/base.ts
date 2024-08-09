@@ -75,6 +75,7 @@ export async function postRequest<R>(args: {
   query?: Query;
   json?: Object;
   formData?: FormData;
+  prohibitRetry?: boolean;
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
 
@@ -95,12 +96,12 @@ export async function postRequest<R>(args: {
   }
 
   const res = await fetch(url, { method: "POST", headers, body });
-  let result = await handleResponse<R>(res);
+  let result = await handleResponse<R>(res, args.prohibitRetry);
 
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
     const res = await fetch(url, { method: "POST", headers, body });
-    result = await handleResponse<R>(res);
+    result = await handleResponse<R>(res, args.prohibitRetry);
   }
 
   if (result.isErr()) {
@@ -118,6 +119,7 @@ export async function postRequest<R>(args: {
 // レスポンスを解析し、必要に応じて認証のリクエストを行うこともあります
 async function handleResponse<R>(
   res: Response,
+  prohibitRefresh?: boolean,
 ): AsyncResult<{ retry: false; value: R } | { retry: true }, RequestError> {
   if (!res.ok) {
     return err({
@@ -132,7 +134,7 @@ async function handleResponse<R>(
   }
 
   // 認証期間切れの場合はrefresh tokenでaccess tokenを更新する
-  if (jr.error === "token_expired") {
+  if (!prohibitRefresh && jr.error === "token_expired") {
     console.debug(`🐠 Refresh access token...`);
     const rErr = await refreshTokens();
     if (rErr) {
@@ -215,5 +217,6 @@ export async function postOauthV2Access(args: {
   }>({
     path: "/oauth.v2.access",
     formData,
+    prohibitRetry: true,
   });
 }
