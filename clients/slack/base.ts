@@ -191,6 +191,9 @@ async function refreshTokens(): AsyncNullable<RequestError> {
     return error;
   }
 
+  console.debug(`✨ Success to refesh`);
+  console.debug(`access token: ${res.access_token}`);
+  console.debug(`refresh token: ${res.refresh_token}`);
   await accessTokenStorage.setValue(res.access_token);
   await refreshTokenStorage.setValue(res.refresh_token);
 
