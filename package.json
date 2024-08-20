@@ -20,6 +20,7 @@
     "@mdi/font": "^7.4.47",
     "@replit/codemirror-vim": "^6.2.1",
     "@vueuse/core": "^10.11.0",
+    "apexcharts": "^3.52.0",
     "codemirror": "^6.0.1",
     "node-emoji": "^2.1.3",
     "owlelia": "^0.48.1",
@@ -29,6 +30,7 @@
     "vue": "^3.4.31",
     "vue-codemirror": "^6.1.1",
     "vue-mention": "^2.0.0-alpha.3",
+    "vue3-apexcharts": "^1.5.3",
     "vue3-toastify": "^0.2.2",
     "vuetify": "^3.6.10"
   },

@@ -1,15 +1,15 @@
-import "./main.css";
 import { createApp } from "vue";
-import App from "./App.vue";
 import Vue3Toastify from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
+import App from "./App.vue";
+import "./main.css";
 
 // Vuetify
 import "@mdi/font/css/materialdesignicons.css";
-import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import "vuetify/styles";
 
 const vuetify = createVuetify({
   components,
@@ -17,22 +17,25 @@ const vuetify = createVuetify({
 });
 
 // Prism
-import "prismjs/themes/prism-okaidia.css";
 import "prismjs/components/prism-json";
+import "prismjs/themes/prism-okaidia.css";
 
 // vue-mention
 import "floating-vue/dist/style.css";
+
+// ApexCharts
+import VueApexCharts from "vue3-apexcharts";
 
 // Pinia
 import { createPinia } from "pinia";
 const pinia = createPinia();
 
 // CodeMirror
-import VueCodemirror from "vue-codemirror";
-import { minimalSetup, EditorView } from "codemirror";
-import { getCM, vim, Vim } from "@replit/codemirror-vim";
-import { keymap } from "@codemirror/view";
 import { yankGenerator } from "@/libs/yank";
+import { keymap } from "@codemirror/view";
+import { getCM, vim, Vim } from "@replit/codemirror-vim";
+import { EditorView, minimalSetup } from "codemirror";
+import VueCodemirror from "vue-codemirror";
 
 const moveFocus = (direction: "next" | "previous") => {
   const activeElement = document.activeElement;
@@ -94,6 +97,7 @@ Vim.defineOperator("yank", yankGenerator(Vim.getRegisterController(), true));
 createApp(App)
   .use(vuetify)
   .use(Vue3Toastify, { autoClose: 1000 })
+  .use(VueApexCharts)
   .use(pinia)
   .use(VueCodemirror, {
     extensions: [vim(), minimalSetup, EditorView.lineWrapping, customKeymap],

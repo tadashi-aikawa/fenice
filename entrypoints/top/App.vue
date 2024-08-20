@@ -360,7 +360,7 @@ onKeyStroke("9", (e) => {
         v-model="searchDrawer"
         :inert="!searchDrawer"
         location="end"
-        width="800"
+        width="1720"
         temporary
       >
         <v-tabs v-model="currentTab" align-tabs="title">

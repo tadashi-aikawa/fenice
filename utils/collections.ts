@@ -27,6 +27,18 @@ export function uniqBy<T>(values: T[], fn: (x: T) => string | number): T[] {
   return Array.from(m.values());
 }
 
+export const count = (values: string[]): { [value: string]: number } => {
+  const ret: { [value: string]: number } = {};
+  for (const value of values) {
+    if (ret[value]) {
+      ret[value]++;
+    } else {
+      ret[value] = 1;
+    }
+  }
+  return ret;
+};
+
 export function smartLineBreakSplit(text: string): string[] {
   return text.split("\n").filter((x) => x);
 }
