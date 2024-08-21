@@ -30,7 +30,7 @@ const countByChannelName = computed(() =>
   count(messages.value.map((x) => x.channel.name)),
 );
 const graphHeight = computed(
-  () => Object.keys(countByChannelName.value).length * 50 || 0,
+  () => (Object.keys(countByChannelName.value).length + 1) * 50 || 0,
 );
 const series = computed(() => [
   {
@@ -41,6 +41,7 @@ const series = computed(() => [
 ]);
 const options = computed(() => ({
   chart: {
+    width: 480,
     height: Math.min(graphHeight.value, 900),
   },
   plotOptions: {
@@ -51,12 +52,19 @@ const options = computed(() => ({
   yaxis: {
     opposite: true,
     reversed: true,
+    tooltip: {
+      enabled: false,
+    },
+    labels: {
+      maxWidth: 300,
+    },
   },
   xaxis: {
     categories: Object.entries(countByChannelName.value)
       .sort(sorter(([_, count]) => count, "desc"))
       .map(([n, _]) => n),
   },
+  tooltip: { enabled: false },
 }));
 
 const loadingPaging = ref(false);
