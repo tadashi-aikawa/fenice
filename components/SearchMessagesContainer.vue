@@ -15,7 +15,7 @@ import SearchMessageQueryInput, {
 
 const searchCondition = ref<SearchCondition>({
   query: "",
-  option: { bot: false },
+  option: { bot: false, "100": false },
 });
 
 const emit = defineEmits<{
@@ -87,6 +87,7 @@ const search = async (cond: SearchCondition) => {
       sort: "timestamp",
       search_exclude_bots: !cond.option.bot,
       cursor: "*",
+      count: cond.option["100"] ? 100 : 20,
     })
   ).unwrap();
 
@@ -110,6 +111,7 @@ const searchPaging = async () => {
       sort: "timestamp",
       search_exclude_bots: !cond.option.bot,
       cursor: nextCursor.value,
+      count: cond.option["100"] ? 100 : 20,
     })
   ).unwrap();
 
@@ -189,8 +191,9 @@ const handleClickThread = (message: Message) => {
             color="primary"
             variant="tonal"
             @click="searchPaging"
-            >次の20件を検索する</v-btn
           >
+            次の{{ searchCondition.option["100"] ? 100 : 20 }}件を検索する
+          </v-btn>
         </template>
       </div>
     </div>

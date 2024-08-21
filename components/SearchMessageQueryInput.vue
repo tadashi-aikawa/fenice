@@ -12,10 +12,10 @@ const channels = ref<string[]>([]);
 
 export type SearchCondition = {
   query: string;
-  option: { bot: boolean };
+  option: { bot: boolean; "100": boolean };
 };
 
-type SearchFlg = "bot";
+type SearchFlg = "bot" | "100";
 const flags = ref<SearchFlg[]>([]);
 
 onMounted(async () => {
@@ -40,7 +40,10 @@ const searchCondition = computed(() => {
 
   return {
     query: q,
-    option: { bot: flags.value.includes("bot") },
+    option: {
+      bot: flags.value.includes("bot"),
+      "100": flags.value.includes("100"),
+    },
   };
 });
 watch(
@@ -94,6 +97,16 @@ const handleSearch = () => {
             <v-btn
               icon="mdi-robot-outline"
               value="bot"
+              v-bind="props"
+              class="mt-2"
+            />
+          </template>
+        </v-tooltip>
+        <v-tooltip text="検索件数を100件にするか?" location="bottom">
+          <template v-slot:activator="{ props }">
+            <v-btn
+              icon="mdi-cash-100"
+              value="100"
               v-bind="props"
               class="mt-2"
             />
