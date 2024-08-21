@@ -2,13 +2,12 @@
 import { getSearchMessages } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
-import { count } from "@/utils/collections";
 import { ts2Divider } from "@/utils/date";
 import { quickReactionEmojisStorage } from "@/utils/storage";
-import apexchart from "vue3-apexcharts";
 import { VBtn, VDivider } from "vuetify/components";
 import Loading from "./Loading.vue";
 import PostCard from "./PostCard.vue";
+import SearchChannelGraph from "./SearchChannelGraph.vue";
 import SearchMessageQueryInput, {
   SearchCondition,
 } from "./SearchMessageQueryInput.vue";
@@ -26,46 +25,6 @@ const { reactAsEmoji, showThread, stock } = useCardActions();
 
 const loading = ref(false);
 const messages = ref<Message[]>([]);
-const countByChannelName = computed(() =>
-  count(messages.value.map((x) => x.channel.name)),
-);
-const graphHeight = computed(
-  () => (Object.keys(countByChannelName.value).length + 1) * 50 || 0,
-);
-const series = computed(() => [
-  {
-    data: Object.values(countByChannelName.value).sort(
-      sorter((x) => x, "desc"),
-    ),
-  },
-]);
-const options = computed(() => ({
-  chart: {
-    width: 480,
-    height: Math.min(graphHeight.value, 900),
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-    },
-  },
-  yaxis: {
-    opposite: true,
-    reversed: true,
-    tooltip: {
-      enabled: false,
-    },
-    labels: {
-      maxWidth: 300,
-    },
-  },
-  xaxis: {
-    categories: Object.entries(countByChannelName.value)
-      .sort(sorter(([_, count]) => count, "desc"))
-      .map(([n, _]) => n),
-  },
-  tooltip: { enabled: false },
-}));
 
 const loadingPaging = ref(false);
 const nextCursor = ref<string>("");
@@ -198,7 +157,7 @@ const handleClickThread = (message: Message) => {
       </div>
     </div>
 
-    <apexchart type="bar" :options="options" :series="series"></apexchart>
+    <SearchChannelGraph :messages="messages" />
   </div>
 </template>
 

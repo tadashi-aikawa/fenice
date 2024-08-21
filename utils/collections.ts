@@ -52,6 +52,26 @@ export const keyBy = <T>(
     {} as { [key: string]: T },
   );
 
+export const max = (collection: number[]): number => {
+  const select = (a: number, b: number) => (a >= b ? a : b);
+  return collection.reduce(select);
+};
+
+export const min = (collection: number[]): number => {
+  const select = (a: number, b: number) => (a < b ? a : b);
+  return collection.reduce(select);
+};
+
+export const maxBy = <T>(collection: T[], toNum: (t: T) => number) => {
+  const select = (a: T, b: T) => (toNum(a) >= toNum(b) ? a : b);
+  return collection.reduce(select);
+};
+
+export const minBy = <T>(collection: T[], toNum: (t: T) => number) => {
+  const select = (a: T, b: T) => (toNum(a) <= toNum(b) ? a : b);
+  return collection.reduce(select);
+};
+
 /**
  * nullableな値がnull/undefinedでないことを確認し、型を保証します
  */
