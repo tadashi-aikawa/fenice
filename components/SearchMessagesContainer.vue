@@ -2,7 +2,8 @@
 import { getSearchMessages } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
-import { ts2Divider } from "@/utils/date";
+import { maxBy, minBy } from "@/utils/collections";
+import { ts2Divider, ts2display } from "@/utils/date";
 import { quickReactionEmojisStorage } from "@/utils/storage";
 import { VBtn, VDivider } from "vuetify/components";
 import Loading from "./Loading.vue";
@@ -11,6 +12,7 @@ import SearchChannelGraph from "./SearchChannelGraph.vue";
 import SearchMessageQueryInput, {
   SearchCondition,
 } from "./SearchMessageQueryInput.vue";
+import SearchUserGraph from "./SearchUserGraph.vue";
 
 const searchCondition = ref<SearchCondition>({
   query: "",
@@ -36,6 +38,26 @@ onMounted(async () => {
     reactionEmojis.value = newValue;
   });
 });
+
+const latestDisplayDate = computed(() =>
+  ts2display(
+    maxBy(
+      messages.value.map((m) => m.ts),
+      Number,
+    ),
+    { onlyDate: true },
+  ),
+);
+
+const oldestDisplayDate = computed(() =>
+  ts2display(
+    minBy(
+      messages.value.map((m) => m.ts),
+      Number,
+    ),
+    { onlyDate: true },
+  ),
+);
 
 const search = async (cond: SearchCondition) => {
   loading.value = true;
@@ -157,7 +179,16 @@ const handleClickThread = (message: Message) => {
       </div>
     </div>
 
-    <SearchChannelGraph :messages="messages" />
+    <div class="d-flex flex-column align-center">
+      <h1 v-if="messages.length > 0" class="pa-6">
+        {{ messages.length }}件の投稿 ({{ oldestDisplayDate }} ~
+        {{ latestDisplayDate }})
+      </h1>
+      <div class="d-flex">
+        <SearchChannelGraph :messages="messages" />
+        <SearchUserGraph :messages="messages" />
+      </div>
+    </div>
   </div>
 </template>
 

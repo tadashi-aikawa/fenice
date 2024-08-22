@@ -7,22 +7,20 @@ const props = defineProps<{
   messages: Message[];
 }>();
 
-const countByChannelName = computed(() =>
-  count(props.messages.map((x) => x.channel.name)),
+const countByUserName = computed(() =>
+  count(props.messages.map((x) => x.username)),
 );
 const graphHeight = computed(
-  () => (Object.keys(countByChannelName.value).length + 1) * 50 || 0,
+  () => (Object.keys(countByUserName.value).length + 1) * 50 || 0,
 );
 const series = computed(() => [
   {
-    data: Object.values(countByChannelName.value).sort(
-      sorter((x) => x, "desc"),
-    ),
+    data: Object.values(countByUserName.value).sort(sorter((x) => x, "desc")),
   },
 ]);
 const options = computed(() => ({
   title: {
-    text: "投稿channel内訳",
+    text: "投稿ユーザー内訳",
   },
   chart: {
     width: 400,
@@ -40,11 +38,11 @@ const options = computed(() => ({
       enabled: false,
     },
     labels: {
-      maxWidth: 400,
+      maxWidth: 300,
     },
   },
   xaxis: {
-    categories: Object.entries(countByChannelName.value)
+    categories: Object.entries(countByUserName.value)
       .sort(sorter(([_, count]) => count, "desc"))
       .map(([n, _]) => n),
   },
