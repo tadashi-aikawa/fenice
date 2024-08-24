@@ -2,9 +2,11 @@
 import { getSearchMessages } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
+
 import { maxBy, minBy } from "@/utils/collections";
 import { ts2Divider, ts2display } from "@/utils/date";
 import { quickReactionEmojisStorage } from "@/utils/storage";
+import { useScroll } from "@vueuse/core";
 import { VBtn, VDivider } from "vuetify/components";
 import Loading from "./Loading.vue";
 import PostCard from "./PostCard.vue";
@@ -24,9 +26,37 @@ const emit = defineEmits<{
 }>();
 
 const { reactAsEmoji, showThread, stock } = useCardActions();
-
 const loading = ref(false);
+
+interface Filter {
+  channel: string | null;
+  user: string | null;
+}
+const createEmptyFilter = () => ({ channel: null, user: null });
+const filter = ref<Filter>(createEmptyFilter());
+const resetFilter = () => {
+  filter.value = createEmptyFilter();
+};
+
 const messages = ref<Message[]>([]);
+watch(() => messages.value, resetFilter);
+
+const filteredMessages = computed(() =>
+  messages.value.filter(
+    (x) =>
+      filter.value.channel == null || x.channel.name === filter.value.channel,
+  ),
+);
+
+const container = ref<HTMLElement | null>(null);
+const { y } = useScroll(container);
+watch(
+  () => filteredMessages.value,
+  async (_) => {
+    await sleep(0);
+    y.value = 0;
+  },
+);
 
 const loadingPaging = ref(false);
 const nextCursor = ref<string>("");
@@ -110,10 +140,6 @@ const hideMessage = (message: Message) => {
   messages.value = messages.value.filter((x) => x.ts !== message.ts);
 };
 
-const handleUpdateSearchCondition = (cond: SearchCondition) => {
-  searchCondition.value = cond;
-};
-
 const handleClickThread = (message: Message) => {
   showThread(message);
   emit("show:thread", message);
@@ -125,46 +151,44 @@ const handleClickThread = (message: Message) => {
     <div class="d-flex flex-column pa-5">
       <SearchMessageQueryInput
         @search="search"
-        @update:condition="handleUpdateSearchCondition"
+        @update:condition="(cond) => (searchCondition = cond)"
         style="width: 745px"
         class="pr-5"
       />
       <div
-        class="pa-1 mt-3 mb-1"
-        style="width: 750px; height: calc(100vh - 205px); overflow-y: auto"
+        ref="container"
+        class="pa-1 pr-3 mt-3 mb-1"
+        style="width: 710px; height: calc(100vh - 205px); overflow-y: auto"
       >
         <template v-if="loading">
           <Loading :loading="loading" message="メッセージを検索中です" />
         </template>
         <template v-else>
-          <transition-group name="list">
-            <template :key="message.ts" v-for="(message, i) in messages">
+          <template :key="message.ts" v-for="(message, i) in filteredMessages">
+            <div
+              v-if="ts2Divider(message.ts, filteredMessages[i - 1]?.ts)"
+              class="d-flex align-center my-4 ga-2"
+            >
+              <v-divider />
               <div
-                v-if="ts2Divider(message.ts, messages[i - 1]?.ts)"
-                class="d-flex align-center my-4 ga-2"
+                class="text-caption text-grey-darken-2 font-weight-bold"
+                style="white-space: nowrap"
               >
-                <v-divider />
-                <div
-                  class="text-caption text-grey-darken-2 font-weight-bold"
-                  style="white-space: nowrap"
-                >
-                  {{ ts2Divider(message.ts, messages[i - 1]?.ts) }}
-                </div>
-                <v-divider />
+                {{ ts2Divider(message.ts, filteredMessages[i - 1]?.ts) }}
               </div>
-              <PostCard
-                :message="message"
-                :reaction-emojis="reactionEmojis"
-                read-icon="mdi-eye-off"
-                enable-stock
-                enable-thread
-                @click:reaction="reactAsEmoji"
-                @click:read="hideMessage"
-                @click:stock="stock"
-                @click:thread="handleClickThread"
-              />
-            </template>
-          </transition-group>
+              <v-divider />
+            </div>
+            <PostCard
+              :message="message"
+              :reaction-emojis="reactionEmojis"
+              enable-stock
+              enable-thread
+              @click:reaction="reactAsEmoji"
+              @click:read="hideMessage"
+              @click:stock="stock"
+              @click:thread="handleClickThread"
+            />
+          </template>
           <v-btn
             v-if="nextCursor !== ''"
             :loading="loadingPaging"
@@ -185,26 +209,12 @@ const handleClickThread = (message: Message) => {
         {{ latestDisplayDate }})
       </h1>
       <div class="d-flex">
-        <SearchChannelGraph :messages="messages" />
+        <SearchChannelGraph
+          :messages="messages"
+          @change:selection="(ch) => (filter.channel = ch)"
+        />
         <SearchUserGraph :messages="messages" />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.list-leave-active {
-  transition: all 0.2s ease-in;
-}
-.list-leave-to {
-  opacity: 0;
-  transform: translatex(360px);
-}
-
-.list-enter-active {
-  transition: all 0.2s linear;
-}
-.list-enter-from {
-  opacity: 0;
-}
-</style>

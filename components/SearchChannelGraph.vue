@@ -1,17 +1,31 @@
 <script setup lang="ts">
 import { Message } from "@/clients/slack/models";
+import { clearFirstSelection } from "@/utils/apexcharts";
 import { count } from "@/utils/collections";
+import type { VueApexChartsComponent } from "vue3-apexcharts";
 import apexchart from "vue3-apexcharts";
 
 const props = defineProps<{
   messages: Message[];
+}>();
+watch(
+  () => props.messages,
+  (_ms) => {
+    if (chart.value) {
+      clearFirstSelection(chart.value);
+    }
+  },
+);
+
+const emit = defineEmits<{
+  "change:selection": [channel: string | null];
 }>();
 
 const countByChannelName = computed(() =>
   count(props.messages.map((x) => x.channel.name)),
 );
 const graphHeight = computed(
-  () => (Object.keys(countByChannelName.value).length + 1) * 50 || 0,
+  () => (Object.keys(countByChannelName.value).length + 2) * 45 || 0,
 );
 const series = computed(() => [
   {
@@ -20,13 +34,24 @@ const series = computed(() => [
     ),
   },
 ]);
-const options = computed(() => ({
+const channelNames = computed(() =>
+  Object.entries(countByChannelName.value)
+    .sort(sorter(([_, count]) => count, "desc"))
+    .map(([n, _]) => n),
+);
+const options = computed<VueApexChartsComponent["options"]>(() => ({
   title: {
     text: "投稿channel内訳",
   },
   chart: {
     width: 400,
     height: Math.min(graphHeight.value, 850),
+    events: {
+      dataPointSelection(_, _2, options) {
+        const index = options.w.globals.selectedDataPoints[0];
+        emit("change:selection", index ? channelNames.value[index] : null);
+      },
+    },
   },
   plotOptions: {
     bar: {
@@ -44,14 +69,19 @@ const options = computed(() => ({
     },
   },
   xaxis: {
-    categories: Object.entries(countByChannelName.value)
-      .sort(sorter(([_, count]) => count, "desc"))
-      .map(([n, _]) => n),
+    categories: channelNames.value,
   },
   tooltip: { enabled: false },
 }));
+
+const chart = ref<VueApexChartsComponent | null>(null);
 </script>
 
 <template>
-  <apexchart type="bar" :options="options" :series="series"></apexchart>
+  <apexchart
+    ref="chart"
+    type="bar"
+    :options="options"
+    :series="series"
+  ></apexchart>
 </template>
