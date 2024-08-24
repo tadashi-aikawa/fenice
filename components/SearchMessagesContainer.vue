@@ -30,9 +30,9 @@ const loading = ref(false);
 
 interface Filter {
   channel: string | null;
-  user: string | null;
+  userName: string | null;
 }
-const createEmptyFilter = () => ({ channel: null, user: null });
+const createEmptyFilter = () => ({ channel: null, userName: null });
 const filter = ref<Filter>(createEmptyFilter());
 const resetFilter = () => {
   filter.value = createEmptyFilter();
@@ -42,10 +42,15 @@ const messages = ref<Message[]>([]);
 watch(() => messages.value, resetFilter);
 
 const filteredMessages = computed(() =>
-  messages.value.filter(
-    (x) =>
-      filter.value.channel == null || x.channel.name === filter.value.channel,
-  ),
+  messages.value.filter((x) => {
+    if (filter.value.channel && filter.value.channel !== x.channel.name) {
+      return false;
+    }
+    if (filter.value.userName && filter.value.userName !== x.username) {
+      return false;
+    }
+    return true;
+  }),
 );
 
 const container = ref<HTMLElement | null>(null);
@@ -213,7 +218,10 @@ const handleClickThread = (message: Message) => {
           :messages="messages"
           @change:selection="(ch) => (filter.channel = ch)"
         />
-        <SearchUserGraph :messages="messages" />
+        <SearchUserGraph
+          :messages="messages"
+          @change:selection="(userName) => (filter.userName = userName)"
+        />
       </div>
     </div>
   </div>
