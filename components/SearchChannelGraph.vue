@@ -56,7 +56,7 @@ const options = computed<VueApexChartsComponent["options"]>(() => ({
   },
   chart: {
     width: 400,
-    height: Math.min(graphHeight.value, 650),
+    height: Math.min(graphHeight.value, 625),
     animations: { enabled: false },
     events: {
       dataPointSelection(_, _2, options) {

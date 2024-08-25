@@ -231,8 +231,13 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
 
     <div class="d-flex flex-column align-center">
       <h1 v-if="messages.length > 0" class="pa-6">
-        {{ messages.length }}件の投稿 ({{ oldestDisplayDate }} ~
-        {{ latestDisplayDate }})
+        <span style="font-size: 1.5em" class="text-primary">{{
+          messages.length
+        }}</span>
+        <span class="pl-2">件の投稿</span>
+        <span class="pl-2 text-grey-darken-1"
+          >({{ oldestDisplayDate }} ~ {{ latestDisplayDate }})</span
+        >
       </h1>
       <div class="d-flex">
         <SearchChannelGraph
@@ -246,7 +251,9 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
           @change:selection="handleChangeUserGraphFilter"
         />
       </div>
-      <SearchMessageTimeGraph :messages="filteredMessages" />
+      <div class="mt-3">
+        <SearchMessageTimeGraph :messages="filteredMessages" />
+      </div>
     </div>
   </div>
 </template>
