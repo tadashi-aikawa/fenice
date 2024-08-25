@@ -154,6 +154,19 @@ const handleClickThread = (message: Message) => {
   showThread(message);
   emit("show:thread", message);
 };
+
+const handleChangeChannelGraphFilter = (ch: string | null) => {
+  if (ch != null) {
+    userGraphRef.value.clearSelection();
+  }
+  filter.value.channel = ch;
+};
+const handleChangeUserGraphFilter = (userName: string | null) => {
+  if (userName != null) {
+    channelGraphRef.value.clearSelection();
+  }
+  filter.value.userName = userName;
+};
 </script>
 
 <template>
@@ -222,12 +235,12 @@ const handleClickThread = (message: Message) => {
         <SearchChannelGraph
           ref="channelGraphRef"
           :messages="messages"
-          @change:selection="(ch) => (filter.channel = ch)"
+          @change:selection="handleChangeChannelGraphFilter"
         />
         <SearchUserGraph
           ref="userGraphRef"
           :messages="messages"
-          @change:selection="(userName) => (filter.userName = userName)"
+          @change:selection="handleChangeUserGraphFilter"
         />
       </div>
     </div>
