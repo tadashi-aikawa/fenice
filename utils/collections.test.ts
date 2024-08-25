@@ -1,5 +1,12 @@
 import { expect, test } from "bun:test";
-import { max, maxBy, min, minBy, smartLineBreakSplit } from "./collections";
+import {
+  countBy,
+  max,
+  maxBy,
+  min,
+  minBy,
+  smartLineBreakSplit,
+} from "./collections";
 
 test.each([
   ["", []],
@@ -60,5 +67,22 @@ test.each([
     expected: ReturnType<typeof minBy>,
   ) => {
     expect(minBy(numbers, toNum)).toEqual(expected);
+  },
+);
+
+test.each([
+  [
+    [10, 12, 20, 30, 33],
+    (x: any) => String(x % 10),
+    { "0": 3, "2": 1, "3": 1 },
+  ],
+])(
+  `countBy`,
+  (
+    values: Parameters<typeof countBy>[0],
+    fn: Parameters<typeof countBy>[1],
+    expected: ReturnType<typeof countBy>,
+  ) => {
+    expect(countBy(values, fn)).toEqual(expected);
   },
 );

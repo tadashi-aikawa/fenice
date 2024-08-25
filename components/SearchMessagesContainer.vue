@@ -14,6 +14,7 @@ import SearchChannelGraph from "./SearchChannelGraph.vue";
 import SearchMessageQueryInput, {
   SearchCondition,
 } from "./SearchMessageQueryInput.vue";
+import SearchMessageSparkline from "./SearchMessageSparkline.vue";
 import SearchUserGraph from "./SearchUserGraph.vue";
 
 const searchCondition = ref<SearchCondition>({
@@ -245,6 +246,7 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
           @change:selection="handleChangeUserGraphFilter"
         />
       </div>
+      <SearchMessageSparkline :messages="filteredMessages" />
     </div>
   </div>
 </template>

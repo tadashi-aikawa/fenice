@@ -27,6 +27,29 @@ export function uniqBy<T>(values: T[], fn: (x: T) => string | number): T[] {
   return Array.from(m.values());
 }
 
+export const groupBy = <T>(
+  values: T[],
+  toKey: (t: T) => string,
+): { [key: string]: T[] } => {
+  const grouped: { [key: string]: T[] } = {};
+  for (const value of values) {
+    const key = toKey(value);
+    if (!grouped[key]) {
+      grouped[key] = [];
+    }
+    grouped[key].push(value);
+  }
+  return grouped;
+};
+
+export const mapValues = <K, T, U>(
+  obj: { [key: string]: T },
+  to: (x: T) => U,
+): { [key: string]: U } =>
+  Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key, to(value)]),
+  );
+
 export const count = (values: string[]): { [value: string]: number } => {
   const ret: { [value: string]: number } = {};
   for (const value of values) {
@@ -38,6 +61,13 @@ export const count = (values: string[]): { [value: string]: number } => {
   }
   return ret;
 };
+
+export function countBy<T>(
+  values: T[],
+  fn: (x: T) => string,
+): { [key: string]: number } {
+  return mapValues(groupBy(values, fn), (xs) => xs.length);
+}
 
 export function smartLineBreakSplit(text: string): string[] {
   return text.split("\n").filter((x) => x);
