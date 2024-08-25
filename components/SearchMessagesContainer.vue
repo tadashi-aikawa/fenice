@@ -2,9 +2,9 @@
 import { getSearchMessages } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { useCardActions } from "@/composables/CardActions";
-
 import { maxBy, minBy } from "@/utils/collections";
 import { ts2Divider, ts2display } from "@/utils/date";
+import { deepEquals } from "@/utils/functions";
 import { quickReactionEmojisStorage } from "@/utils/storage";
 import { useScroll } from "@vueuse/core";
 import { VBtn, VDivider } from "vuetify/components";
@@ -60,8 +60,12 @@ const container = ref<HTMLElement | null>(null);
 const { y } = useScroll(container);
 watch(
   () => filter.value,
-  async (_) => {
-    await sleep(0);
+  async (newO, oldO) => {
+    if (deepEquals(newO, oldO)) {
+      return;
+    }
+
+    await nextTick();
     y.value = 0;
   },
   { deep: true },
@@ -144,6 +148,9 @@ const searchPaging = async () => {
 
   nextCursor.value = res.messages.paging.next_cursor;
   messages.value = messages.value.concat(res.messages.matches);
+  await nextTick();
+  channelGraphRef.value.selectByName(filter.value.channel);
+  userGraphRef.value.selectByName(filter.value.userName);
 };
 
 const handleClickThread = (message: Message) => {

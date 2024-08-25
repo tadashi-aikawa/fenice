@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Message } from "@/clients/slack/models";
-import { clearFirstSelection } from "@/utils/apexcharts";
+import { clearFirstSelection, select } from "@/utils/apexcharts";
 import { count } from "@/utils/collections";
 import apexchart, { VueApexChartsComponent } from "vue3-apexcharts";
 
@@ -13,7 +13,19 @@ function clearSelection() {
     clearFirstSelection(chart.value);
   }
 }
-defineExpose({ clearSelection });
+function selectByName(userName: string) {
+  if (!chart.value) {
+    return;
+  }
+
+  const i = userNames.value.findIndex((x) => x === userName);
+  if (i === -1) {
+    return;
+  }
+
+  select(chart.value, i);
+}
+defineExpose({ clearSelection, selectByName });
 
 const emit = defineEmits<{
   "change:selection": [userName: string | null];
