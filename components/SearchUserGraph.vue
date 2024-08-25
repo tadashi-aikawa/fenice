@@ -23,7 +23,7 @@ const countByUserName = computed(() =>
   count(props.messages.map((x) => x.username)),
 );
 const graphHeight = computed(
-  () => (Object.keys(countByUserName.value).length + 1) * 45 || 0,
+  () => (Object.keys(countByUserName.value).length + 2) * 45 || 0,
 );
 const series = computed(() => [
   {
