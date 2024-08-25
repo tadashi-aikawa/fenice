@@ -34,12 +34,15 @@ interface Filter {
 }
 const createEmptyFilter = () => ({ channel: null, userName: null });
 const filter = ref<Filter>(createEmptyFilter());
+const channelGraphRef = ref<any | null>(null);
+const userGraphRef = ref<any | null>(null);
 const resetFilter = () => {
   filter.value = createEmptyFilter();
+  channelGraphRef.value.clearSelection();
+  userGraphRef.value.clearSelection();
 };
 
 const messages = ref<Message[]>([]);
-watch(() => messages.value, resetFilter);
 
 const filteredMessages = computed(() =>
   messages.value.filter((x) => {
@@ -56,11 +59,12 @@ const filteredMessages = computed(() =>
 const container = ref<HTMLElement | null>(null);
 const { y } = useScroll(container);
 watch(
-  () => filteredMessages.value,
+  () => filter.value,
   async (_) => {
     await sleep(0);
     y.value = 0;
   },
+  { deep: true },
 );
 
 const loadingPaging = ref(false);
@@ -113,6 +117,7 @@ const search = async (cond: SearchCondition) => {
     return showErrorToast(error);
   }
 
+  resetFilter();
   nextCursor.value = res.messages.paging.next_cursor;
   messages.value = res.messages.matches;
 };
@@ -215,10 +220,12 @@ const handleClickThread = (message: Message) => {
       </h1>
       <div class="d-flex">
         <SearchChannelGraph
+          ref="channelGraphRef"
           :messages="messages"
           @change:selection="(ch) => (filter.channel = ch)"
         />
         <SearchUserGraph
+          ref="userGraphRef"
           :messages="messages"
           @change:selection="(userName) => (filter.userName = userName)"
         />

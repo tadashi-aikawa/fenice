@@ -8,14 +8,13 @@ import apexchart from "vue3-apexcharts";
 const props = defineProps<{
   messages: Message[];
 }>();
-watch(
-  () => props.messages,
-  (_ms) => {
-    if (chart.value) {
-      clearFirstSelection(chart.value);
-    }
-  },
-);
+
+function clearSelection() {
+  if (chart.value) {
+    clearFirstSelection(chart.value);
+  }
+}
+defineExpose({ clearSelection });
 
 const emit = defineEmits<{
   "change:selection": [channel: string | null];
