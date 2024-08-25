@@ -146,10 +146,6 @@ const searchPaging = async () => {
   messages.value = messages.value.concat(res.messages.matches);
 };
 
-const hideMessage = (message: Message) => {
-  messages.value = messages.value.filter((x) => x.ts !== message.ts);
-};
-
 const handleClickThread = (message: Message) => {
   showThread(message);
   emit("show:thread", message);
@@ -207,7 +203,6 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
               enable-stock
               enable-thread
               @click:reaction="reactAsEmoji"
-              @click:read="hideMessage"
               @click:stock="stock"
               @click:thread="handleClickThread"
             />
