@@ -28,10 +28,12 @@ const dates = computed<DateTime[]>(() => {
 });
 
 const options = computed<VueApexChartsComponent["options"]>(() => ({
+  title: { text: "直近30日の投稿分布(フィルタ後)" },
   chart: {
     type: "bar",
     width: 800,
     height: 200,
+    animations: { enabled: false },
   },
   yaxis: {
     min: 0,

@@ -57,6 +57,7 @@ const options = computed<VueApexChartsComponent["options"]>(() => ({
   chart: {
     width: 400,
     height: Math.min(graphHeight.value, 650),
+    animations: { enabled: false },
     events: {
       dataPointSelection(_, _2, options) {
         const index = options.w.globals.selectedDataPoints[0];
