@@ -76,8 +76,6 @@ export default defineBackground(() => {
   browser.alarms.create("background-search", { periodInMinutes: 1 });
 
   browser.alarms.onAlarm.addListener(async (alarm) => {
-    console.debug(`[${DateTime.now().rfc3339}] 📣 alermの登録処理を実行`);
-
     // 完璧ではないけど一旦これで十分
     const feniceTab = (await browser.tabs.query({ title: "Fenice" })).at(0);
     if (!feniceTab) {
@@ -92,10 +90,6 @@ export default defineBackground(() => {
         DateTime.now().diffSeconds(DateTime.of(lastTimestamp)) <
         intervalMinutes * 60
       ) {
-        console.debug(
-          "[${DateTime.now().rfc3339}] 🥃 間隔が設定値未満なのでスキップ",
-        );
-        console.debug({ lastTimestamp, intervalMinutes });
         return;
       }
 
