@@ -49,11 +49,16 @@ const authenticate = async () => {
       body: `client_id=${props.clientId}&client_secret=${props.clientSecret}&code=${code}&redirect_uri=${redirectUri}`,
     });
 
+    const resJson = await res.json();
+
+    console.debug(`🎁 Response from oauth.v2.access`);
+    console.debug(JSON.stringify(resJson));
+
     const {
       ok,
       authed_user: user,
       error,
-    } = (await res.json()) as {
+    } = resJson as {
       ok: boolean;
       error: unknown | undefined;
       authed_user: {
