@@ -273,56 +273,63 @@ onKeyStroke("9", (e) => {
   <v-app>
     <v-layout>
       <v-navigation-drawer v-if="accessToken" expand-on-hover rail>
-        <v-list>
-          <v-list-item title="Fenice" :subtitle="`v${version}`">
-            <template v-slot:prepend>
-              <v-avatar>
-                <v-img alt="Fenice" src="/icon/384.png" />
-              </v-avatar>
-            </template>
-          </v-list-item>
-        </v-list>
-
-        <v-divider></v-divider>
-
-        <v-list nav @click:select="handleClickItem">
-          <v-list-item
-            title="禅 times"
-            value="zen-times"
-            :active="page === 'zen-times'"
-          >
-            <template v-slot:prepend>
-              <v-icon icon="mdi-meditation" size="x-large"></v-icon>
-            </template>
-          </v-list-item>
-          <Badge
-            :disabled="unreadCount === 0"
-            color="primary"
-            :content="unreadCount"
-            location="top start"
-            offset-x="32"
-            offset-y="7"
-          >
-            <v-list-item
-              title="重要メッセージ"
-              value="crucial-messages"
-              :active="page === 'crucial-messages'"
-            >
+        <div class="d-flex flex-column" style="height: 100%">
+          <v-list>
+            <v-list-item title="Fenice" :subtitle="`v${version}`">
               <template v-slot:prepend>
-                <v-icon icon="mdi-message-alert" size="x-large"></v-icon>
+                <v-avatar>
+                  <v-img alt="Fenice" src="/icon/384.png" />
+                </v-avatar>
               </template>
             </v-list-item>
-          </Badge>
-          <v-list-item
-            title="設定"
-            value="settings"
-            :active="page === 'settings'"
-          >
-            <template v-slot:prepend>
-              <v-icon icon="mdi-cog" size="x-large"></v-icon>
-            </template>
-          </v-list-item>
-        </v-list>
+          </v-list>
+
+          <v-divider></v-divider>
+
+          <v-list nav @click:select="handleClickItem">
+            <v-list-item
+              title="禅 times"
+              value="zen-times"
+              :active="page === 'zen-times'"
+            >
+              <template v-slot:prepend>
+                <v-icon icon="mdi-meditation" size="x-large"></v-icon>
+              </template>
+            </v-list-item>
+            <Badge
+              :disabled="unreadCount === 0"
+              color="primary"
+              :content="unreadCount"
+              location="top start"
+              offset-x="32"
+              offset-y="7"
+            >
+              <v-list-item
+                title="重要メッセージ"
+                value="crucial-messages"
+                :active="page === 'crucial-messages'"
+              >
+                <template v-slot:prepend>
+                  <v-icon icon="mdi-message-alert" size="x-large"></v-icon>
+                </template>
+              </v-list-item>
+            </Badge>
+          </v-list>
+
+          <v-divider></v-divider>
+
+          <v-list nav @click:select="handleClickItem" class="mt-auto">
+            <v-list-item
+              title="設定"
+              value="settings"
+              :active="page === 'settings'"
+            >
+              <template v-slot:prepend>
+                <v-icon icon="mdi-cog" size="x-large"></v-icon>
+              </template>
+            </v-list-item>
+          </v-list>
+        </div>
       </v-navigation-drawer>
 
       <v-main>
