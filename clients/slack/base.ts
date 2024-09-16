@@ -75,24 +75,24 @@ export async function postRequest<R>(args: {
   query?: Query;
   json?: Object;
   formData?: FormData;
-  prohibitRetry?: boolean;
+  prohibitRetry?: boolean; // trueの場合はリトライを禁止する
+  noAuth?: boolean; // trueの場合は認証をskipする
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
 
-  let headers, body;
+  let headers = args.noAuth ? {} : await createDefaultHeaders();
+  let body = undefined;
   if (args.json) {
     headers = {
-      ...(await createDefaultHeaders()),
+      ...headers,
       "Content-Type": "application/json;charset=utf-8",
     };
     body = JSON.stringify(args.json);
   } else if (args.formData) {
     // https://zenn.dev/kariya_mitsuru/articles/25c9aeb27059e7
-    headers = await createDefaultHeaders();
     body = args.formData;
   } else {
-    headers = await createDefaultHeaders();
-    body = undefined;
+    // DO NOTHING
   }
 
   const res = await fetch(url, { method: "POST", headers, body });
@@ -220,6 +220,7 @@ export async function postOauthV2Access(args: {
   }>({
     path: "/oauth.v2.access",
     formData,
-    prohibitRetry: true,
+    prohibitRetry: true, // 無限ループを防ぐため
+    noAuth: true, // refreshにアクセストークンは不要
   });
 }
