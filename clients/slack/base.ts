@@ -54,6 +54,7 @@ export async function getRequest<R>(args: {
 
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
+    console.debug(`Retry: GET ${url}`);
     const res = await fetch(url, { headers });
     result = await handleResponse<R>(res);
   }
@@ -62,6 +63,7 @@ export async function getRequest<R>(args: {
     return err(result.error);
   }
   if (result.value.retry) {
+    console.debug(`Retry loop error: GET ${url}`);
     return err({
       title: "retryループエラー",
       message: "ネストしてのretryリクエストはできません",
@@ -100,6 +102,7 @@ export async function postRequest<R>(args: {
 
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
+    console.debug(`Retry: POST ${url}`);
     const res = await fetch(url, { method: "POST", headers, body });
     result = await handleResponse<R>(res, args.prohibitRetry);
   }
@@ -108,6 +111,7 @@ export async function postRequest<R>(args: {
     return err(result.error);
   }
   if (result.value.retry) {
+    console.debug(`Retry: POST ${url}`);
     return err({
       title: "retryループエラー",
       message: "ネストしてのretryリクエストはできません",
