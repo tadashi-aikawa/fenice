@@ -8,6 +8,7 @@ export default {
         releaseRules: [
           { breaking: true, release: "minor" }, // TODO: v1になったら release: "major" にする
           { type: "feat", release: "minor" },
+          { type: "build", release: "minor" },
           { type: "style", release: "minor" },
           { type: "fix", release: "patch" },
           { type: "refactor", release: "patch" },
@@ -24,11 +25,11 @@ export default {
             { type: "feat", section: "✨ Features" },
             { type: "style", section: "🎨 Styles" },
             { type: "fix", section: "🛡️ Bug Fixes" },
+            { type: "build", section: "🤖 Build" },
             { type: "docs", hidden: true },
             { type: "refactor", hidden: true },
             { type: "test", hidden: true },
             { type: "ci", hidden: true },
-            { type: "build", hidden: true },
             { type: "dev", hidden: true },
             { type: "chore", hidden: true },
           ],
@@ -36,7 +37,18 @@ export default {
       },
     ],
     "@semantic-release/npm",
-    "@semantic-release/github",
+    [
+      "@semantic-release/exec",
+      {
+        prepareCmd: "bun install && bun pre:push && bun zip",
+      },
+    ],
+    [
+      "@semantic-release/github",
+      {
+        assets: ["fenice-${nextRelease.version}-chrome.zip"],
+      },
+    ],
     "@semantic-release/git",
   ],
 };
