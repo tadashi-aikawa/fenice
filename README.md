@@ -83,16 +83,9 @@ bun i
 bun dev
 ```
 
-### リリースビルド
+### リリース
 
-```console
-npm version 1.2.3
-git push --tags
-git push
-bun zip
-```
-
-zipが成果物。
+[GitHub Action](https://github.com/tadashi-aikawa/fenice/actions/workflows/release.yaml)を実行すると、リリースノートと成果物のzipがリリースページに公開されます。
 
 TODO: ストアへの登録など (形になってきたら)
 
