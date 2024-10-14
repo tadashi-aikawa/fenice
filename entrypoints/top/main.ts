@@ -20,9 +20,6 @@ const vuetify = createVuetify({
 import "prismjs/components/prism-json";
 import "prismjs/themes/prism-okaidia.css";
 
-// vue-mention
-import "floating-vue/dist/style.css";
-
 // ApexCharts
 import VueApexCharts from "vue3-apexcharts";
 
