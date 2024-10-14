@@ -88,6 +88,10 @@ export async function updateLastUsedEmojis(emojis: string[]) {
   });
 }
 
+export const lastSelectedChannelMapStorage = storage.defineItem<
+  Record<string, number>
+>("local:lastSelectedChannelMap", { defaultValue: {} });
+
 // ----------------------------------
 // Settings
 // ----------------------------------

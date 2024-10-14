@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import { lastSelectedChannelMapStorage } from "@/utils/storage";
+import { DateTime } from "owlelia";
 import {
+  VAutocomplete,
   VBtn,
   VBtnToggle,
-  VCombobox,
   VTextField,
   VTooltip,
 } from "vuetify/components";
-const query = defineModel("query", { default: "" });
-const channel = defineModel("channel", { default: "" });
-const channels = ref<string[]>([]);
+
+const query = ref<string>("");
+const channel = ref<string>("");
 
 export type SearchCondition = {
   query: string;
@@ -18,6 +20,7 @@ export type SearchCondition = {
 type SearchFlg = "bot" | "100";
 const flags = ref<SearchFlg[]>([]);
 
+const channels = ref<string[]>([]);
 onMounted(async () => {
   channels.value = (await channelsCacheStorage.getValue()).channels.map(
     (x) => x.name,
@@ -26,6 +29,20 @@ onMounted(async () => {
     channels.value = newValue.channels.map((x) => x.name);
   });
 });
+
+const lastSelectedChannelMap = ref<Record<string, number>>({});
+onMounted(async () => {
+  lastSelectedChannelMapStorage.watch((newValue) => {
+    lastSelectedChannelMap.value = newValue;
+  });
+  lastSelectedChannelMap.value = await lastSelectedChannelMapStorage.getValue();
+});
+
+const sortedChannels = computed(() =>
+  channels.value.toSorted(
+    sorter((x) => lastSelectedChannelMap.value[x] ?? -1, "desc"),
+  ),
+);
 
 const emit = defineEmits<{
   search: [condition: SearchCondition];
@@ -57,8 +74,20 @@ watch(
 const customFilter = (value: string, query: string) =>
   query.split(" ").every((q) => value.includes(q));
 
-const handleSearch = () => {
+const handleSearch = async (_channel: string | null) => {
+  if (!_channel) {
+    return;
+  }
+
+  await nextTick();
   emit("search", searchCondition.value);
+
+  if (channel.value) {
+    lastSelectedChannelMapStorage.setValue({
+      ...lastSelectedChannelMap.value,
+      [channel.value]: DateTime.now().unix,
+    });
+  }
 };
 </script>
 
@@ -75,21 +104,21 @@ const handleSearch = () => {
     ></v-text-field>
 
     <div class="d-flex align-center ga-3">
-      <v-combobox
+      <v-autocomplete
         v-model="channel"
-        :items="channels"
+        :items="sortedChannels"
         density="compact"
         :custom-filter="customFilter"
         clearable
-        clear-on-select
         bg-color="white"
         variant="outlined"
         label="絞り込むchannel"
-        placeholder="スペース区切りでand検索"
+        placeholder="スペース区切りでand絞り込み"
         class="mt-3 mb-1"
         auto-select-first
+        clear-on-select
         hide-details
-        @keyup.enter.exact="handleSearch"
+        @update:model-value="handleSearch"
       />
       <v-btn-toggle v-model="flags" multiple variant="elevated" color="primary">
         <v-tooltip text="botを検索に含めるか?" location="bottom">
