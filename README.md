@@ -36,7 +36,7 @@ Feniceは作業に集中しつつもSlackを使いこなしたいと思ってい
     - APIから返却される値 (開発者向け)
 - 目玉機能
   - クエリで定義した重要なメッセージがあったときのみデスクトップへ通知
-    - 1分ごとに`search.messages` APIで検索
+    - 指定した時間ごと(1分以上で分単位)に`search.messages` APIで検索
   - メッセージ投稿欄のVim対応
     - codemirror-vimで可能なことはできる
 - Fenice独自機能
