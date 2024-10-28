@@ -149,14 +149,11 @@ const actions = computed(() => settingStore.visibledButtons);
                   class="d-flex align-center text-caption text-grey-darken-1"
                 >
                   <span>{{ channelName }}</span>
-                  <v-icon
-                    size="small"
-                    class="ml-3"
-                    style="font-size: 120%; margin-top: 2px"
+                  <v-icon size="small" class="ml-3" style="font-size: 120%"
                     >mdi-clock-outline</v-icon
                   >
                   <span
-                    style="font-size: 90%; margin-left: 2px; height: 18px"
+                    style="font-size: 90%; align-self: end; margin-left: 2px"
                     >{{ ts2display(message.ts) }}</span
                   >
                 </div>
