@@ -36,7 +36,7 @@ function buildUrl(path: Path, query: Query = {}): string {
   return `${BASE_URL}${path}${queryStr ? "?" + queryStr : ""}`;
 }
 
-export async function createDefaultHeaders(): Promise<HeadersInit> {
+export async function createBearerTokenHeaders(): Promise<HeadersInit> {
   const token = await accessTokenStorage.getValue();
   return {
     Authorization: `Bearer ${token}`,
@@ -48,7 +48,7 @@ export async function getRequest<R>(args: {
   query?: Query;
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
-  const headers = await createDefaultHeaders();
+  const headers = await createBearerTokenHeaders();
   const res = await fetch(url, { headers });
   let result = await handleResponse<R>(res);
 
@@ -56,7 +56,7 @@ export async function getRequest<R>(args: {
   if (result.isOk() && result.value.retry) {
     console.debug(`Retry: GET ${url}`);
     const res = await fetch(url, {
-      headers: { ...headers, ...(await createDefaultHeaders()) },
+      headers: { ...headers, ...(await createBearerTokenHeaders()) },
     });
     result = await handleResponse<R>(res);
   }
@@ -84,7 +84,7 @@ export async function postRequest<R>(args: {
 }): AsyncResult<R, RequestError> {
   const url = buildUrl(args.path, args.query);
 
-  let headers = args.noAuth ? {} : await createDefaultHeaders();
+  let headers = args.noAuth ? {} : await createBearerTokenHeaders();
   let body = undefined;
   if (args.json) {
     headers = {
@@ -108,7 +108,7 @@ export async function postRequest<R>(args: {
     const res = await fetch(url, {
       method: "POST",
       body,
-      headers: { ...headers, ...(await createDefaultHeaders()) },
+      headers: { ...headers, ...(await createBearerTokenHeaders()) },
     });
     result = await handleResponse<R>(res, args.prohibitRetry);
   }
