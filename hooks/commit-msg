@@ -33,10 +33,10 @@ function validateType() {
 # $1: scope
 function validateScope() {
   case $1 in
-  禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | "") ;;
+  禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | 投稿カード | "") ;;
   *)
     echo "Invalid scope: $1"
-    echo ">> 禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー"
+    echo ">> 禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | 投稿カード"
     exit 1
     ;;
   esac
