@@ -55,7 +55,9 @@ export async function getRequest<R>(args: {
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
     console.debug(`Retry: GET ${url}`);
-    const res = await fetch(url, { headers });
+    const res = await fetch(url, {
+      headers: { ...headers, ...(await createDefaultHeaders()) },
+    });
     result = await handleResponse<R>(res);
   }
 
@@ -103,7 +105,11 @@ export async function postRequest<R>(args: {
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
     console.debug(`Retry: POST ${url}`);
-    const res = await fetch(url, { method: "POST", headers, body });
+    const res = await fetch(url, {
+      method: "POST",
+      body,
+      headers: { ...headers, ...(await createDefaultHeaders()) },
+    });
     result = await handleResponse<R>(res, args.prohibitRetry);
   }
 
