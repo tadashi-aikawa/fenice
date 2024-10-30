@@ -54,7 +54,6 @@ export async function getRequest<R>(args: {
 
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
-    console.debug(`Retry: GET ${url}`);
     const res = await fetch(url, {
       headers: { ...headers, ...(await createBearerTokenHeaders()) },
     });
@@ -65,10 +64,9 @@ export async function getRequest<R>(args: {
     return err(result.error);
   }
   if (result.value.retry) {
-    console.debug(`Retry loop error: GET ${url}`);
     return err({
       title: "retryループエラー",
-      message: "ネストしてのretryリクエストはできません",
+      message: `ネストしてのretryリクエストはできません: GET ${url}`,
     });
   }
   return ok(result.value.value);
@@ -104,7 +102,6 @@ export async function postRequest<R>(args: {
 
   // refresh tokenの更新などによりretry要求された場合はもう一度だけリクエスト
   if (result.isOk() && result.value.retry) {
-    console.debug(`Retry: POST ${url}`);
     const res = await fetch(url, {
       method: "POST",
       body,
@@ -117,10 +114,9 @@ export async function postRequest<R>(args: {
     return err(result.error);
   }
   if (result.value.retry) {
-    console.debug(`Retry: POST ${url}`);
     return err({
       title: "retryループエラー",
-      message: "ネストしてのretryリクエストはできません",
+      message: `ネストしてのretryリクエストはできません: POST ${url}`,
     });
   }
   return ok(result.value.value);
@@ -145,10 +141,8 @@ async function handleResponse<R>(
 
   // 認証期間切れの場合はrefresh tokenでaccess tokenを更新する
   if (!prohibitRefresh && jr.error === "token_expired") {
-    console.debug(`🐠 Refresh access token...`);
     const rErr = await refreshTokens();
     if (rErr) {
-      console.debug(`⚠️ Refresh error: ${JSON.stringify(rErr)}`);
       return err(rErr);
     }
     return ok({ retry: true });
@@ -201,9 +195,6 @@ async function refreshTokens(): AsyncNullable<RequestError> {
     return error;
   }
 
-  console.debug(`✨ Success to refesh`);
-  console.debug(`access token: ${res.access_token}`);
-  console.debug(`refresh token: ${res.refresh_token}`);
   await accessTokenStorage.setValue(res.access_token);
   await refreshTokenStorage.setValue(res.refresh_token);
 
