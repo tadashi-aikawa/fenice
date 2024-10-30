@@ -46,7 +46,7 @@ export default {
     [
       "@semantic-release/github",
       {
-        assets: [".output/fenice-${nextRelease.version}-chrome.zip"],
+        assets: [".output/fenice-*-chrome.zip"],
       },
     ],
     "@semantic-release/git",
