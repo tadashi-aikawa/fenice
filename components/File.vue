@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { File } from "@/clients/slack/models";
 import { VIcon } from "vuetify/components";
+import CsvBox from "./files/CsvBox.vue";
 import FileBox from "./files/FileBox.vue";
 
 defineProps<{
@@ -84,6 +85,15 @@ defineProps<{
         icon="mdi-file-pdf-box"
         color="red"
         :preview-image="file.thumb_pdf"
+      />
+    </template>
+
+    <template v-else-if="['csv', 'tsv'].includes(file.filetype)">
+      <CsvBox
+        :url="file.url_private"
+        :title="file.name"
+        :preview-text="file.preview"
+        :type="file.filetype as 'csv' | 'tsv'"
       />
     </template>
 

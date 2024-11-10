@@ -131,6 +131,7 @@ export interface File {
   name: string;
   url_private: string;
   is_external: boolean;
+  preview?: string; // csv/tsvでは確認
   thumb_480?: string; // GoogleDocでは確認
   thumb_pdf?: string; // PDFのみ
 }
