@@ -12,7 +12,7 @@
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "vue-tsc --noEmit",
-    "postinstall": "wxt prepare",
+    "postinstall": "wxt prepare && git config core.hooksPath hooks",
     "pre:push": "bun compile && bun test"
   },
   "dependencies": {

@@ -65,12 +65,6 @@ Feniceは作業に集中しつつもSlackを使いこなしたいと思ってい
 
 ### 開発環境構築
 
-#### hooks設定
-
-```bash
-git config core.hooksPath hooks
-```
-
 #### 依存関係のインストール
 
 ```console
