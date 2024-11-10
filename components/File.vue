@@ -23,7 +23,7 @@ defineProps<{
       </a>
     </template>
 
-    <template v-else-if="['mp4'].includes(file.filetype)">
+    <template v-else-if="['mp4', 'webm', 'mov'].includes(file.filetype)">
       <video
         muted
         controls
