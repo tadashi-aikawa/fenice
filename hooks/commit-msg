@@ -33,7 +33,7 @@ function validateType() {
 # $1: scope
 function validateScope() {
   case $1 in
-  禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | 投稿カード | "") ;;
+  禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | 投稿カード | release | "") ;;
   *)
     echo "Invalid scope: $1"
     echo ">> 禅times画面 | 重要メッセージ画面 | 設定画面 | 検索ビュー | スレッドビュー | 投稿カード"
