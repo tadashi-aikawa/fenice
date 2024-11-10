@@ -4,6 +4,7 @@ import { VIcon } from "vuetify/components";
 import CsvBox from "./files/CsvBox.vue";
 import DeleteBox from "./files/DeleteBox.vue";
 import FileBox from "./files/FileBox.vue";
+import UnsupportFileTypeBox from "./files/UnsupportFileTypeBox.vue";
 
 defineProps<{
   file: File;
@@ -108,7 +109,7 @@ defineProps<{
     </template>
 
     <template v-else>
-      <b>今はFeniceでサポートしていない形式です</b>
+      <UnsupportFileTypeBox :title="file.name" :type="file.filetype" />
     </template>
   </div>
 </template>
