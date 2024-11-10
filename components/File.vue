@@ -11,7 +11,9 @@ defineProps<{
 <template>
   <div>
     <template
-      v-if="['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(file.filetype)"
+      v-if="
+        ['png', 'jpg', 'jpeg', 'webp', 'gif', 'svg'].includes(file.filetype)
+      "
     >
       <a :href="file.url_private" target="_blank" class="link">
         <img
