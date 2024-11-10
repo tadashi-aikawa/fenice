@@ -1,8 +1,8 @@
 import { getConversationsReplies, getPermalink } from "@/clients/slack";
 import { Message } from "@/clients/slack/models";
 import { channelsByIdCache } from "@/global-cache";
-import { defineStore } from "pinia";
 import { visibledButtonsStorage } from "@/utils/storage";
+import { defineStore } from "pinia";
 
 export const cardActionButtonTypes = [
   "open-browser",

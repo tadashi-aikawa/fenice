@@ -1,4 +1,3 @@
-import { AsyncNullable, DateTime } from "owlelia";
 import { RequestError } from "@/clients/slack/base";
 import {
   refreshAllUserCaches,
@@ -6,6 +5,7 @@ import {
   refreshChannelsCaches,
   refreshEmojiCaches,
 } from "@/global-cache";
+import { AsyncNullable, DateTime } from "owlelia";
 
 export function useCache() {
   const loadingCache = ref(false);
