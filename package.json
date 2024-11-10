@@ -9,11 +9,12 @@
     "dev:firefox": "wxt -b firefox",
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
+    "format": "prettier **/*.ts -l",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
     "compile": "vue-tsc --noEmit",
     "postinstall": "wxt prepare && git config core.hooksPath hooks",
-    "pre:push": "bun compile && bun test"
+    "pre:push": "prettier **/*.ts -l && bun test && bun compile"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
