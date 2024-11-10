@@ -13,7 +13,6 @@
     "zip:firefox": "wxt zip -b firefox",
     "compile": "vue-tsc --noEmit",
     "postinstall": "wxt prepare",
-    "prepare": "husky",
     "pre:push": "bun compile && bun test"
   },
   "dependencies": {
@@ -38,7 +37,6 @@
     "@types/bun": "^1.1.13",
     "@types/prismjs": "^1.26.5",
     "@wxt-dev/module-vue": "^1.0.1",
-    "husky": "^9.1.6",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "typescript": "^5.6.3",
