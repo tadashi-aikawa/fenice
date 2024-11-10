@@ -2,6 +2,7 @@
 import { File } from "@/clients/slack/models";
 import { VIcon } from "vuetify/components";
 import CsvBox from "./files/CsvBox.vue";
+import DeleteBox from "./files/DeleteBox.vue";
 import FileBox from "./files/FileBox.vue";
 
 defineProps<{
@@ -100,6 +101,10 @@ defineProps<{
     <template v-else-if="['zip'].includes(file.filetype)">
       <v-icon>mdi-zip-box-outline</v-icon>
       <a :href="file.url_private">{{ file.name }}</a>
+    </template>
+
+    <template v-else-if="file.mode === 'tombstone'">
+      <DeleteBox />
     </template>
 
     <template v-else>
