@@ -81,8 +81,6 @@ bun dev
 
 [GitHub Action](https://github.com/tadashi-aikawa/fenice/actions/workflows/release.yaml)を実行すると、リリースノートと成果物のzipがリリースページに公開されます。
 
-TODO: ストアへの登録など (形になってきたら)
-
 ---
 
 [WXT]: https://github.com/wxt-dev/wxt
