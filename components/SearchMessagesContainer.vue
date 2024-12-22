@@ -29,6 +29,9 @@ const emit = defineEmits<{
 const { reactAsEmoji, showThread, stock } = useCardActions();
 const loading = ref(false);
 
+type ViewFlg = "hidePreview";
+const flags = ref<ViewFlg[]>([]);
+
 interface Filter {
   channel: string | null;
   userName: string | null;
@@ -182,10 +185,16 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
         style="width: 745px"
         class="pr-5"
       />
+      <v-btn-toggle v-model="flags" multiple variant="elevated" color="primary">
+        <v-btn size="small" value="hidePreview" class="mt-3">
+          <v-icon>mdi-arrow-collapse-vertical</v-icon>
+          <span class="pl-1">プレビューや添付ファイルを隠す</span>
+        </v-btn>
+      </v-btn-toggle>
       <div
         ref="container"
         class="pa-1 pr-3 mt-3 mb-1"
-        style="width: 710px; height: calc(100vh - 205px); overflow-y: auto"
+        style="width: 710px; height: calc(100vh - 255px); overflow-y: auto"
       >
         <template v-if="loading">
           <Loading :loading="loading" message="メッセージを検索中です" />
@@ -210,6 +219,7 @@ const handleChangeUserGraphFilter = (userName: string | null) => {
               :reaction-emojis="reactionEmojis"
               enable-stock
               enable-thread
+              :hide-preview="flags.includes('hidePreview')"
               @click:reaction="reactAsEmoji"
               @click:stock="stock"
               @click:thread="handleClickThread"

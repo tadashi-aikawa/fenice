@@ -30,6 +30,7 @@ interface Props {
   readIcon?: `mdi-${string}`;
   enableStock?: boolean;
   enableThread?: boolean;
+  hidePreview?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   reactionEmojis: () => [],
@@ -241,11 +242,11 @@ const actions = computed(() => settingStore.visibledButtons);
             <Block :item="block" style="font-size: 14px" />
           </template>
 
-          <template v-for="f in message.files ?? []">
+          <template v-if="!hidePreview" v-for="f in message.files ?? []">
             <File :file="f" class="mt-4 ml-4" />
           </template>
 
-          <template v-for="at in message.attachments ?? []">
+          <template v-if="!hidePreview" v-for="at in message.attachments ?? []">
             <Attachement :attachment="at" class="mt-4 ml-4" />
           </template>
 
